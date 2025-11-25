@@ -1,24 +1,12 @@
-FROM node:20-alpine
+FROM node:18-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
+RUN npm install --production
 
-# Install dependencies
-RUN npm ci --only=production
+COPY . .
 
-# Copy source code
-COPY src/ ./src/
+EXPOSE 3000
 
-# Create uploads directory
-RUN mkdir -p uploads
-
-# Verify ethers installation
-RUN node -e "console.log('Ethers version:', require('ethers').version)"
-
-# Use Railway's PORT
-EXPOSE $PORT
-
-# Start server
-CMD ["node", "src/index.js"]
+CMD ["npm", "start"]
