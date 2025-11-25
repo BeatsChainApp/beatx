@@ -15,7 +15,6 @@ const nextConfig = {
   },
   serverExternalPackages: ['@sanity/client', 'firebase-admin'],
   // Force static optimization for better performance
-  output: 'standalone',
   async headers() {
     return [
       {
