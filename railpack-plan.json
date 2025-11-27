@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "install": "npm run install:mcp",
-  "build": "npm run build",
-  "start": "npm start",
-  "deploy": "npm start"
+  "install": "cd packages/mcp-server && npm install --production --legacy-peer-deps",
+  "build": "cd packages/mcp-server && npm run build",
+  "start": "cd packages/mcp-server && npm start",
+  "deploy": "cd packages/mcp-server && npm start"
 }
