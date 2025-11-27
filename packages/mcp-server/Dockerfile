@@ -5,19 +5,22 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install production dependencies
-RUN npm install --production --legacy-peer-deps
+# Install dependencies
+RUN npm ci --only=production
 
 # Copy source code
-COPY . ./
+COPY src/ ./src/
+COPY .env.example ./
 
-# Ensure uploads dir permissions (created at runtime if missing)
-RUN mkdir -p uploads && chown -R node:node /app
+# Create uploads directory
+RUN mkdir -p uploads data
 
-USER node
-
-# Expose the port the app listens on (uses PORT env or 4000)
+# Expose port
 EXPOSE 4000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:4000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
 # Start server
 CMD ["npm", "start"]

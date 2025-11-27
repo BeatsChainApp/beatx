@@ -9,7 +9,7 @@
 const https = require('https');
 const http = require('http');
 
-const BASE_URL = 'https://beatschain-mcp-server-production.up.railway.app';
+const BASE_URL = process.env.MCP_SERVER_URL || 'https://beatschain-mcp-server-production.up.railway.app';
 const TIMEOUT = 10000; // 10 seconds
 
 class SmokeTestRunner {
