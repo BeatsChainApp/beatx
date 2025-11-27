@@ -1,4 +1,1 @@
-FORCE DEPLOYMENT - Railway auto-deploy broken
-Timestamp: 2025-11-14 12:55 PM
-Changes: Port fix 8080->4000, ethers dependency, env vars
-Manual deployment required in Railway dashboard
+Railway deployment trigger - Dockerfile fixed
