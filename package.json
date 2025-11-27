@@ -1,0 +1,13 @@
+{
+  "name": "beatschain",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "install:mcp": "cd packages/mcp-server && npm install --production --legacy-peer-deps",
+    "build": "cd packages/mcp-server && npm run build",
+    "start": "cd packages/mcp-server && npm start"
+  }
+}

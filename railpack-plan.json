@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "install": "npm run install:mcp",
+  "build": "npm run build",
+  "start": "npm start",
+  "deploy": "npm start"
+}
