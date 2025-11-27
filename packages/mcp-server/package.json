@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "BeatsChain MCP Server - Backend services for Web3 music marketplace",
   "main": "src/index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
@@ -24,9 +27,6 @@
   "devDependencies": {
     "jest": "^29.7.0",
     "nodemon": "^3.0.2"
-  },
-  "engines": {
-    "node": ">=20.0.0"
   },
   "keywords": [
     "web3",
