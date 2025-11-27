@@ -1,0 +1,141 @@
+nohup: ignoring input
+
+> beatschain-mcp-server@1.0.0 start
+> node src/index.js
+
+=== RAILWAY ENVIRONMENT DEBUG ===
+PORT: 4000
+NODE_ENV: undefined
+RAILWAY_ENVIRONMENT: undefined
+RAILWAY_PROJECT_ID: undefined
+SUPABASE_URL: MISSING
+SUPABASE_SERVICE_ROLE_KEY: MISSING
+SUPABASE_ANON_KEY: MISSING
+PINATA_JWT: MISSING
+LIVEPEER_API_KEY: MISSING
+THIRDWEB_SECRET_KEY: MISSING
+THIRDWEB_CLIENT_ID: MISSING
+GOOGLE_CLIENT_ID: MISSING
+All environment keys: 132
+All env keys: [
+  'BROWSER',
+  'CLOUDENV_ENVIRONMENT_ID',
+  'CODESPACES',
+  'CODESPACE_NAME',
+  'CODESPACE_VSCODE_FOLDER',
+  'COLOR',
+  'COLORTERM',
+  'CONDA_DIR',
+  'CONDA_SCRIPT',
+  'ContainerVersion',
+  'DEBIAN_FLAVOR',
+  'DEBUGINFOD_URLS',
+  'DOCKER_BUILDKIT',
+  'DOTNET_ROOT',
+  'DOTNET_RUNNING_IN_CONTAINER',
+  'DOTNET_SKIP_FIRST_TIME_EXPERIENCE',
+  'DOTNET_USE_POLLING_FILE_WATCHER',
+  'DYNAMIC_INSTALL_ROOT_DIR',
+  'EDITOR',
+  'ENABLE_DYNAMIC_INSTALL',
+  'FEATURE_SPARK_POST_COMMIT_CREATE_ITERATION',
+  'GEM_HOME',
+  'GEM_PATH',
+  'GITHUB_API_URL',
+  'GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN',
+  'GITHUB_CODESPACE_TOKEN',
+  'GITHUB_GRAPHQL_URL',
+  'GITHUB_REPOSITORY',
+  'GITHUB_SERVER_URL',
+  'GITHUB_TOKEN',
+  'GITHUB_USER',
+  'GIT_ASKPASS',
+  'GIT_EDITOR',
+  'GOPATH',
+  'GOROOT',
+  'GRADLE_HOME',
+  'HOME',
+  'HOSTNAME',
+  'HUGO_DIR',
+  'HUGO_ROOT',
+  'INIT_CWD',
+  'INTERNAL_VSCS_TARGET_URL',
+  'IRBRC',
+  'JAVA_HOME',
+  'JAVA_ROOT',
+  'JUPYTERLAB_PATH',
+  'LANG',
+  'LESSCLOSE',
+  'LESSOPEN',
+  'LS_COLORS',
+  'MAVEN_HOME',
+  'MAVEN_ROOT',
+  'MY_RUBY_HOME',
+  'NODE',
+  'NODE_ROOT',
+  'NPM_GLOBAL',
+  'NUGET_XMLDOC_MODE',
+  'NVM_BIN',
+  'NVM_CD_FLAGS',
+  'NVM_DIR',
+  'NVM_INC',
+  'NVM_SYMLINK_CURRENT',
+  'NVS_DIR',
+  'NVS_HOME',
+  'NVS_OS',
+  'NVS_ROOT',
+  'NVS_USE_XZ',
+  'OLDPWD',
+  'ORYX_DIR',
+  'ORYX_ENV_TYPE',
+  'ORYX_PREFER_USER_INSTALLED_SDKS',
+  'ORYX_SDK_STORAGE_BASE_URL',
+  'PATH',
+  'PHP_PATH',
+  'PHP_ROOT',
+  'PIPX_BIN_DIR',
+  'PIPX_HOME',
+  'PORT',
+  'PROMPT_DIRTRIM',
+  'PWD',
+  'PYTHONIOENCODING',
+  'PYTHON_PATH',
+  'PYTHON_ROOT',
+  'RAILS_DEVELOPMENT_HOSTS',
+  'RUBY_HOME',
+  'RUBY_ROOT',
+  'RUBY_VERSION',
+  'RVM_PATH',
+  'SDKMAN_BROKER_API',
+  'SDKMAN_CANDIDATES_API',
+  'SDKMAN_CANDIDATES_DIR',
+  'SDKMAN_DIR',
+  'SDKMAN_PLATFORM',
+  'SHELL',
+  'SHELL_LOGGED_IN',
+  'SHLVL',
+  'TERM',
+  'TERM_PROGRAM',
+  'TERM_PROGRAM_VERSION',
+  'USER',
+  ... 32 more items
+]
+SUPABASE keys found: []
+================================
+✅ TUS client available for Livepeer uploads
+✅ TUS client loaded for Livepeer uploads
+✅ Ethers module found: ethers/5.8.0
+✅ Thirdweb routes loaded successfully
+Analytics routes not available: SUPABASE_URL is required.
+Notifications routes not available: SUPABASE_URL is required.
+Content routes not available: SUPABASE_URL is required.
+Recommendations routes not available: SUPABASE_URL is required.
+Supabase credentials missing - using mock mode
+✅ SAMRO routes loaded successfully
+==================================================
+✅ BeatsChain MCP server STARTED
+Port: 4000
+Host: 0.0.0.0
+Health: http://0.0.0.0:4000/healthz
+Root: http://0.0.0.0:4000/
+==================================================
