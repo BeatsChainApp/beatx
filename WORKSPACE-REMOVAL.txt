@@ -1,0 +1,8 @@
+WORKSPACE DETECTION REMOVED - 2025-11-27T13:09:00Z
+
+Fixed yarn workspace issue:
+- Moved root package.json to package.json.bak
+- Railway will no longer detect this as a workspace
+- Build will use npm instead of yarn workspace
+
+Should deploy successfully now!

@@ -1,0 +1,8 @@
+PACKAGE-LOCK REGENERATED - 2025-11-27T13:03:00Z
+
+Fixed npm ci failure:
+- Removed corrupted package-lock.json
+- Regenerated with npm install
+- All dependencies resolved
+
+Railway deployment should work now!

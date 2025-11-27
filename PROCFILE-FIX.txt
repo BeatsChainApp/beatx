@@ -1,0 +1,8 @@
+PROCFILE DEPLOYMENT FIX - 2025-11-27T13:05:00Z
+
+Bypassing npm ci completely:
+- Created Procfile with: npm install && node src/index.js
+- Removed all package-lock.json files
+- Railway will use npm install instead of npm ci
+
+This should work!

@@ -1,0 +1,8 @@
+NIXPACKS DEPLOYMENT - 2025-11-27T12:48:00Z
+
+Using original nixpacks configuration:
+- Node.js 20
+- npm ci install
+- Start: node src/index.js
+
+Trigger deployment now!

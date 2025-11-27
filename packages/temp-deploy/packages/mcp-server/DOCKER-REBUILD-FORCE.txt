@@ -1,0 +1,12 @@
+DOCKER REBUILD REQUIRED
+Timestamp: 2025-11-14 1:36 PM
+Build ID: FORCE-REBUILD-$(date +%s)
+
+Railway is using cached Docker container with old code.
+This file forces Docker layer invalidation and rebuild.
+
+Expected after rebuild:
+- Port 4000 (not 8080)
+- Ethers module installed
+- Enhanced debug logging
+- Environment variables loaded

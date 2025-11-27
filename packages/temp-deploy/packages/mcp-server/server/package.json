@@ -1,0 +1,16 @@
+{
+  "name": "beatschain-server",
+  "version": "0.1.0",
+  "description": "Minimal server for BeatsChain: token exchange, upload broker and IPFS pinning (scaffold)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "cross-fetch": "^3.1.5"
+  }
+}

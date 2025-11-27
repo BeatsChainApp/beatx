@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: beatschain-mcp-server
+    env: node
+    plan: starter
+    buildCommand: npm install --production
+    startCommand: node src/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+    healthCheckPath: /health

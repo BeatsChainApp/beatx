@@ -1,0 +1,9 @@
+AUTO-DETECTION DEPLOYMENT - 2025-11-27T12:56:00Z
+
+Fixed nixpacks issues:
+- Removed nixpacks.toml (outdated package names)
+- Using Railway auto-detection
+- Simple railway.json config
+- Start: node src/index.js
+
+Should work now!

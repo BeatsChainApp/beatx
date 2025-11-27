@@ -1,0 +1,14 @@
+CRITICAL: Railway not deploying latest code
+Timestamp: 2025-11-14 1:20 PM
+
+Environment variables are CORRECT in Railway dashboard.
+Problem: Railway using OLD code that still has:
+- Port 8080 (fixed to 4000 in latest code)
+- Missing ethers (installed in latest code)  
+- Throwing errors (fixed to warnings in latest code)
+
+MANUAL RAILWAY ACTIONS REQUIRED:
+1. Go to Railway Dashboard → Deployments
+2. Click "Redeploy" on latest deployment
+3. OR trigger new deployment manually
+4. Verify logs show port 4000 and enhanced debug output

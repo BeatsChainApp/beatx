@@ -1,0 +1,9 @@
+DEPLOYMENT TRIGGER - 2025-11-27T12:25:00Z
+
+Critical fixes applied:
+- Supabase client singleton pattern
+- Beats API graceful degradation
+- Livepeer TUS upload fixes
+- Enhanced error handling
+
+Target: 100% smoke test pass rate

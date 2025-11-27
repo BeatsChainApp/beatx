@@ -1,0 +1,32 @@
+{
+  "assets": {
+    "mock-1762892752392": {
+      "assetId": "mock-1762892752392",
+      "name": "test-beat",
+      "ipfsCid": "QmMockCid123",
+      "createdAt": 1762892752392,
+      "asset": {
+        "id": "mock-1762892752392",
+        "name": "test-beat",
+        "status": "created",
+        "uploadUrl": "ipfs://mock-1762892752392",
+        "mocked": true,
+        "createdAt": 1762892752392
+      }
+    },
+    "mock-123": {
+      "lastWebhook": {
+        "id": "mock-123",
+        "playback": [
+          {
+            "url": "ipfs://QmPlaybackMock"
+          }
+        ]
+      },
+      "updatedAt": 1762892765525,
+      "pinnedPlayback": {
+        "ipfsHash": "QmDevMock6d7d193bb8"
+      }
+    }
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "lastDesignation": 209,
+  "codes": {
+    "ZA-80G-25-00201": {
+      "trackTitle": "Test Track",
+      "artistName": "Test Artist",
+      "generated": "2025-11-11T18:56:07.471Z",
+      "userId": "test-user-1",
+      "used": false
+    },
+    "ZA-80G-25-00202": {
+      "trackTitle": "Test Beat",
+      "artistName": "Alice",
+      "generated": "2025-11-11T20:53:14.018Z",
+      "userId": "alice-wallet",
+      "used": false,
+      "year": "25",
+      "designation": "00202"
+    },
+    "ZA-80G-25-00203": {
+      "trackTitle": "Integration Beat",
+      "artistName": "Bob",
+      "generated": "2025-11-11T20:56:15.894Z",
+      "userId": "bob-wallet",
+      "used": true,
+      "year": "25",
+      "designation": "00203"
+    },
+    "ZA-80G-25-00204": {
+      "trackTitle": "CLI Test",
+      "artistName": "CLI Artist",
+      "generated": "2025-11-11T23:18:04.769Z",
+      "userId": "cli-user",
+      "used": false,
+      "year": "25",
+      "designation": "00204"
+    },
+    "ZA-80G-25-00205": {
+      "trackTitle": "Smoke Test",
+      "artistName": "CI",
+      "generated": "2025-11-12T08:32:17.104Z",
+      "userId": "ci-test",
+      "used": false,
+      "year": "25",
+      "designation": "00205"
+    },
+    "ZA-80G-25-00206": {
+      "trackTitle": "T",
+      "artistName": "A",
+      "generated": "2025-11-12T08:58:43.286Z",
+      "userId": "u-1",
+      "used": false,
+      "year": "25",
+      "designation": "00206"
+    },
+    "ZA-80G-25-00207": {
+      "trackTitle": "T",
+      "artistName": "A",
+      "generated": "2025-11-12T09:05:04.381Z",
+      "userId": "u-1",
+      "used": false,
+      "year": "25",
+      "designation": "00207"
+    },
+    "ZA-80G-25-00208": {
+      "trackTitle": "T",
+      "artistName": "A",
+      "generated": "2025-11-12T09:26:42.159Z",
+      "userId": "u-1",
+      "used": false,
+      "year": "25",
+      "designation": "00208"
+    },
+    "ZA-80G-25-00209": {
+      "trackTitle": "T",
+      "artistName": "A",
+      "generated": "2025-11-27T12:09:52.494Z",
+      "userId": "u-1",
+      "used": false,
+      "year": "25",
+      "designation": "00209"
+    }
+  },
+  "year": "25"
+}

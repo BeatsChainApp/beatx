@@ -1,0 +1,184 @@
+const express = require('express')
+const router = express.Router()
+const supabase = require('../services/supabaseClient')
+
+// Professional ISRC Generation (separate from regular ISRC)
+router.post('/professional/isrc/generate', async (req, res) => {
+  try {
+    const { trackTitle, artistName } = req.body
+
+    const year = new Date().getFullYear().toString().slice(-2)
+    const countryCode = 'ZA'
+    const registrantCode = 'BTC'
+    
+    // Get next designation number
+    const { data: lastISRC } = await supabase
+      .from('isrc_registry')
+      .select('designation_code')
+      .order('designation_code', { ascending: false })
+      .limit(1)
+      .single()
+
+    const nextDesignation = lastISRC ? (parseInt(lastISRC.designation_code) + 1) : 1
+    const designationCode = nextDesignation.toString().padStart(5, '0')
+    
+    const isrcCode = `${countryCode}-${registrantCode}-${year}-${designationCode}`
+
+    // Store in database with professional flag
+    const { error } = await supabase
+      .from('isrc_registry')
+      .insert({
+        isrc: isrcCode,
+        track_title: trackTitle,
+        artist_name: artistName,
+        country_code: countryCode,
+        registrant_code: registrantCode,
+        year: year,
+        designation_code: designationCode,
+        generated_at: new Date().toISOString(),
+        used: false,
+        professional_service: true
+      })
+
+    if (error) throw error
+
+    res.json({
+      success: true,
+      isrc: isrcCode,
+      professional: true
+    })
+
+  } catch (error) {
+    console.error('Professional ISRC generation error:', error)
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Professional ISRC generation failed'
+    })
+  }
+})
+
+// Professional Audio Analysis
+router.post('/professional/audio/analyze', async (req, res) => {
+  try {
+    const { fileName, fileSize, metadata = {} } = req.body
+
+    const format = fileName.split('.').pop()?.toUpperCase()
+    const analysis = {
+      format,
+      size: fileSize,
+      supportsISRCEmbedding: ['MP3', 'WAV'].includes(format || ''),
+      hasEmbeddedISRC: false, // Would implement actual extraction
+      extractedISRC: null,
+      professional: true,
+      analyzedAt: new Date().toISOString()
+    }
+
+    res.json({
+      success: true,
+      analysis,
+      professional: true
+    })
+
+  } catch (error) {
+    console.error('Professional audio analysis error:', error)
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Audio analysis failed'
+    })
+  }
+})
+
+// Professional License Generation
+router.post('/professional/license/generate', async (req, res) => {
+  try {
+    const { 
+      trackTitle, 
+      artistName, 
+      licenseType = 'EXCLUSIVE',
+      royaltyPercentage = 5,
+      territory = 'Worldwide',
+      duration = 'Perpetual'
+    } = req.body
+
+    const license = {
+      type: licenseType,
+      trackTitle,
+      artistName,
+      royaltyPercentage,
+      territory,
+      duration,
+      terms: generateLicenseTerms(licenseType),
+      generatedAt: new Date().toISOString(),
+      professional: true
+    }
+
+    res.json({
+      success: true,
+      license,
+      professional: true
+    })
+
+  } catch (error) {
+    console.error('Professional license generation error:', error)
+    res.status(500).json({
+      success: false,
+      message: error.message || 'License generation failed'
+    })
+  }
+})
+
+// Professional Revenue Tracking (separate from campaigns)
+router.post('/professional/revenue/track', async (req, res) => {
+  try {
+    const { service, amount, metadata = {} } = req.body
+
+    // Record professional service revenue
+    const { error } = await supabase
+      .from('credit_ledger')
+      .insert({
+        wallet: 'professional-services',
+        delta: amount,
+        reason: `professional_${service}`,
+        meta: {
+          service,
+          professional: true,
+          ...metadata,
+          timestamp: new Date().toISOString()
+        },
+        created_at: new Date().toISOString()
+      })
+
+    if (error) throw error
+
+    res.json({
+      success: true,
+      revenue: amount,
+      service,
+      professional: true
+    })
+
+  } catch (error) {
+    console.error('Professional revenue tracking error:', error)
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Revenue tracking failed'
+    })
+  }
+})
+
+// Helper function for license terms
+function generateLicenseTerms(licenseType) {
+  const baseTerms = {
+    BASIC: 'Non-exclusive license for personal and commercial use',
+    PREMIUM: 'Exclusive license with enhanced distribution rights',
+    EXCLUSIVE: 'Full exclusive rights with worldwide distribution'
+  }
+
+  return {
+    summary: baseTerms[licenseType] || baseTerms.BASIC,
+    fullTerms: `Professional ${licenseType} License Agreement generated by BeatsChain AI`,
+    generated: true
+  }
+}
+
+module.exports = router
