@@ -2,10 +2,12 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+# Copy package files from mcp-server directory
+COPY packages/mcp-server/package*.json ./
 RUN npm install --production --legacy-peer-deps
 
-COPY . ./
+# Copy mcp-server source
+COPY packages/mcp-server/ ./
 
 RUN mkdir -p uploads && chown -R node:node /app
 
