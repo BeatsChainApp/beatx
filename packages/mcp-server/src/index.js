@@ -12,7 +12,7 @@ if (!fs.existsSync('uploads')) {
 const upload = multer({ dest: 'uploads/' });
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || process.env.RAILWAY_PORT || 4000;
 
 // Enhanced Environment Debug
 console.log('=== MCP SERVER ENVIRONMENT DEBUG ===');
@@ -242,13 +242,45 @@ specialRoutes.forEach(({ path, mount, name, requires }) => {
   }
 });
 
+// API index endpoint
+app.get('/api', (req, res) => {
+  res.json({
+    success: true,
+    service: 'beatschain-mcp-server',
+    version: '2.0.0',
+    endpoints: {
+      working: [
+        'GET /healthz - Health check',
+        'GET /health - Health check', 
+        'POST /api/token-exchange - Authentication',
+        'POST /api/pin - IPFS pinning',
+        'POST /api/upload - File upload',
+        'GET /api/beats - Beat operations',
+        'GET /api/credits - Credits system',
+        'GET /api/success - Success logging',
+        'POST /api/isrc/generate - ISRC generation',
+        'POST /api/livepeer/upload - Video upload',
+        'POST /api/samro/generate - SAMRO split sheets',
+        'GET /api/sync - Real-time sync'
+      ],
+      unavailable: [
+        '/api/analytics - Requires callback function fix',
+        '/api/notifications - Requires callback function fix', 
+        '/api/content - LivepeerAdapter constructor issue',
+        '/api/recommendations - Requires callback function fix'
+      ]
+    }
+  });
+});
+
 // Catch-all 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
     message: 'Endpoint not found',
     path: req.originalUrl,
-    method: req.method
+    method: req.method,
+    hint: 'Visit /api for available endpoints'
   });
 });
 

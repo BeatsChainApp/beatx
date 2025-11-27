@@ -9,6 +9,6 @@ COPY . .
 
 RUN mkdir -p uploads
 
-EXPOSE 4000
+EXPOSE $PORT
 
 CMD ["npm", "start"]
