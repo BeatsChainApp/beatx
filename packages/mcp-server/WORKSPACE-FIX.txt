@@ -1,0 +1,8 @@
+WORKSPACE BUILD FIX - 2025-11-27T12:58:00Z
+
+Fixed yarn workspace build issue:
+- Updated build script to work with workspace
+- Added .railwayignore
+- Build command now succeeds
+
+Railway should deploy successfully!

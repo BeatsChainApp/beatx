@@ -2,8 +2,5 @@ node_modules
 .git
 .env
 *.log
-test/
-.github/
-uploads/
-data/
-*.md
+uploads/*
+data/*
