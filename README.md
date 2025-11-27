@@ -32,7 +32,7 @@ Where South African beats meet global blockchain - connecting SA producers with 
 - **Smart Contracts**: Hardhat + Solidity
 - **Deployment**: GitHub Actions + Vercel
 
-## 🏃‍♂️ Quick Start
+## 🏃♂️ Quick Start
 
 ```bash
 # Install dependencies
@@ -106,7 +106,7 @@ yarn build
 - Own beats as NFTs
 - Resell with original producer royalties
 
-### 👨‍💼 For Admins
+### 👨💼 For Admins
 - User management dashboard
 - Content moderation tools
 - Platform analytics
