@@ -6,7 +6,7 @@ describe('Message', function () {
   async function deployMessageFixture() {
     const [owner, otherAccount] = await hre.viem.getWalletClients()
 
-    const defaultMessage = 'Quickly ship Web3 Apps'
+    const defaultMessage = 'Quickly ship Web3 Apps!'
     const newMessage = 'Updated Message'
     const message = await hre.viem.deployContract('Message')
 
