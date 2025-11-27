@@ -184,8 +184,14 @@ try {
 }
 
 // Health checks
-app.get('/healthz', (req, res) => res.json({ ok: true, ts: Date.now(), service: 'mcp-server' }));
-app.get('/health', (req, res) => res.json({ ok: true, ts: Date.now(), service: 'mcp-server' }));
+app.get('/healthz', (req, res) => {
+  console.log('Health check hit: /healthz');
+  res.json({ ok: true, ts: Date.now(), service: 'mcp-server', port: port });
+});
+app.get('/health', (req, res) => {
+  console.log('Health check hit: /health');
+  res.json({ ok: true, ts: Date.now(), service: 'mcp-server', port: port });
+});
 
 // POST /api/token-exchange
 const tokenExchange = require('./tokenExchange');
@@ -254,10 +260,13 @@ try {
 }
 
 const server = app.listen(port, '0.0.0.0', () => {
-  console.log(`BeatsChain MCP server listening on port ${port}`);
-  console.log(`Server accessible at: http://0.0.0.0:${port}`);
-  console.log(`Health check: http://0.0.0.0:${port}/healthz`);
-  console.log(`Root endpoint: http://0.0.0.0:${port}/`);
+  console.log('='.repeat(50));
+  console.log(`✅ BeatsChain MCP server STARTED`);
+  console.log(`Port: ${port}`);
+  console.log(`Host: 0.0.0.0`);
+  console.log(`Health: http://0.0.0.0:${port}/healthz`);
+  console.log(`Root: http://0.0.0.0:${port}/`);
+  console.log('='.repeat(50));
 });
 
 server.on('error', (error) => {
