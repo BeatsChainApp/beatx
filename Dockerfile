@@ -2,7 +2,7 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files from the MCP package
 COPY packages/mcp-server/package*.json ./
 
 # Install production dependencies
@@ -11,7 +11,7 @@ RUN npm ci --production
 # Copy source code
 COPY packages/mcp-server/ ./
 
-# Ensure uploads dir permissions (created at runtime if missing)
+# Create uploads directory and set permissions
 RUN mkdir -p uploads && chown -R node:node /app
 
 USER node

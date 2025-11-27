@@ -14,11 +14,10 @@ railway variables set SUPABASE_ANON_KEY=sb_publishable_ZNsSNgXL7N74uzV6oWkp-A_MM
 railway variables set GOOGLE_CLIENT_ID=239753403483-re3akggqub93apgm4t5nnabbbrcp0q1p.apps.googleusercontent.com
 railway variables set NODE_ENV=production
 railway variables set CORS_ORIGIN=*
-railway variables set PORT=4000
 
 # Deploy
 echo "Deploying to Railway..."
 railway up
 
 echo "✅ Deployment complete!"
-echo "Test: curl https://beatschain-mcp-production.up.railway.app/healthz"
+echo "Test: curl https://REPLACE_WITH_MCP_URL/healthz"

@@ -1,8 +1,9 @@
 // API integration for Extension CRUD
 export class SponsorAPI {
   private baseUrl: string;
-  
-  constructor(baseUrl = 'https://beatschain-mcp-production.up.railway.app') {
+
+  // Use environment config when available. Falls back to localhost for local dev.
+  constructor(baseUrl = (process.env.NEXT_PUBLIC_MCP_SERVER_URL || process.env.MCP_SERVER_URL || 'http://localhost:4000')) {
     this.baseUrl = baseUrl;
   }
   

@@ -31,7 +31,6 @@ echo "🔧 Setting environment variables..."
 
 # Core configuration
 railway variables set NODE_ENV=production
-railway variables set PORT=4000
 
 # Supabase
 railway variables set SUPABASE_URL=https://zgdxpsenxjwyiwbbealf.supabase.co

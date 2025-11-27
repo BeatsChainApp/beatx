@@ -16,7 +16,7 @@
     "https://api.mainnet-beta.solana.com/*",
     "https://drive.usercontent.google.com/*",
     "https://beats-app.vercel.app/*",
-    "https://beatschain-mcp-production.up.railway.app/*",
+    "https://REPLACE_WITH_MCP_URL/*",
     "https://api.pinata.cloud/*",
     "https://livepeer.studio/*"
   ],

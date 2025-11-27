@@ -85,7 +85,7 @@ console.log('- Admin dashboard OAuth works');
 console.log('');
 
 console.log('📞 NEXT STEPS AFTER RAILWAY FIX:');
-console.log('1. Test MCP server health: https://beatschain-mcp-production.up.railway.app/healthz');
+console.log('1. Test MCP server health: https://REPLACE_WITH_MCP_URL/healthz');
 console.log('2. Test Chrome Extension connectivity');
 console.log('3. Fix Admin OAuth issues');
 console.log('4. Deploy to mainnet when ready');

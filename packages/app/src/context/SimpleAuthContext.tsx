@@ -110,8 +110,9 @@ export function SimpleAuthProvider({ children }: { children: ReactNode }) {
               created_at: new Date().toISOString()
             }
             
-            // Exchange token with MCP server
-            const mcpResponse = await fetch('https://beatschain-mcp-production.up.railway.app/api/token-exchange', {
+            // Exchange token with MCP server (use configured MCP URL)
+            const mcpBase = process.env.NEXT_PUBLIC_MCP_SERVER_URL || 'http://localhost:4000'
+            const mcpResponse = await fetch(`${mcpBase}/api/token-exchange`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ idToken: response.credential })

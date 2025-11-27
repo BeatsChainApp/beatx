@@ -52,6 +52,6 @@ After removing the custom target port, Railway will:
 
 ## 🧪 **Test After Fix:**
 ```bash
-curl https://beatschain-mcp-production.up.railway.app/healthz
+curl https://REPLACE_WITH_MCP_URL/healthz
 # Should return: {"ok": true, "ts": 1699901234567, "service": "mcp-server"}
 ```

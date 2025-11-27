@@ -5,7 +5,7 @@
 ### Current Status
 - **CLI Deployment**: ✅ Working
 - **GitHub Integration**: ❌ Not connected
-- **Live URL**: https://beatschain-mcp-production.up.railway.app
+- **Live URL**: https://REPLACE_WITH_MCP_URL
 - **Issue**: 502 Application failed to respond
 
 ### Fix GitHub Connection
@@ -69,7 +69,7 @@ railway up
 
 1. **Check Railway Dashboard**: Ensure service is running
 2. **View Logs**: Look for startup errors
-3. **Test Health Endpoint**: `curl https://beatschain-mcp-production.up.railway.app/healthz`
+3. **Test Health Endpoint**: `curl https://REPLACE_WITH_MCP_URL/healthz`
 4. **Verify Environment Variables**: Check all required vars are set
 
 ### Expected Response

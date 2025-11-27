@@ -6,7 +6,7 @@
 - **MCP Server**: ✅ Running on Railway
 - **Logs**: ✅ "BeatsChain MCP server listening on port 8080"
 - **App Connection**: ❌ 502 Gateway errors
-- **URL**: https://beatschain-mcp-production.up.railway.app
+- **URL**: https://REPLACE_WITH_MCP_URL
 
 ### **Root Cause Analysis:**
 
@@ -63,7 +63,7 @@ console.log('All env keys:', Object.keys(process.env).filter(k => k.includes('PO
 
 Your app is correctly configured to use:
 ```bash
-NEXT_PUBLIC_MCP_SERVER_URL=https://beatschain-mcp-production.up.railway.app
+NEXT_PUBLIC_MCP_SERVER_URL=https://REPLACE_WITH_MCP_URL
 ```
 
 Found in these files:
@@ -75,13 +75,13 @@ Found in these files:
 
 ```bash
 # Test health endpoint
-curl https://beatschain-mcp-production.up.railway.app/healthz
+curl https://REPLACE_WITH_MCP_URL/healthz
 
 # Test root endpoint
-curl https://beatschain-mcp-production.up.railway.app/
+curl https://REPLACE_WITH_MCP_URL/
 
 # Test with verbose output
-curl -v https://beatschain-mcp-production.up.railway.app/healthz
+curl -v https://REPLACE_WITH_MCP_URL/healthz
 ```
 
 ### **Next Steps:**

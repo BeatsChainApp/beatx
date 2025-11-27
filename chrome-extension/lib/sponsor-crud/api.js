@@ -2,8 +2,11 @@
 class SponsorAPI {
   baseUrl;
   
-  constructor(baseUrl = 'https://beatschain-mcp-production.up.railway.app') {
-    this.baseUrl = baseUrl;
+  constructor(baseUrl) {
+    const defaultUrl = (typeof process !== 'undefined' && process.env && (process.env.NEXT_PUBLIC_MCP_SERVER_URL || process.env.MCP_SERVER_URL)) ||
+      (typeof window !== 'undefined' && window.__MCP_SERVER_URL__) ||
+      'http://localhost:4000';
+    this.baseUrl = baseUrl || defaultUrl;
   }
   
   async createSponsor(sponsor) {

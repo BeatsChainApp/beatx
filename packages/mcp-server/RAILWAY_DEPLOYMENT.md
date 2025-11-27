@@ -93,19 +93,19 @@ railway ssh
 After deployment, test the endpoints:
 ```bash
 # Health check
-curl https://beatschain-mcp-production.up.railway.app/healthz
+curl https://REPLACE_WITH_MCP_URL/healthz
 
 # Test token exchange
-curl -X POST https://beatschain-mcp-production.up.railway.app/api/token-exchange \
+curl -X POST https://REPLACE_WITH_MCP_URL/api/token-exchange \
   -H "Content-Type: application/json" \
   -d '{"idToken":"test"}'
 
 # Run test script
-bash test-deployment.sh https://beatschain-mcp-production.up.railway.app
+bash test-deployment.sh https://REPLACE_WITH_MCP_URL
 ```
 
 ### Live URL
-**Production MCP Server**: https://beatschain-mcp-production.up.railway.app
+**Production MCP Server**: https://REPLACE_WITH_MCP_URL
 
 ### 502 Error Troubleshooting
 If getting 502 errors:
