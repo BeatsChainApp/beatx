@@ -1,20 +1,16 @@
 FROM node:20-alpine
 
-# Set working directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Use production environment
-ENV NODE_ENV=production
-
-# Install dependencies (use package-lock if present)
 COPY package*.json ./
-RUN npm ci --production --legacy-peer-deps
+RUN npm install --production --legacy-peer-deps
 
-# Copy source
-COPY . .
+COPY . ./
 
-# Expose port
+RUN mkdir -p uploads && chown -R node:node /app
+
+USER node
+
 EXPOSE 4000
 
-# Start the server
-CMD ["node", "src/index.js"]
+CMD ["npm", "start"]
