@@ -2,52 +2,74 @@ const fetch = global.fetch || require('node-fetch');
 const LIVEPEER_API_KEY = process.env.LIVEPEER_API_KEY;
 const LIVEPEER_API_BASE = process.env.LIVEPEER_API_BASE || process.env.LIVEPEER_API_HOST || 'https://livepeer.studio/api';
 
+// Validate TUS client availability
+let tusClient = null;
+try {
+  tusClient = require('tus-js-client');
+  console.log('✅ TUS client available for Livepeer uploads');
+} catch (e) {
+  console.warn('⚠️ TUS client not available:', e.message);
+}
+
 async function createAsset(name = 'beatschain-asset', options = {}) {
   // Default to mocking when no key is provided (safe for local dev)
   if (!LIVEPEER_API_KEY) {
+    console.log('⚠️ Livepeer API key not configured - using mock mode');
     return {
       id: `mock-${Date.now()}`,
       name,
       status: 'created',
-      uploadUrl: `ipfs://mock-${Date.now()}`,
+      uploadUrl: `https://mock-tus-endpoint.com/files/`,
       mocked: true,
       createdAt: Date.now()
     };
   }
 
-  // Build request for Livepeer asset creation with transcoding profiles
-  const url = `${LIVEPEER_API_BASE.replace(/\/$/, '')}/asset`;
-  const body = Object.assign({ 
-    name, 
-    upload: { approach: 'tus' },
-    profiles: [
-      { name: '720p', bitrate: 2000000, fps: 30, width: 1280, height: 720 },
-      { name: '480p', bitrate: 1000000, fps: 30, width: 854, height: 480 },
-      { name: '360p', bitrate: 500000, fps: 30, width: 640, height: 360 }
-    ]
-  }, options);
+  try {
+    // Build request for Livepeer asset creation with TUS upload
+    const url = `${LIVEPEER_API_BASE.replace(/\/$/, '')}/asset/request-upload`;
+    const body = {
+      name,
+      staticMp4: true,
+      playbackPolicy: { type: 'public' },
+      profiles: [
+        { name: '720p', bitrate: 2000000, fps: 30, width: 1280, height: 720 },
+        { name: '480p', bitrate: 1000000, fps: 30, width: 854, height: 480 }
+      ],
+      ...options
+    };
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${LIVEPEER_API_KEY}`
-    },
-    body: JSON.stringify(body)
-  });
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${LIVEPEER_API_KEY}`
+      },
+      body: JSON.stringify(body)
+    });
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Livepeer createAsset failed: ${res.status} ${text}`);
+    if (!res.ok) {
+      const text = await res.text();
+      console.error('Livepeer API error:', res.status, text);
+      throw new Error(`Livepeer createAsset failed: ${res.status} ${text}`);
+    }
+
+    const data = await res.json();
+    console.log('✅ Livepeer asset created:', data.asset?.id);
+
+    // Normalize upload URL for TUS
+    const uploadUrl = data?.tusEndpoint || data?.url || data?.asset?.uploadUrl;
+    if (uploadUrl) {
+      data.uploadUrl = uploadUrl;
+      data.asset = data.asset || {};
+      data.asset.uploadUrl = uploadUrl;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Livepeer createAsset error:', error.message);
+    throw error;
   }
-
-  const data = await res.json();
-
-  // Normalize common upload URL locations so callers can find uploadUrl easily
-  const uploadUrl = data?.upload?.url || data?.upload?.tus?.endpoint || data?.urls?.uploadUrl || data?.uploadUrl;
-  if (uploadUrl) data.uploadUrl = uploadUrl;
-
-  return data;
 }
 
 async function getAsset(assetId) {
@@ -55,24 +77,29 @@ async function getAsset(assetId) {
     return {
       id: assetId,
       status: 'ready',
-      playbackUrl: `ipfs://QmMockPlayback${assetId}`,
+      playbackUrl: `https://mock-playback.com/${assetId}.m3u8`,
       mocked: true
     };
   }
 
-  const url = `${LIVEPEER_API_BASE.replace(/\/$/, '')}/asset/${assetId}`;
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${LIVEPEER_API_KEY}`
+  try {
+    const url = `${LIVEPEER_API_BASE.replace(/\/$/, '')}/asset/${assetId}`;
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${LIVEPEER_API_KEY}`
+      }
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Livepeer getAsset failed: ${res.status} ${text}`);
     }
-  });
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Livepeer getAsset failed: ${res.status} ${text}`);
+    return await res.json();
+  } catch (error) {
+    console.error('Livepeer getAsset error:', error.message);
+    throw error;
   }
-
-  return await res.json();
 }
 
 async function handleWebhook(payload) {
