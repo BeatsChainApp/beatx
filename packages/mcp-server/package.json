@@ -1,40 +1,20 @@
 {
   "name": "beatschain-mcp-server",
   "version": "1.0.0",
-  "description": "BeatsChain MCP Server - Backend services for Web3 music marketplace",
-  "main": "start.js",
-  "engines": {
-    "node": ">=20.0.0"
-  },
+  "main": "src/index.js",
   "scripts": {
-    "start": "node start.js",
-    "dev": "nodemon src/index.js",
-    "build": "echo 'Build complete - Node.js server ready'",
-    "test": "echo 'No tests specified'"
+    "start": "node src/index.js",
+    "build": "echo 'No build needed'"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.81.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "ethers": "^5.7.2",
     "express": "^4.21.2",
     "multer": "^1.4.5-lts.1",
-    "node-fetch": "^3.3.2",
-    "pg": "^8.11.3",
-    "tus-js-client": "^4.1.0",
-    "web3.storage": "^4.5.5"
+    "node-fetch": "^3.3.2"
   },
-  "devDependencies": {
-    "jest": "^29.7.0",
-    "nodemon": "^3.0.2"
-  },
-  "keywords": [
-    "web3",
-    "music",
-    "blockchain",
-    "nft",
-    "marketplace"
-  ],
-  "author": "BeatsChain",
-  "license": "MIT"
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }

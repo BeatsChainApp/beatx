@@ -2,5 +2,10 @@ node_modules
 .git
 .env
 *.log
-uploads/*
-data/*
+.DS_Store
+coverage
+.nyc_output
+test
+docs
+*.md
+!README.md
