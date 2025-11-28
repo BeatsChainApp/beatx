@@ -56,5 +56,6 @@ const optionalAuth = async (req, res, next) => {
 
 module.exports = {
   verifySession,
-  optionalAuth
+  optionalAuth,
+  authenticateUser: verifySession // Alias for compatibility
 };
