@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-11-28T17:30:38.267Z",
+  "strategy": "Complete MCP Server Isolation",
+  "fixes": [
+    "Railway-specific package.json (no monorepo deps)",
+    "Root-level .railwayignore (exclude monorepo)",
+    "Railway.toml deployment configuration",
+    "Nixpacks.toml isolated installation",
+    "Removed all lock files"
+  ],
+  "deployment_flow": [
+    "Railway sees only MCP server",
+    "Installs in packages/mcp-server/",
+    "Starts with: cd packages/mcp-server && npm start",
+    "No monorepo conflicts"
+  ]
+}
