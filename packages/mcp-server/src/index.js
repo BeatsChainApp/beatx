@@ -286,8 +286,21 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.use('/api', require('./routes/index'));
-require('./routes/fallbacks')(app);
+// Load additional routes if they exist
+try {
+  const indexRoute = require('./routes/index');
+  app.use('/api', indexRoute);
+  console.log('✅ Additional index routes loaded');
+} catch (e) {
+  console.log('ℹ️ No additional index routes found');
+}
+
+try {
+  require('./routes/fallbacks')(app);
+  console.log('✅ Fallback routes loaded');
+} catch (e) {
+  console.log('ℹ️ No fallback routes found');
+}
 
 const server = app.listen(port, '0.0.0.0', () => {
   console.log('='.repeat(50));
