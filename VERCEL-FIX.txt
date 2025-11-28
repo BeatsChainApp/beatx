@@ -1,0 +1,9 @@
+VERCEL DEPLOYMENT FIX - 2025-11-27T22:15:00Z
+
+Fixed Next.js App Router deployment:
+✅ Added framework: "nextjs" to vercel.json
+✅ Created app-specific vercel.json
+✅ Configured API routes for serverless functions
+
+Issue: Vercel couldn't find entrypoint in .next directory
+Solution: Proper Next.js framework detection
