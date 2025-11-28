@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "cd packages/app && npm run build"
+    "build": "cd packages/app && npm install && npm run build"
   }
 }
