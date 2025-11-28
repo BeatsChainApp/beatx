@@ -1,0 +1,66 @@
+{
+  "task": "BeatsChain Production Hardening Implementation",
+  "agent_prompt": "You are a production deployment automation agent with full repository access. Execute the BeatsChain MCP server hardening plan. Work in /workspaces/beatx repository. Never expose secrets in logs. Execute all commands non-interactively.",
+  "execution_plan": {
+    "repository": "/workspaces/beatx",
+    "branch": "production-hardening",
+    "phases": [
+      {
+        "name": "setup",
+        "commands": [
+          "cd /workspaces/beatx",
+          "git checkout -b production-hardening-$(date +%s)",
+          "npm install && cd packages/mcp-server && npm install && cd ../.."
+        ]
+      },
+      {
+        "name": "route_hardening", 
+        "files": [
+          {
+            "path": "packages/mcp-server/src/routes/fallbacks.js",
+            "content": "module.exports = function(app){const fs = require('fs');const path = require('path');const routesDir = path.join(__dirname);const files = fs.readdirSync(routesDir).filter(f => f.endsWith('.js') && f !== 'index.js' && f !== 'fallbacks.js');files.forEach(f => {const name = path.basename(f, '.js');const mount = `/api/${name}`;if (fs.existsSync(path.join(routesDir, f))) {app.use(mount, (req, res) => {res.status(503).json({ ok: false, reason: `${name}_missing_deps` });});}});};"
+          }
+        ],
+        "commands": [
+          "perl -0777 -pe \"unless (/app.use\\\\('\\\\/api', require\\\\('\\\\.\\\\/routes\\\\/index'\\\\)\\\\);/s) { s/(const server = app.listen[\\\\s\\\\S]*?$)/app.use('\\\\/api', require('\\\\.\\\\/routes\\\\/index'));\\nrequire('\\\\.\\\\/routes\\\\/fallbacks')(app);\\n\\n\\$1/s }\" -i packages/mcp-server/src/index.js"
+        ]
+      },
+      {
+        "name": "testing",
+        "files": [
+          {
+            "path": "smoke-test-production.js",
+            "content": "const fetch = require('node-fetch');const BASE = process.env.MCP_BASE || 'https://beatschain-mcp-server-production.up.railway.app';const endpoints = [{ path: '/health', method: 'GET', expect: [200] },{ path: '/api', method: 'GET', expect: [200] },{ path: '/api/isrc/generate', method: 'POST', expect: [200, 400] }];(async function(){let success = 0;for (const {path, method, expect} of endpoints) {const url = BASE + path;try {const res = await fetch(url, {method});const ok = expect.includes(res.status);console.log(`${method} ${path} -> ${res.status} ${ok ? 'OK' : 'FAIL'}`);if (ok) success++;} catch(e) {console.log(`${method} ${path} -> ERROR: ${e.message}`);}}console.log(`Summary: ${success}/${endpoints.length} endpoints OK`);process.exit(success === endpoints.length ? 0 : 1);})();"
+          }
+        ],
+        "commands": [
+          "MCP_BASE=http://127.0.0.1:4000 node smoke-test-production.js"
+        ]
+      },
+      {
+        "name": "chrome_extension",
+        "commands": [
+          "sed -i 's|https://REPLACE_WITH_MCP_URL/\\*|https://beatschain-mcp-server-production.up.railway.app/\\*|g' chrome-extension/manifest.json",
+          "node create-chrome-store-zip.js"
+        ]
+      },
+      {
+        "name": "deploy",
+        "commands": [
+          "git add -A",
+          "git commit -m 'feat(production): harden MCP server routes and add comprehensive testing'",
+          "git push -u origin HEAD",
+          "./scripts/deploy_via_railway.sh",
+          "sleep 60",
+          "node smoke-test-production.js"
+        ]
+      }
+    ]
+  },
+  "success_criteria": [
+    "All MCP server routes return 200 or 503",
+    "Chrome extension package created",
+    "Production deployment successful",
+    "All health checks pass"
+  ]
+}

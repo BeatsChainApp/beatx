@@ -1,0 +1,184 @@
+{
+  "agent_name": "BeatsChain Production Hardening Agent",
+  "version": "1.0.0",
+  "description": "Comprehensive production-grade implementation agent for BeatsChain MCP server and all integrations",
+  
+  "system_prompt": "You are a production deployment automation agent with full repository access. Your mission is to harden the BeatsChain MCP server and all integrations to production grade. Execute all commands non-interactively. Never expose secrets in logs. Confirm each phase with JSON status updates.",
+  
+  "execution_phases": [
+    {
+      "phase": "1_validation",
+      "description": "Repository state validation and dependency checks",
+      "commands": [
+        "cd /workspaces/beatx",
+        "git fetch origin --depth=1",
+        "git status --porcelain",
+        "git checkout -b production-hardening-$(date +%s)",
+        "npm install",
+        "cd packages/mcp-server && npm install",
+        "cd ../app && npm install",
+        "./scripts/run_local_checks.sh"
+      ],
+      "success_criteria": "All dependencies installed, no git conflicts, local server starts"
+    },
+    
+    {
+      "phase": "2_route_hardening", 
+      "description": "Implement 503 fallbacks and route index",
+      "file_operations": [
+        {
+          "action": "create",
+          "path": "packages/mcp-server/src/routes/fallbacks.js",
+          "content": "module.exports = function(app){\n  const fs = require('fs');\n  const path = require('path');\n  const routesDir = path.join(__dirname);\n  const files = fs.readdirSync(routesDir).filter(f => f.endsWith('.js') && f !== 'index.js' && f !== 'fallbacks.js');\n\n  files.forEach(f => {\n    const name = path.basename(f, '.js');\n    const mount = `/api/${name}`;\n    const routePath = path.join(routesDir, f);\n\n    if (fs.existsSync(routePath)) {\n      app.use(mount, (req, res) => {\n        res.status(503).json({ ok: false, reason: `${name}_missing_deps` });\n      });\n    }\n  });\n};"
+        },
+        {
+          "action": "update",
+          "path": "packages/mcp-server/src/index.js",
+          "operation": "insert_before_listen",
+          "content": "app.use('/api', require('./routes/index'));\nrequire('./routes/fallbacks')(app);"
+        }
+      ],
+      "commands": [
+        "cd packages/mcp-server",
+        "node test-local.js"
+      ],
+      "success_criteria": "Route index returns active endpoints, 503 responses for missing deps"
+    },
+    
+    {
+      "phase": "3_database_hardening",
+      "description": "Ensure database migrations and Supabase integration",
+      "commands": [
+        "node scripts/run_migrations.js",
+        "node scripts/inspect_supabase.js",
+        "cd packages/app && npm run migrate-content"
+      ],
+      "success_criteria": "Database schema up to date, Supabase connection verified"
+    },
+    
+    {
+      "phase": "4_auth_system",
+      "description": "Validate and harden authentication flows",
+      "commands": [
+        "node test-auth-flow.js",
+        "cd chrome-extension && node ../verify-chrome-store-ready.js"
+      ],
+      "success_criteria": "OAuth2 flow works, Chrome extension auth validated"
+    },
+    
+    {
+      "phase": "5_comprehensive_testing",
+      "description": "Run full test suite against all systems",
+      "file_operations": [
+        {
+          "action": "create",
+          "path": "smoke-test-production.js",
+          "content": "const fetch = require('node-fetch');\nconst BASE = process.env.MCP_BASE || 'https://beatschain-mcp-server-production.up.railway.app';\n\nconst endpoints = [\n  { path: '/health', method: 'GET', expect: [200] },\n  { path: '/api', method: 'GET', expect: [200] },\n  { path: '/api/isrc/generate', method: 'POST', expect: [200, 400] },\n  { path: '/api/samro/generate', method: 'POST', expect: [200, 400] },\n  { path: '/api/livepeer/upload', method: 'POST', expect: [200, 400] },\n  { path: '/api/credits', method: 'GET', expect: [200, 503] },\n  { path: '/api/analytics', method: 'GET', expect: [200, 503] },\n  { path: '/api/notifications', method: 'GET', expect: [200, 503] }\n];\n\n(async function(){\n  let success = 0;\n  console.log(`Testing ${endpoints.length} endpoints against ${BASE}`);\n  \n  for (const {path, method, expect} of endpoints) {\n    const url = BASE + path;\n    try {\n      const res = await fetch(url, {method});\n      const ok = expect.includes(res.status);\n      console.log(`${method} ${path} -> ${res.status} ${ok ? 'OK' : 'FAIL'}`);\n      if (ok) success++;\n    } catch(e) {\n      console.log(`${method} ${path} -> ERROR: ${e.message}`);\n    }\n  }\n  \n  console.log(`\\nSummary: ${success}/${endpoints.length} endpoints OK`);\n  process.exit(success === endpoints.length ? 0 : 1);\n})();"
+        }
+      ],
+      "commands": [
+        "node smoke-test-production.js",
+        "MCP_BASE=http://127.0.0.1:4000 node smoke-test-production.js"
+      ],
+      "success_criteria": "All critical endpoints respond appropriately"
+    },
+    
+    {
+      "phase": "6_deployment",
+      "description": "Deploy to production and verify",
+      "commands": [
+        "git add -A",
+        "git commit -m 'feat(production): harden MCP server routes and add comprehensive testing'",
+        "git push -u origin HEAD",
+        "./scripts/deploy_via_railway.sh",
+        "sleep 60",
+        "MCP_BASE=https://beatschain-mcp-server-production.up.railway.app node smoke-test-production.js"
+      ],
+      "success_criteria": "Production deployment successful, all health checks pass"
+    },
+    
+    {
+      "phase": "7_chrome_extension",
+      "description": "Update Chrome extension for production",
+      "file_operations": [
+        {
+          "action": "update",
+          "path": "chrome-extension/manifest.json",
+          "operation": "replace_mcp_url",
+          "find": "https://REPLACE_WITH_MCP_URL/*",
+          "replace": "https://beatschain-mcp-server-production.up.railway.app/*"
+        },
+        {
+          "action": "update", 
+          "path": "chrome-extension/lib/config.js",
+          "operation": "set_production_endpoints"
+        }
+      ],
+      "commands": [
+        "cd chrome-extension",
+        "node ../create-chrome-store-zip.js",
+        "node ../verify-chrome-store-ready.js"
+      ],
+      "success_criteria": "Chrome extension package ready for store submission"
+    },
+    
+    {
+      "phase": "8_frontend_deployment",
+      "description": "Deploy Next.js app with production config",
+      "commands": [
+        "cd packages/app",
+        "npm run build",
+        "npm run deploy:production",
+        "curl -f https://beats-app.vercel.app/api/health"
+      ],
+      "success_criteria": "Frontend deployed and accessible"
+    }
+  ],
+  
+  "environment_requirements": {
+    "railway": {
+      "SUPABASE_URL": "REQUIRED",
+      "SUPABASE_SERVICE_ROLE_KEY": "REQUIRED", 
+      "PINATA_JWT": "REQUIRED",
+      "LIVEPEER_API_KEY": "REQUIRED",
+      "THIRDWEB_SECRET_KEY": "OPTIONAL",
+      "GOOGLE_CLIENT_ID": "REQUIRED"
+    },
+    "vercel": {
+      "NEXT_PUBLIC_MCP_SERVER_URL": "https://beatschain-mcp-server-production.up.railway.app",
+      "NEXT_PUBLIC_SUPABASE_URL": "REQUIRED",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "REQUIRED"
+    }
+  },
+  
+  "rollback_procedures": {
+    "mcp_server": [
+      "git revert HEAD",
+      "git push origin production-hardening",
+      "railway up --service beatschain-mcp-server"
+    ],
+    "frontend": [
+      "vercel rollback --prod"
+    ]
+  },
+  
+  "success_validation": {
+    "health_endpoints": [
+      "https://beatschain-mcp-server-production.up.railway.app/health",
+      "https://beats-app.vercel.app/api/health"
+    ],
+    "functional_tests": [
+      "ISRC generation works",
+      "SAMRO split sheet creation works", 
+      "File upload via IPFS works",
+      "Chrome extension connects to MCP server",
+      "Auth flow completes successfully"
+    ]
+  },
+  
+  "monitoring_setup": {
+    "health_checks": "*/5 * * * * curl -f https://beatschain-mcp-server-production.up.railway.app/health",
+    "error_tracking": "Sentry integration in Next.js app",
+    "performance_monitoring": "Vercel analytics enabled"
+  }
+}

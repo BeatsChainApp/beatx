@@ -12,6 +12,7 @@ if (!fs.existsSync('uploads')) {
 const upload = multer({ dest: 'uploads/' });
 
 const app = express();
+const path = require('path');
 const port = process.env.PORT || process.env.RAILWAY_PORT || 4000;
 
 // Enhanced Environment Debug
@@ -29,6 +30,25 @@ console.log('=====================================');
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
+
+// Helper to safely mount route modules. If the route file exists but fails to initialize
+// (missing deps/env), mount a 503 responder so monitoring can distinguish missing route vs unavailable.
+function safeMount(routeName, mountPath) {
+  const routePath = path.join(__dirname, 'routes', `${routeName}.js`);
+  try {
+    const route = require(`./routes/${routeName}`);
+    app.use(mountPath, route);
+    console.log(`✅ ${routeName} routes loaded at ${mountPath}`);
+  } catch (e) {
+    const routeExists = fs.existsSync(routePath);
+    if (routeExists) {
+      app.use(mountPath, (req, res) => res.status(503).json({ ok: false, reason: `${routeName}_missing_deps`, message: e.message }));
+      console.warn(`❌ ${routeName} route failed to initialize: ${e && e.message}`);
+    } else {
+      console.warn(`${routeName} routes not available: file missing`);
+    }
+  }
+}
 
 // Root endpoint for Railway health check
 app.get('/', (req, res) => {
@@ -160,85 +180,57 @@ const specialRoutes = [
   { path: './routes/professional', mount: '/api', name: 'Professional' }
 ];
 
-// Load basic routes
-routes.forEach(({ path, mount, name }) => {
-  try {
-    const router = require(path);
-    app.use(mount, router);
-    console.log(`✅ ${name} routes loaded successfully`);
-  } catch (e) {
-    console.warn(`❌ ${name} routes failed to load:`, e.message);
-    
-    // Create fallback route for missing endpoints
-    const fallbackPath = path.split('/').pop().replace('.js', '');
-    app.all(`${mount}/${fallbackPath}*`, (req, res) => {
-      res.status(503).json({ 
-        success: false, 
-        message: `${name} service temporarily unavailable`,
-        error: e.message 
-      });
-    });
-  }
+// Load basic routes (use safeMount helper)
+routes.forEach(({ path: routePath, mount, name }) => {
+  const routeFile = routePath.split('/').pop().replace('.js', '');
+  safeMount(routeFile, mount);
 });
 
 // Load Supabase-dependent routes
 if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  supabaseRoutes.forEach(({ path, mount, name }) => {
-    try {
-      const router = require(path);
-      app.use(mount, router);
-      console.log(`✅ ${name} routes loaded successfully`);
-    } catch (e) {
-      console.warn(`❌ ${name} routes failed to load:`, e.message);
-      
-      // Create fallback route
-      const fallbackPath = path.split('/').pop().replace('.js', '');
+  supabaseRoutes.forEach(({ path: routePath, mount, name }) => {
+    const routeFile = routePath.split('/').pop().replace('.js', '');
+    safeMount(routeFile, mount);
+  });
+} else {
+  console.warn('Supabase routes not available: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY required');
+
+  // Create fallback routes for missing Supabase endpoints (if files exist)
+  supabaseRoutes.forEach(({ path: routePath, mount, name }) => {
+    const routeFile = routePath.split('/').pop().replace('.js', '');
+    const routeFilePath = path.join(__dirname, 'routes', `${routeFile}.js`);
+    if (fs.existsSync(routeFilePath)) {
       app.all(`${mount}*`, (req, res) => {
-        res.status(503).json({ 
-          success: false, 
-          message: `${name} service requires database connection`,
-          error: e.message 
+        res.status(503).json({
+          success: false,
+          message: `${name} service requires database configuration`
         });
       });
     }
   });
-} else {
-  console.warn('Supabase routes not available: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY required');
-  
-  // Create fallback routes for missing Supabase endpoints
-  supabaseRoutes.forEach(({ mount, name }) => {
-    app.all(`${mount}*`, (req, res) => {
-      res.status(503).json({ 
-        success: false, 
-        message: `${name} service requires database configuration` 
-      });
-    });
-  });
 }
 
 // Load special dependency routes
-specialRoutes.forEach(({ path, mount, name, requires }) => {
+specialRoutes.forEach(({ path: routePath, mount, name, requires }) => {
+  const routeFile = routePath.split('/').pop().replace('.js', '');
   try {
     if (requires) {
-      const dependency = require(requires);
+      require(requires);
       console.log(`✅ ${requires} dependency found for ${name}`);
     }
-    
-    const router = require(path);
-    app.use(mount, router);
-    console.log(`✅ ${name} routes loaded successfully`);
+    safeMount(routeFile, mount);
   } catch (e) {
     console.warn(`❌ ${name} routes failed to load:`, e.message);
-    
-    // Create fallback route
-    const fallbackPath = path.split('/').pop().replace('.js', '');
-    app.all(`${mount}/${fallbackPath}*`, (req, res) => {
-      res.status(503).json({ 
-        success: false, 
-        message: `${name} service temporarily unavailable`,
-        error: requires ? `Missing dependency: ${requires}` : e.message
+    const routeFilePath = path.join(__dirname, 'routes', `${routeFile}.js`);
+    if (fs.existsSync(routeFilePath)) {
+      app.all(`${mount}/${routeFile}*`, (req, res) => {
+        res.status(503).json({
+          success: false,
+          message: `${name} service temporarily unavailable`,
+          error: requires ? `Missing dependency: ${requires}` : e.message
+        });
       });
-    });
+    }
   }
 });
 
@@ -293,6 +285,9 @@ app.use((err, req, res, next) => {
     error: process.env.NODE_ENV === 'development' ? err.message : 'Server error'
   });
 });
+
+app.use('/api', require('./routes/index'));
+require('./routes/fallbacks')(app);
 
 const server = app.listen(port, '0.0.0.0', () => {
   console.log('='.repeat(50));
