@@ -1,0 +1,9 @@
+Railway Deployment Trigger - 2025-11-28T17:10:00Z
+
+Package.json sync issue fixed:
+- Regenerated package-lock.json
+- Created minimal package.json 
+- Removed conflicting dependencies
+- Ready for clean deployment
+
+Trigger deployment now.
