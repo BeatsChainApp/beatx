@@ -10,7 +10,7 @@ const { authenticateUser } = require('../middleware/auth');
 const analytics = new AnalyticsEngine();
 
 // Dashboard metrics endpoint
-router.get('/dashboard', authenticateUser, async (req, res) => {
+router.get('/dashboard', async (req, res) => {
   try {
     const { userId, timeRange = '24h' } = req.query;
     

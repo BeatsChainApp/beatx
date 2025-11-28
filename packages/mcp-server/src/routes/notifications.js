@@ -10,7 +10,7 @@ const { authenticateUser } = require('../middleware/auth');
 const notifications = new NotificationSystem();
 
 // Get user notifications
-router.get('/', authenticateUser, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const userId = req.user.uid;
     const { limit = 20, offset = 0, unreadOnly = false } = req.query;

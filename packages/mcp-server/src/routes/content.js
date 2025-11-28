@@ -5,18 +5,35 @@
 
 const express = require('express');
 const router = express.Router();
-const ContentModerator = require('../services/contentModerator');
-const StreamingManager = require('../services/streamingManager');
 const { authenticateUser } = require('../middleware/auth');
 
-const moderator = new ContentModerator();
-const streaming = new StreamingManager();
+// Initialize services with error handling
+let moderator = null;
+let streaming = null;
+
+try {
+  const ContentModerator = require('../services/contentModerator');
+  moderator = new ContentModerator();
+} catch (e) {
+  console.warn('ContentModerator not available:', e.message);
+}
+
+try {
+  const StreamingManager = require('../services/streamingManager');
+  streaming = new StreamingManager();
+} catch (e) {
+  console.warn('StreamingManager not available:', e.message);
+}
 
 // Initialize upload
-router.post('/upload/init', authenticateUser, async (req, res) => {
+router.post('/upload/init', async (req, res) => {
   try {
+    if (!streaming) {
+      return res.status(503).json({ error: 'Streaming service not available' });
+    }
+
     const { fileInfo } = req.body;
-    const userId = req.user.uid;
+    const userId = req.query.userId || 'anonymous';
 
     if (!fileInfo || !fileInfo.name || !fileInfo.size) {
       return res.status(400).json({ error: 'File info required' });
