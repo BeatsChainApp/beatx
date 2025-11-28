@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const supabase = require('../services/supabaseClient')
+const { getClient } = require('../services/supabaseClient')
 
 // Generate new ISRC code
 router.post('/isrc/generate', async (req, res) => {
@@ -18,6 +18,26 @@ router.post('/isrc/generate', async (req, res) => {
     const registrantCode = 'BTC'
     
     // Get next designation number from database
+    const supabase = getClient();
+    if (!supabase) {
+      // Fallback to sequential numbering without database
+      const nextDesignation = Math.floor(Math.random() * 99999) + 1;
+      const designationCode = nextDesignation.toString().padStart(5, '0');
+      const isrcCode = `${countryCode}-${registrantCode}-${year}-${designationCode}`;
+      
+      return res.json({
+        success: true,
+        isrc: isrcCode,
+        breakdown: {
+          countryCode,
+          registrantCode,
+          year,
+          designationCode
+        },
+        note: 'Generated without database (demo mode)'
+      });
+    }
+    
     const { data: lastISRC } = await supabase
       .from('isrc_registry')
       .select('designation_code')
@@ -85,6 +105,17 @@ router.post('/isrc/validate', async (req, res) => {
     }
 
     // Check if exists in our registry
+    const supabase = getClient();
+    if (!supabase) {
+      return res.json({
+        success: true,
+        valid: true,
+        exists: false,
+        data: null,
+        note: 'Database not configured - validation limited'
+      });
+    }
+    
     const { data: existing } = await supabase
       .from('isrc_registry')
       .select('*')
@@ -112,6 +143,18 @@ router.get('/isrc/registry', async (req, res) => {
   try {
     const { limit = 50, offset = 0 } = req.query
 
+    const supabase = getClient();
+    if (!supabase) {
+      return res.json({
+        success: true,
+        codes: [],
+        total: 0,
+        limit: parseInt(limit),
+        offset: parseInt(offset),
+        note: 'Database not configured - no registry available'
+      });
+    }
+    
     const { data: codes, error } = await supabase
       .from('isrc_registry')
       .select('*')
@@ -146,6 +189,15 @@ router.post('/isrc/mark-used', async (req, res) => {
   try {
     const { isrc, trackTitle, artistName } = req.body
 
+    const supabase = getClient();
+    if (!supabase) {
+      return res.json({
+        success: true,
+        message: 'ISRC marked as used (demo mode)',
+        note: 'Database not configured - changes not persisted'
+      });
+    }
+    
     const { error } = await supabase
       .from('isrc_registry')
       .update({

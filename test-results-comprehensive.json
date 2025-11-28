@@ -1,0 +1,175 @@
+{
+  "timestamp": "2025-11-28T16:50:44.551Z",
+  "mcpServer": "https://beatschain-mcp-server-production.up.railway.app",
+  "vercelApp": "https://beats-app.vercel.app",
+  "tests": {
+    "Health": [
+      {
+        "name": "Root endpoint",
+        "status": "pass",
+        "details": "vundefined",
+        "timestamp": "2025-11-28T16:50:46.120Z"
+      },
+      {
+        "name": "Health check",
+        "status": "pass",
+        "details": "Port: 4000",
+        "timestamp": "2025-11-28T16:50:46.196Z"
+      },
+      {
+        "name": "API index",
+        "status": "fail",
+        "details": "API index failed",
+        "timestamp": "2025-11-28T16:50:46.277Z"
+      }
+    ],
+    "ISRC": [
+      {
+        "name": "Generate ISRC",
+        "status": "fail",
+        "details": "Generation failed",
+        "timestamp": "2025-11-28T16:50:46.362Z"
+      },
+      {
+        "name": "Registry access",
+        "status": "fail",
+        "details": "Registry failed",
+        "timestamp": "2025-11-28T16:50:46.437Z"
+      }
+    ],
+    "SAMRO": [
+      {
+        "name": "Generate split sheet",
+        "status": "pass",
+        "details": "Generation ready",
+        "timestamp": "2025-11-28T16:50:46.512Z"
+      },
+      {
+        "name": "Fill instructions",
+        "status": "pass",
+        "details": "8 steps",
+        "timestamp": "2025-11-28T16:50:46.588Z"
+      }
+    ],
+    "IPFS": [
+      {
+        "name": "JSON pinning",
+        "status": "pass",
+        "details": "Pinned",
+        "timestamp": "2025-11-28T16:50:46.664Z"
+      }
+    ],
+    "Livepeer": [
+      {
+        "name": "IPFS upload",
+        "status": "fail",
+        "details": "Upload failed",
+        "timestamp": "2025-11-28T16:50:47.342Z"
+      }
+    ],
+    "Credits": [
+      {
+        "name": "Credits endpoint",
+        "status": "fail",
+        "details": "Not accessible",
+        "timestamp": "2025-11-28T16:50:47.426Z"
+      }
+    ],
+    "Beats": [
+      {
+        "name": "Beats endpoint",
+        "status": "fail",
+        "details": "Not accessible",
+        "timestamp": "2025-11-28T16:50:47.516Z"
+      }
+    ],
+    "Sync": [
+      {
+        "name": "Sync endpoint",
+        "status": "fail",
+        "details": "Not accessible",
+        "timestamp": "2025-11-28T16:50:47.590Z"
+      }
+    ],
+    "Vercel": [
+      {
+        "name": "Main app",
+        "status": "pass",
+        "details": "Status: 200",
+        "timestamp": "2025-11-28T16:50:52.250Z"
+      },
+      {
+        "name": "API health",
+        "status": "pass",
+        "details": "API accessible",
+        "timestamp": "2025-11-28T16:50:54.511Z"
+      }
+    ],
+    "Extension": [
+      {
+        "name": "Manifest exists",
+        "status": "pass",
+        "details": "v3.0.0",
+        "timestamp": "2025-11-28T16:50:54.511Z"
+      },
+      {
+        "name": "Permissions configured",
+        "status": "pass",
+        "details": "2 permissions",
+        "timestamp": "2025-11-28T16:50:54.512Z"
+      },
+      {
+        "name": "Host permissions",
+        "status": "pass",
+        "details": "7 hosts",
+        "timestamp": "2025-11-28T16:50:54.512Z"
+      },
+      {
+        "name": "MCP client exists",
+        "status": "pass",
+        "details": "Client ready",
+        "timestamp": "2025-11-28T16:50:54.512Z"
+      }
+    ],
+    "Pipeline": [
+      {
+        "name": "Success logging",
+        "status": "pass",
+        "details": "Endpoint accessible",
+        "timestamp": "2025-11-28T16:50:54.938Z"
+      },
+      {
+        "name": "Analytics",
+        "status": "fail",
+        "details": "Failed",
+        "timestamp": "2025-11-28T16:50:55.004Z"
+      },
+      {
+        "name": "Notifications",
+        "status": "fail",
+        "details": "Failed",
+        "timestamp": "2025-11-28T16:50:55.065Z"
+      }
+    ],
+    "Workflow": [
+      {
+        "name": "Step 1: ISRC Generation",
+        "status": "fail",
+        "details": "ISRC generation failed",
+        "timestamp": "2025-11-28T16:50:55.127Z"
+      },
+      {
+        "name": "Complete Workflow",
+        "status": "fail",
+        "details": "Workflow failed at step 1",
+        "timestamp": "2025-11-28T16:50:55.127Z"
+      }
+    ]
+  },
+  "summary": {
+    "total": 23,
+    "passed": 12,
+    "failed": 11,
+    "warnings": 0
+  }
+}
