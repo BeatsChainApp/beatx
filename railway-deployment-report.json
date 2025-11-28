@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-11-28T17:25:01.983Z",
+  "issue": "Monorepo package.json conflicts",
+  "solution": "Isolated MCP server deployment",
+  "fixes_applied": [
+    "Standalone package.json with minimal deps",
+    "Removed package-lock.json",
+    "Updated nixpacks.toml for clean install",
+    "Comprehensive .railwayignore",
+    "Verified Procfile configuration"
+  ],
+  "next_steps": [
+    "Commit and push changes",
+    "Railway will auto-redeploy",
+    "Verify MCP server health"
+  ]
+}
