@@ -196,6 +196,11 @@ export default function Navigation() {
           </div>
         </div>
       )}
-    </nav>
+            {user?.role === 'admin' && (
+          <Link href="/admin" className="nav-link">
+            👑 Admin
+          </Link>
+        )}
+      </nav>
   )
 }

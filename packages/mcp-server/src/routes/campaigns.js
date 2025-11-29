@@ -95,7 +95,64 @@ router.get('/campaigns/stats', async (req, res) => {
   }
 })
 
-// Create new sponsored campaign
+// Create platform-specific campaign
+router.post('/campaigns/:platform/create', async (req, res) => {
+  try {
+    const { platform } = req.params;
+    if (!['app', 'extension'].includes(platform)) {
+      return res.status(400).json({ error: 'Invalid platform' });
+    }
+
+    const { name, placement, budget, dailyLimit = 100 } = req.body;
+
+    const { data: campaign, error } = await supabase
+      .from('sponsored_campaigns')
+      .insert({
+        name,
+        platform,
+        placement,
+        budget: parseFloat(budget),
+        remaining_budget: parseFloat(budget),
+        daily_limit: parseInt(dailyLimit),
+        active: true,
+        total_revenue: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({ success: true, campaign });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Get campaigns by platform
+router.get('/campaigns/:platform', async (req, res) => {
+  try {
+    const { platform } = req.params;
+    if (!['app', 'extension'].includes(platform)) {
+      return res.status(400).json({ error: 'Invalid platform' });
+    }
+
+    const { data: campaigns, error } = await supabase
+      .from('sponsored_campaigns')
+      .select('*')
+      .eq('platform', platform)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    res.json({ success: true, campaigns: campaigns || [] });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Create new sponsored campaign (legacy)
 router.post('/campaigns/create', async (req, res) => {
   try {
     const {

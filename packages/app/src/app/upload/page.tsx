@@ -1,6 +1,6 @@
 'use client'
 
-import BeatUpload from '@/components/BeatUpload'
+import EnhancedBeatUpload from '@/components/EnhancedBeatUpload'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 export const dynamic = 'force-dynamic'
@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 export default function UploadPage() {
   return (
     <ProtectedRoute permission="upload" requireWallet={true}>
-      <BeatUpload />
+      <EnhancedBeatUpload />
     </ProtectedRoute>
   )
 }

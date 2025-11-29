@@ -1,0 +1,138 @@
+{
+  "extension": {
+    "workflow": {
+      "status": "PASS",
+      "steps": {
+        "upload": true,
+        "licensing": true,
+        "isrc": true,
+        "minting": true,
+        "success": true,
+        "radio": true
+      },
+      "totalSteps": 6
+    },
+    "upload": {
+      "status": "PASS",
+      "features": {
+        "fileProcessing": true,
+        "audioManager": true,
+        "metadataExtraction": true,
+        "sponsoredContent": true
+      }
+    },
+    "isrc": {
+      "status": "PASS",
+      "features": {
+        "manager": true,
+        "generation": true,
+        "validation": true
+      }
+    },
+    "minting": {
+      "status": "PASS",
+      "features": {
+        "mintFunction": true,
+        "thirdweb": true,
+        "solana": true,
+        "walletContext": true
+      }
+    },
+    "issues": []
+  },
+  "app": {
+    "workflow": {
+      "status": "PASS",
+      "features": {
+        "fileUpload": true,
+        "validation": false,
+        "progress": true,
+        "professionalServices": true
+      }
+    },
+    "upload": {
+      "status": "PASS",
+      "features": {
+        "ipfsUpload": true,
+        "metadataUpload": true,
+        "fileValidation": true
+      }
+    },
+    "nft": {
+      "status": "PASS",
+      "features": {
+        "gaslessMinting": true,
+        "directMinting": true,
+        "beatNFTConfig": true
+      }
+    },
+    "livepeer": {
+      "status": "PASS",
+      "features": {
+        "upload": true,
+        "optimizedPlayback": true,
+        "playbackUrl": true
+      }
+    },
+    "issues": []
+  },
+  "mcp": {
+    "routes": {
+      "status": "PASS",
+      "available": [
+        "analytics.js",
+        "beats.js",
+        "campaigns.js",
+        "content.js",
+        "credits.js",
+        "fallbacks.js",
+        "index.js",
+        "ipfs-proxy.js",
+        "isrc.js",
+        "livepeer.js",
+        "notifications.js",
+        "professional.js",
+        "recommendations.js",
+        "samro.js",
+        "success.js",
+        "sync.js",
+        "thirdweb.js"
+      ],
+      "critical": {
+        "beats": true,
+        "ipfs": true,
+        "isrc": true,
+        "livepeer": true
+      }
+    },
+    "services": {
+      "status": "PASS",
+      "available": [
+        "analyticsEngine.js",
+        "campaigns.js",
+        "contentModerator.js",
+        "creditLedger.js",
+        "customRelayer.js",
+        "databaseAgent.js",
+        "ipfsPinner.js",
+        "livepeerAdapter.js",
+        "livepeerStore.js",
+        "notificationSystem.js",
+        "performanceOptimizer.js",
+        "realTimeSync.js",
+        "recommendationEngine.js",
+        "streamingManager.js",
+        "successLogger.js",
+        "supabaseClient.js",
+        "thirdwebAdapter.js",
+        "thirdwebJobs.js"
+      ],
+      "critical": {
+        "supabase": true,
+        "ipfs": true,
+        "analytics": true
+      }
+    },
+    "issues": []
+  }
+}

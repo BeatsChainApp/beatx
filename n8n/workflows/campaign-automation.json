@@ -1,0 +1,222 @@
+{
+  "name": "Campaign Management Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "campaign-event",
+        "options": {}
+      },
+      "id": "webhook-campaign-trigger",
+      "name": "Campaign Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "platform-extension",
+              "leftValue": "={{ $json.platform }}",
+              "rightValue": "extension",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "platform-app", 
+              "leftValue": "={{ $json.platform }}",
+              "rightValue": "app",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "id": "platform-router",
+      "name": "Platform Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extension Campaign Processing\nconst eventData = $input.first().json;\n\n// Process extension-specific campaign events\nif (eventData.event_type === 'isrc_generated') {\n  // Track ISRC generation revenue (+$2.50)\n  return {\n    platform: 'extension',\n    revenue: 2.50,\n    placement: 'after_isrc',\n    user_id: eventData.user_id,\n    campaign_id: eventData.campaign_id,\n    attribution: {\n      source: 'isrc_generation',\n      timestamp: new Date().toISOString()\n    }\n  };\n}\n\nif (eventData.event_type === 'radio_package_complete') {\n  // Track radio package completion\n  return {\n    platform: 'extension',\n    revenue: 1.25,\n    placement: 'post_package',\n    user_id: eventData.user_id,\n    campaign_id: eventData.campaign_id,\n    attribution: {\n      source: 'radio_package',\n      timestamp: new Date().toISOString()\n    }\n  };\n}\n\nreturn eventData;"
+      },
+      "id": "extension-campaign-processor",
+      "name": "Extension Campaign Processor",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// App Campaign Processing\nconst eventData = $input.first().json;\n\n// Process app-specific campaign events\nif (eventData.event_type === 'nft_minted') {\n  // Track NFT minting revenue\n  return {\n    platform: 'app',\n    revenue: 5.00,\n    placement: 'mint_success',\n    user_id: eventData.user_id,\n    campaign_id: eventData.campaign_id,\n    attribution: {\n      source: 'nft_minting',\n      timestamp: new Date().toISOString()\n    }\n  };\n}\n\nif (eventData.event_type === 'premium_upload') {\n  // Track premium upload revenue\n  return {\n    platform: 'app',\n    revenue: 3.50,\n    placement: 'upload_start',\n    user_id: eventData.user_id,\n    campaign_id: eventData.campaign_id,\n    attribution: {\n      source: 'premium_upload',\n      timestamp: new Date().toISOString()\n    }\n  };\n}\n\nif (eventData.event_type === 'gasless_mint_purchased') {\n  // Track gasless minting upsell\n  return {\n    platform: 'app',\n    revenue: 5.00,\n    placement: 'gasless_mint_offer',\n    user_id: eventData.user_id,\n    campaign_id: eventData.campaign_id,\n    attribution: {\n      source: 'gasless_mint_upsell',\n      timestamp: new Date().toISOString()\n    }\n  };\n}\n\nreturn eventData;"
+      },
+      "id": "app-campaign-processor",
+      "name": "App Campaign Processor", 
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.MCP_SERVER_URL }}/api/campaigns/track-revenue",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "={{ $json.attribution.source }}"
+            },
+            {
+              "name": "amount", 
+              "value": "={{ $json.revenue }}"
+            },
+            {
+              "name": "metadata",
+              "value": "={{ { platform: $json.platform, placement: $json.placement, user_id: $json.user_id, campaign_id: $json.campaign_id, attribution: $json.attribution } }}"
+            }
+          ]
+        }
+      },
+      "id": "revenue-attribution",
+      "name": "Revenue Attribution",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.MCP_SERVER_URL }}/api/campaigns/{{ $json.platform }}/{{ $json.campaign_id }}/metrics",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type", 
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "impressions",
+              "value": "1"
+            },
+            {
+              "name": "clicks",
+              "value": "={{ $json.attribution.source.includes('click') ? 1 : 0 }}"
+            },
+            {
+              "name": "conversions",
+              "value": "1"
+            },
+            {
+              "name": "revenue",
+              "value": "={{ $json.revenue }}"
+            }
+          ]
+        }
+      },
+      "id": "update-campaign-metrics",
+      "name": "Update Campaign Metrics",
+      "type": "n8n-nodes-base.httpRequest", 
+      "typeVersion": 4.2,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Campaign Trigger": {
+      "main": [
+        [
+          {
+            "node": "Platform Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Platform Router": {
+      "main": [
+        [
+          {
+            "node": "Extension Campaign Processor",
+            "type": "main", 
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "App Campaign Processor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extension Campaign Processor": {
+      "main": [
+        [
+          {
+            "node": "Revenue Attribution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "App Campaign Processor": {
+      "main": [
+        [
+          {
+            "node": "Revenue Attribution", 
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Revenue Attribution": {
+      "main": [
+        [
+          {
+            "node": "Update Campaign Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["campaign", "automation", "revenue"],
+  "triggerCount": 1,
+  "updatedAt": "2025-11-28T12:00:00.000Z",
+  "versionId": "1"
+}
