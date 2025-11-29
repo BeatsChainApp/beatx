@@ -1,8 +1,9 @@
-# Exclude entire monorepo except MCP server
+# Exclude everything except MCP server
 /*
 !/packages/
 /packages/*
 !/packages/mcp-server/
 /packages/mcp-server/node_modules/
-/packages/mcp-server/*.log
-/packages/mcp-server/.env
+*.log
+.env
+.DS_Store

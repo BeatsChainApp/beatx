@@ -1,0 +1,25 @@
+{
+  "timestamp": "2025-11-29T07:17:56.772Z",
+  "full_mcp": {
+    "location": "/workspaces/beatx/packages/mcp-server/src",
+    "routes": 17,
+    "services": 18,
+    "integrations": 5
+  },
+  "standalone_mcp": {
+    "location": "/workspaces/beatx/mcp-server-standalone",
+    "files": 9,
+    "endpoints": 8,
+    "integrations": "mock_only"
+  },
+  "missing_in_standalone": [
+    "Real IPFS integration",
+    "Supabase database",
+    "Livepeer video processing",
+    "Thirdweb gasless minting",
+    "Analytics engine",
+    "16 route files",
+    "19 service files"
+  ],
+  "recommendation": "Deploy standalone first, then migrate integrations"
+}

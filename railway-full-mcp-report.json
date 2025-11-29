@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-11-29T07:19:10.553Z",
+  "solution": "Full MCP Server Railway Deployment",
+  "includes": {
+    "routes": 17,
+    "services": 18,
+    "integrations": [
+      "IPFS",
+      "Supabase",
+      "Livepeer",
+      "Thirdweb",
+      "Analytics"
+    ],
+    "pipelines": [
+      "Upload",
+      "Minting",
+      "Radio",
+      "Analytics",
+      "Notifications"
+    ]
+  },
+  "deployment": "packages/mcp-server with all functionality"
+}

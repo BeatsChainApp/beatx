@@ -7,8 +7,7 @@ nixPkgs = ["nodejs-20_x", "npm-9_x"]
 [phases.install]
 cmds = [
   "cd packages/mcp-server",
-  "rm -f package-lock.json",
-  "npm install --no-package-lock --production"
+  "npm install --production"
 ]
 
 [phases.build]
