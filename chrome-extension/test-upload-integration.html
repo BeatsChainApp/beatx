@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Process Integration Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+        }
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .test-results {
+            background: #1e1e1e;
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 16px;
+            border-left: 4px solid #00d67a;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d67a, #00b366);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        .btn {
+            background: #00d67a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            background: #00b366;
+            transform: translateY(-1px);
+        }
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status.success { background: #28a745; }
+        .status.error { background: #dc3545; }
+        .status.running { background: #ffc107; color: #000; }
+        .log {
+            background: #000;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 16px;
+        }
+        .file-input {
+            margin: 16px 0;
+            padding: 12px;
+            background: #333;
+            border: 2px dashed #666;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .file-input:hover {
+            border-color: #00d67a;
+            background: #2a2a2a;
+        }
+        .metadata-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 4px;
+            font-size: 13px;
+            color: #ccc;
+        }
+        .form-group input {
+            padding: 8px 12px;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: #fff;
+        }
+        @media (max-width: 768px) {
+            .metadata-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Upload Process Integration Test</h1>
+        
+        <!-- File Upload Test -->
+        <div class="test-section">
+            <div class="test-header">
+                <h3>📁 File Upload Test</h3>
+                <span id="upload-status" class="status">Ready</span>
+            </div>
+            
+            <div class="file-input" onclick="document.getElementById('file-input').click()">
+                <input type="file" id="file-input" accept="audio/*" style="display: none;">
+                <p>Click to select audio file or drag & drop</p>
+                <small>Supported: MP3, WAV, MP4, AAC (max 50MB)</small>
+            </div>
+            
+            <div class="metadata-form">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="title" placeholder="Beat Title">
+                </div>
+                <div class="form-group">
+                    <label>Artist</label>
+                    <input type="text" id="artist" placeholder="Artist Name">
+                </div>
+                <div class="form-group">
+                    <label>Producer</label>
+                    <input type="text" id="producer" placeholder="Producer Name">
+                </div>
+                <div class="form-group">
+                    <label>BPM</label>
+                    <input type="number" id="bpm" placeholder="120">
+                </div>
+                <div class="form-group">
+                    <label>Genre</label>
+                    <input type="text" id="genre" placeholder="Hip Hop">
+                </div>
+                <div class="form-group">
+                    <label>Year</label>
+                    <input type="number" id="year" placeholder="2025">
+                </div>
+            </div>
+            
+            <div class="progress-bar">
+                <div id="upload-progress" class="progress-fill"></div>
+            </div>
+            
+            <button id="start-upload" class="btn" disabled>Start Upload Process</button>
+            
+            <div id="upload-results" class="test-results" style="display: none;">
+                <h4>Upload Results</h4>
+                <div id="upload-log" class="log"></div>
+            </div>
+        </div>
+        
+        <!-- Campaign Integration Test -->
+        <div class="test-section">
+            <div class="test-header">
+                <h3>📊 Campaign Integration Test</h3>
+                <span id="campaign-status" class="status">Ready</span>
+            </div>
+            
+            <button id="test-campaigns" class="btn">Test Campaign CRUD</button>
+            <button id="test-revenue" class="btn">Test Revenue Tracking</button>
+            
+            <div id="campaign-results" class="test-results" style="display: none;">
+                <h4>Campaign Test Results</h4>
+                <div id="campaign-log" class="log"></div>
+            </div>
+        </div>
+        
+        <!-- Comprehensive Test Suite -->
+        <div class="test-section">
+            <div class="test-header">
+                <h3>🧪 Comprehensive Test Suite</h3>
+                <span id="suite-status" class="status">Ready</span>
+            </div>
+            
+            <button id="run-all-tests" class="btn">Run All Tests</button>
+            <button id="run-upload-tests" class="btn">Upload Tests Only</button>
+            <button id="run-mobile-tests" class="btn">Mobile Responsiveness</button>
+            
+            <div id="suite-results" class="test-results" style="display: none;">
+                <h4>Test Suite Results</h4>
+                <div id="suite-summary"></div>
+                <div id="suite-log" class="log"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="lib/audio-manager.js"></script>
+    <script src="lib/metadata-writer.js"></script>
+    <script src="lib/user-input-manager.js"></script>
+    <script src="lib/campaign-manager.js"></script>
+    <script src="lib/upload-manager.js"></script>
+    <script src="test-upload-comprehensive.js"></script>
+
+    <script>
+        // Initialize test environment
+        let uploadManager;
+        let selectedFile = null;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTests();
+            setupEventListeners();
+        });
+        
+        function initializeTests() {
+            try {
+                uploadManager = new UploadManager();
+                console.log('✅ Upload Manager initialized');
+            } catch (error) {
+                console.error('❌ Failed to initialize Upload Manager:', error);
+                logToElement('upload-log', `Error: ${error.message}`);
+            }
+        }
+        
+        function setupEventListeners() {
+            // File input
+            document.getElementById('file-input').addEventListener('change', handleFileSelect);
+            
+            // Upload process
+            document.getElementById('start-upload').addEventListener('click', startUploadTest);
+            
+            // Campaign tests
+            document.getElementById('test-campaigns').addEventListener('click', testCampaignCRUD);
+            document.getElementById('test-revenue').addEventListener('click', testRevenueTracking);
+            
+            // Test suite
+            document.getElementById('run-all-tests').addEventListener('click', runAllTests);
+            document.getElementById('run-upload-tests').addEventListener('click', runUploadTests);
+            document.getElementById('run-mobile-tests').addEventListener('click', runMobileTests);
+            
+            // Upload progress listener
+            window.addEventListener('uploadProgress', handleUploadProgress);
+        }
+        
+        function handleFileSelect(event) {
+            selectedFile = event.target.files[0];
+            if (selectedFile) {
+                document.getElementById('start-upload').disabled = false;
+                updateStatus('upload-status', 'File Selected', 'success');
+                logToElement('upload-log', `Selected: ${selectedFile.name} (${formatFileSize(selectedFile.size)})`);
+                showResults('upload-results');
+            }
+        }
+        
+        async function startUploadTest() {
+            if (!selectedFile) return;
+            
+            updateStatus('upload-status', 'Uploading...', 'running');
+            document.getElementById('start-upload').disabled = true;
+            
+            const userMetadata = {
+                title: document.getElementById('title').value,
+                artist: document.getElementById('artist').value,
+                producer: document.getElementById('producer').value,
+                bpm: document.getElementById('bpm').value,
+                genre: document.getElementById('genre').value,
+                year: document.getElementById('year').value
+            };
+            
+            try {
+                const result = await uploadManager.processUpload(selectedFile, userMetadata);
+                updateStatus('upload-status', 'Upload Complete', 'success');
+                logToElement('upload-log', `✅ Upload successful: ${JSON.stringify(result, null, 2)}`);
+            } catch (error) {
+                updateStatus('upload-status', 'Upload Failed', 'error');
+                logToElement('upload-log', `❌ Upload failed: ${error.message}`);
+            } finally {
+                document.getElementById('start-upload').disabled = false;
+            }
+        }
+        
+        function handleUploadProgress(event) {
+            const { progress, stage, message } = event.detail;
+            document.getElementById('upload-progress').style.width = `${progress}%`;
+            logToElement('upload-log', `${progress}% - ${stage}${message ? ` (${message})` : ''}`);
+        }
+        
+        async function testCampaignCRUD() {
+            updateStatus('campaign-status', 'Testing...', 'running');
+            showResults('campaign-results');
+            
+            try {
+                const tester = new CampaignManagementTester();
+                const results = await tester.testCampaignCRUD();
+                
+                updateStatus('campaign-status', 'Tests Complete', 'success');
+                logToElement('campaign-log', `✅ Campaign CRUD tests passed: ${JSON.stringify(results, null, 2)}`);
+            } catch (error) {
+                updateStatus('campaign-status', 'Tests Failed', 'error');
+                logToElement('campaign-log', `❌ Campaign tests failed: ${error.message}`);
+            }
+        }
+        
+        async function testRevenueTracking() {
+            try {
+                const mcpClient = new MCPClient();
+                const result = await mcpClient.trackRevenue({
+                    type: 'test_revenue',
+                    amount: 1.25,
+                    metadata: { test: true }
+                });
+                
+                logToElement('campaign-log', `✅ Revenue tracking test: ${JSON.stringify(result, null, 2)}`);
+            } catch (error) {
+                logToElement('campaign-log', `❌ Revenue tracking failed: ${error.message}`);
+            }
+        }
+        
+        async function runAllTests() {
+            updateStatus('suite-status', 'Running...', 'running');
+            showResults('suite-results');
+            
+            try {
+                const tester = new UploadProcessTester();
+                const results = await tester.runAllTests();
+                
+                updateStatus('suite-status', 'Tests Complete', 'success');
+                displayTestSummary(results);
+            } catch (error) {
+                updateStatus('suite-status', 'Tests Failed', 'error');
+                logToElement('suite-log', `❌ Test suite failed: ${error.message}`);
+            }
+        }
+        
+        async function runUploadTests() {
+            if (typeof window.runUploadTests === 'function') {
+                const results = await window.runUploadTests();
+                displayTestSummary(results);
+            }
+        }
+        
+        async function runMobileTests() {
+            // Test mobile responsiveness
+            const viewports = [
+                { name: 'Mobile', width: 375 },
+                { name: 'Tablet', width: 768 },
+                { name: 'Desktop', width: 1200 }
+            ];
+            
+            logToElement('suite-log', 'Testing mobile responsiveness...');
+            
+            viewports.forEach(viewport => {
+                const responsive = window.innerWidth <= viewport.width || viewport.width >= 375;
+                const status = responsive ? '✅' : '❌';
+                logToElement('suite-log', `${status} ${viewport.name} (${viewport.width}px): ${responsive ? 'Responsive' : 'Not Responsive'}`);
+            });
+        }
+        
+        function displayTestSummary(results) {
+            const summary = document.getElementById('suite-summary');
+            summary.innerHTML = `
+                <h5>Test Summary</h5>
+                <p>Total Tests: ${results.summary.totalTests}</p>
+                <p>Passed: ${results.summary.passedTests}</p>
+                <p>Failed: ${results.summary.failedTests}</p>
+                <p>Success Rate: ${results.summary.successRate.toFixed(1)}%</p>
+            `;
+            
+            // Log detailed results
+            Object.entries(results.categories).forEach(([category, stats]) => {
+                const rate = ((stats.passed / stats.total) * 100).toFixed(1);
+                logToElement('suite-log', `${category}: ${stats.passed}/${stats.total} (${rate}%)`);
+            });
+        }
+        
+        function updateStatus(elementId, text, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = text;
+            element.className = `status ${type}`;
+        }
+        
+        function showResults(elementId) {
+            document.getElementById(elementId).style.display = 'block';
+        }
+        
+        function logToElement(elementId, message) {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            element.innerHTML += `[${timestamp}] ${message}\n`;
+            element.scrollTop = element.scrollHeight;
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>

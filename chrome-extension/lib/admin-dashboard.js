@@ -136,7 +136,7 @@ class AdminDashboardManager {
             },
             generateCampaignHTML: (campaign) => {
                 if (!campaign) return '<div class="no-campaigns">No campaigns available</div>';
-                return `<div class="campaign-card"><h6>${campaign.name || 'Untitled'}</h6></div>`;
+                return `<div class="campaign-card"><h6>${this.escapeHtml(campaign.name) || 'Untitled'}</h6></div>`;
             },
             getCampaign: (id) => null,
             createCampaign: (data) => Promise.reject(new Error('Campaign system unavailable')),
@@ -619,6 +619,7 @@ class AdminDashboardManager {
         const recentData = await this.loadRecentImplementationsData();
         
         const adminContent = container.querySelector('#admin-content') || container;
+        // amazonq-ignore-next-line
         adminContent.innerHTML = `
             <div class="admin-dashboard-header">
                 <h3>👑 Admin Dashboard</h3>
@@ -802,24 +803,24 @@ class AdminDashboardManager {
                                 </div>
                             ` : paginatedSponsors.map(([key, template]) => `
                                 <div class="template-card ${this.sponsorConfig.currentSponsor === key ? 'active' : ''}">
-                                    <input type="radio" name="sponsor-template" value="${key}" id="template-${key}" 
+                                    <input type="radio" name="sponsor-template" value="${this.escapeHtml(key)}" id="template-${this.escapeHtml(key)}" 
                                            ${this.sponsorConfig.currentSponsor === key ? 'checked' : ''}>
-                                    <label for="template-${key}">
+                                    <label for="template-${this.escapeHtml(key)}">
                                         <div class="template-preview">
                                             <div class="template-logo">${template.logo ? '🖼️' : '📄'}</div>
                                             <div class="template-info">
                                                 <strong>${this.escapeHtml(template.name)}</strong>
                                                 <small>${this.escapeHtml(template.message)}</small>
                                                 <div class="template-meta">
-                                                    <span class="template-category">${template.category || 'General'}</span>
-                                                    <span class="template-date">${new Date(template.createdAt || Date.now()).toLocaleDateString()}</span>
+                                                    <span class="template-category">${this.escapeHtml(template.category || 'General')}</span>
+                                                    <span class="template-date">${this.escapeHtml(new Date(template.createdAt || Date.now()).toLocaleDateString())}</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </label>
                                     <div class="template-actions">
-                                        <button class="btn-small btn-info edit-sponsor" data-sponsor-id="${key}" title="Edit Sponsor">✏️</button>
-                                        <button class="btn-small btn-danger delete-sponsor" data-sponsor-id="${key}" title="Delete Sponsor">🗑️</button>
+                                        <button class="btn-small btn-info edit-sponsor" data-sponsor-id="${this.escapeHtml(key)}" title="Edit Sponsor">✏️</button>
+                                        <button class="btn-small btn-danger delete-sponsor" data-sponsor-id="${this.escapeHtml(key)}" title="Delete Sponsor">🗑️</button>
                                     </div>
                                 </div>
                             `).join('')}
@@ -888,7 +889,7 @@ class AdminDashboardManager {
                                     <select id="campaign-sponsor-filter" class="form-input">
                                         <option value="all">All Sponsors</option>
                                         ${Object.entries(this.sponsorConfig.templates).map(([key, template]) => 
-                                            `<option value="${key}">${template.name}</option>`
+                                            `<option value="${this.escapeHtml(key)}">${this.escapeHtml(template.name)}</option>`
                                         ).join('')}
                                     </select>
                                 </div>
@@ -2297,6 +2298,7 @@ class AdminDashboardManager {
     showAIInsightsModal(insights) {
         const modal = document.createElement('div');
         modal.className = 'ai-insights-modal';
+        // amazonq-ignore-next-line
         modal.innerHTML = `
             <div class="modal-overlay">
                 <div class="modal-content">
@@ -2326,21 +2328,21 @@ class AdminDashboardManager {
                         <div class="insights-section">
                             <h5>💡 Optimization Suggestions</h5>
                             <ul class="suggestions-list">
-                                ${(insights.optimizationSuggestions || ['No suggestions available']).map(suggestion => `<li>${suggestion}</li>`).join('')}
+                                ${(insights.optimizationSuggestions || ['No suggestions available']).map(suggestion => `<li>${this.escapeHtml(suggestion)}</li>`).join('')}
                             </ul>
                         </div>
                         
                         <div class="insights-section">
                             <h5>⭐ Premium Recommendations</h5>
                             <ul class="recommendations-list">
-                                ${(insights.premiumRecommendations || ['No recommendations available']).map(rec => `<li>${rec}</li>`).join('')}
+                                ${(insights.premiumRecommendations || ['No recommendations available']).map(rec => `<li>${this.escapeHtml(rec)}</li>`).join('')}
                             </ul>
                         </div>
                         
                         <div class="insights-section">
                             <h5>🎯 Market Opportunities</h5>
                             <ul class="opportunities-list">
-                                ${(insights.marketOpportunities || ['No opportunities identified']).map(opp => `<li>${opp}</li>`).join('')}
+                                ${(insights.marketOpportunities || ['No opportunities identified']).map(opp => `<li>${this.escapeHtml(opp)}</li>`).join('')}
                             </ul>
                         </div>
                     </div>
@@ -4374,37 +4376,37 @@ class AdminDashboardManager {
         const budgetUtilization = budgetTotal > 0 ? (budgetUsed / budgetTotal) * 100 : 0;
 
         return `
-            <div class="enhanced-campaign-card" data-campaign-id="${campaign.id}" data-status="${campaign.status}">
+            <div class="enhanced-campaign-card" data-campaign-id="${this.escapeHtml(campaign.id)}" data-status="${this.escapeHtml(campaign.status)}">
                 <div class="campaign-status-indicator" style="background: ${statusColor}"></div>
                 
                 <div class="campaign-header">
                     <div class="campaign-title-section">
                         <div class="campaign-title-row">
-                            <h6 class="campaign-name">${campaign.name || 'Untitled Campaign'}</h6>
+                            <h6 class="campaign-name">${this.escapeHtml(campaign.name) || 'Untitled Campaign'}</h6>
                             <div class="campaign-badges">
                                 <span class="campaign-status-badge" style="background-color: ${statusColor}">
-                                    ${statusIcon} ${(campaign.status || 'unknown').toUpperCase()}
+                                    ${statusIcon} ${this.escapeHtml((campaign.status || 'unknown').toString()).toUpperCase()}
                                 </span>
                                 <span class="campaign-type-badge">Method 3</span>
                             </div>
                         </div>
                         <div class="campaign-subtitle">
-                            <span class="sponsor-name">🏢 ${sponsorTemplate.name}</span>
+                            <span class="sponsor-name">🏢 ${this.escapeHtml(sponsorTemplate.name)}</span>
                             <span class="campaign-dates">📅 ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}</span>
                         </div>
                     </div>
                     
                     <div class="campaign-actions">
-                        <button class="btn-small btn-secondary edit-campaign" data-campaign-id="${campaign.id}" title="Edit Campaign">
+                        <button class="btn-small btn-secondary edit-campaign" data-campaign-id="${this.escapeHtml(campaign.id)}" title="Edit Campaign">
                             <span class="btn-icon">✏️</span>
                         </button>
-                        <button class="btn-small btn-info view-analytics" data-campaign-id="${campaign.id}" title="View Analytics">
+                        <button class="btn-small btn-info view-analytics" data-campaign-id="${this.escapeHtml(campaign.id)}" title="View Analytics">
                             <span class="btn-icon">📈</span>
                         </button>
-                        <button class="btn-small btn-success duplicate-campaign" data-campaign-id="${campaign.id}" title="Duplicate Campaign">
+                        <button class="btn-small btn-success duplicate-campaign" data-campaign-id="${this.escapeHtml(campaign.id)}" title="Duplicate Campaign">
                             <span class="btn-icon">📋</span>
                         </button>
-                        <button class="btn-small btn-danger delete-campaign" data-campaign-id="${campaign.id}" title="Delete Campaign">
+                        <button class="btn-small btn-danger delete-campaign" data-campaign-id="${this.escapeHtml(campaign.id)}" title="Delete Campaign">
                             <span class="btn-icon">🗑️</span>
                         </button>
                     </div>
@@ -4585,7 +4587,7 @@ class AdminDashboardManager {
                                 <select id="campaign-sponsor" class="form-input" required>
                                     <option value="">Select Sponsor</option>
                                     ${Object.entries(sponsors).map(([key, sponsor]) => 
-                                        `<option value="${key}" ${campaign?.sponsorId === key ? 'selected' : ''}>${sponsor.name}</option>`
+                                        `<option value="${this.escapeHtml(key)}" ${campaign?.sponsorId === key ? 'selected' : ''}>${this.escapeHtml(sponsor.name)}</option>`
                                     ).join('')}
                                 </select>
                             </div>
