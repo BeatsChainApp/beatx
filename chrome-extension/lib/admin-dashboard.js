@@ -29,7 +29,7 @@ class AdminDashboardManager {
             this.authManager = authManager;
             
             // Initialize security validator
-            this.securityValidator = window.SecurityValidator ? new SecurityValidator() : null;
+            this.securityValidator = window.SecurityValidator ? new window.SecurityValidator() : null;
         
         // Verify admin permissions - allow bypass for development
         try {
@@ -808,8 +808,8 @@ class AdminDashboardManager {
                                         <div class="template-preview">
                                             <div class="template-logo">${template.logo ? '🖼️' : '📄'}</div>
                                             <div class="template-info">
-                                                <strong>${this.securityValidator.escapeHtml(template.name)}</strong>
-                                                <small>${this.securityValidator.escapeHtml(template.message)}</small>
+                                                <strong>${this.escapeHtml(template.name)}</strong>
+                                                <small>${this.escapeHtml(template.message)}</small>
                                                 <div class="template-meta">
                                                     <span class="template-category">${template.category || 'General'}</span>
                                                     <span class="template-date">${new Date(template.createdAt || Date.now()).toLocaleDateString()}</span>
@@ -918,7 +918,7 @@ class AdminDashboardManager {
                                 <select id="sponsor-select" class="form-input">
                                     <option value="">Select Sponsor</option>
                                     ${Object.entries(this.sponsorConfig.templates).map(([key, template]) => 
-                                        `<option value="${key}">${template.name}</option>`
+                                        `<option value="${this.escapeHtml(key)}">${this.escapeHtml(template.name)}</option>`
                                     ).join('')}
                                 </select>
                             </div>
@@ -971,7 +971,7 @@ class AdminDashboardManager {
                             <div class="form-row">
                                 <label for="sponsor-message">Message:</label>
                                 <input type="text" id="sponsor-message" class="form-input" 
-                                       value="${currentTemplate?.message || 'Powered by BeatsChain'}" maxlength="100">
+                                       value="${this.escapeHtml(currentTemplate?.message || 'Powered by BeatsChain')}" maxlength="100">
                                 <small class="field-help">Max 100 characters</small>
                             </div>
                             
@@ -2732,9 +2732,39 @@ class AdminDashboardManager {
 
     escapeHtml(text) {
         if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+        if (typeof text !== 'string') text = String(text);
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;')
+            .replace(/\//g, '&#x2F;');
+    }
+
+    sanitizeInput(input) {
+        if (!input) return '';
+        if (typeof input !== 'string') input = String(input);
+        return input.trim().replace(/[<>"'&]/g, '');
+    }
+
+    validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    validateUrl(url) {
+        try {
+            new URL(url);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    formatPlacementName(placement) {
+        if (!placement) return 'Unknown';
+        return placement.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
 
     generateSponsorPreview() {
@@ -2758,9 +2788,10 @@ class AdminDashboardManager {
             website: '#'
         };
         
-        // SECURITY FIX: Escape HTML content to prevent XSS
-        const safeName = this.securityValidator ? this.securityValidator.escapeHtml(template.name) : this.escapeHtml(template.name);
-        const safeMessage = this.securityValidator ? this.securityValidator.escapeHtml(template.message) : this.escapeHtml(template.message);
+        // SECURITY: Sanitize all template data
+        const safeName = this.escapeHtml(template.name || '');
+        const safeMessage = this.escapeHtml(template.message || '');
+        const safeWebsite = this.validateUrl(template.website) ? template.website : '#';
         
         return `
             <div class="sponsor-content" style="border: 2px solid #4CAF50; border-radius: 6px; padding: 16px; background: rgba(76,175,80,0.1);">
@@ -3053,7 +3084,7 @@ class AdminDashboardManager {
             if (messageInput && this.sponsorConfig.templates && this.sponsorConfig.currentSponsor) {
                 const template = this.sponsorConfig.templates[this.sponsorConfig.currentSponsor];
                 if (template) {
-                    template.message = messageInput.value.trim();
+                    template.message = this.sanitizeInput(messageInput.value);
                 }
             }
             
@@ -3237,15 +3268,20 @@ class AdminDashboardManager {
 
     sendAdminInvite() {
         const emailInput = document.getElementById('admin-invite-email');
-        const roleSelect = document.getElementById('admin-role');
+        const email = this.sanitizeInput(emailInput?.value || '');
         
-        if (!emailInput.value.trim()) {
+        if (!email) {
             this.showAdminMessage('Please enter an email address', 'error');
             return;
         }
         
-        // Mock invitation sending
-        this.showAdminMessage(`Invitation sent to ${emailInput.value}`, 'success');
+        if (!this.validateEmail(email)) {
+            this.showAdminMessage('Please enter a valid email address', 'error');
+            return;
+        }
+        
+        // Mock invitation sending with sanitized email
+        this.showAdminMessage(`Invitation sent to ${this.escapeHtml(email)}`, 'success');
         emailInput.value = '';
     }
 
@@ -3255,14 +3291,14 @@ class AdminDashboardManager {
 
     searchUsers() {
         const searchInput = document.getElementById('user-search');
-        const query = searchInput.value.trim();
+        const query = this.sanitizeInput(searchInput?.value || '');
         
         if (!query) {
             this.showAdminMessage('Please enter a search term', 'error');
             return;
         }
         
-        this.showAdminMessage(`Searching for users: ${query}`, 'info');
+        this.showAdminMessage(`Searching for users: ${this.escapeHtml(query)}`, 'info');
     }
 
     async optimizeStorage() {
@@ -3400,8 +3436,8 @@ class AdminDashboardManager {
     }
 
     filterSponsors() {
-        const searchTerm = document.querySelector('#sponsor-search-input')?.value.toLowerCase() || '';
-        const categoryFilter = document.querySelector('#sponsor-category-filter')?.value || '';
+        const searchTerm = this.sanitizeInput(document.querySelector('#sponsor-search-input')?.value || '').toLowerCase();
+        const categoryFilter = this.sanitizeInput(document.querySelector('#sponsor-category-filter')?.value || '');
         
         const allSponsors = Object.entries(this.sponsorConfig.templates);
         
@@ -3410,11 +3446,11 @@ class AdminDashboardManager {
         } else {
             this.sponsorPagination.filteredSponsors = allSponsors.filter(([key, sponsor]) => {
                 const matchesSearch = !searchTerm || 
-                    sponsor.name.toLowerCase().includes(searchTerm) ||
-                    sponsor.message.toLowerCase().includes(searchTerm) ||
+                    (sponsor.name || '').toLowerCase().includes(searchTerm) ||
+                    (sponsor.message || '').toLowerCase().includes(searchTerm) ||
                     key.toLowerCase().includes(searchTerm);
                     
-                const matchesCategory = !categoryFilter || sponsor.category === categoryFilter;
+                const matchesCategory = !categoryFilter || (sponsor.category || '') === categoryFilter;
                 
                 return matchesSearch && matchesCategory;
             });
@@ -3521,7 +3557,7 @@ class AdminDashboardManager {
                     return this.campaignManager.generateCampaignHTML(campaign);
                 } catch (error) {
                     console.warn('Failed to generate campaign HTML:', error);
-                    const campaignName = (campaign && campaign.name) ? campaign.name : 'Unknown';
+                    const campaignName = (campaign && campaign.name) ? this.escapeHtml(campaign.name) : 'Unknown';
                     return `<div class="campaign-error">Campaign "${campaignName}" has display issues</div>`;
                 }
             }).join('');
@@ -3592,7 +3628,7 @@ class AdminDashboardManager {
             // Create duplicate with modified name and reset metrics
             const duplicateData = {
                 ...campaign,
-                name: `${campaign.name} (Copy)`,
+                name: `${this.sanitizeInput(campaign.name)} (Copy)`,
                 status: 'scheduled',
                 totalSpend: 0,
                 metrics: { impressions: 0, clicks: 0, conversions: 0, spend: 0 },
@@ -3665,7 +3701,7 @@ class AdminDashboardManager {
             <div class="analytics-modal-overlay">
                 <div class="analytics-modal">
                     <div class="modal-header">
-                        <h4>📈 Campaign Analytics: ${campaign.name}</h4>
+                        <h4>📈 Campaign Analytics: ${this.escapeHtml(campaign.name)}</h4>
                         <button class="close-modal-btn">&times;</button>
                     </div>
                     
@@ -3738,19 +3774,19 @@ class AdminDashboardManager {
                                 <div class="details-grid">
                                     <div class="detail-item">
                                         <span class="detail-label">Status:</span>
-                                        <span class="detail-value">${campaign.status}</span>
+                                        <span class="detail-value">${this.escapeHtml(campaign.status)}</span>
                                     </div>
                                     <div class="detail-item">
                                         <span class="detail-label">Sponsor:</span>
-                                        <span class="detail-value">${this.sponsorConfig?.templates?.[campaign.sponsorId]?.name || campaign.sponsorId}</span>
+                                        <span class="detail-value">${this.escapeHtml(this.sponsorConfig?.templates?.[campaign.sponsorId]?.name || campaign.sponsorId)}</span>
                                     </div>
                                     <div class="detail-item">
                                         <span class="detail-label">Placement:</span>
-                                        <span class="detail-value">${this.formatPlacementName(campaign.placement)}</span>
+                                        <span class="detail-value">${this.escapeHtml(this.formatPlacementName(campaign.placement))}</span>
                                     </div>
                                     <div class="detail-item">
                                         <span class="detail-label">Schedule:</span>
-                                        <span class="detail-value">${campaign.schedule?.type || 'continuous'}</span>
+                                        <span class="detail-value">${this.escapeHtml(campaign.schedule?.type || 'continuous')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -3789,10 +3825,10 @@ class AdminDashboardManager {
         }
         
         const report = {
-            campaignName: campaign.name,
+            campaignName: this.sanitizeInput(campaign.name),
             campaignId: campaignId,
             status: campaign.status,
-            sponsor: this.sponsorConfig?.templates?.[campaign.sponsorId]?.name || campaign.sponsorId,
+            sponsor: this.sanitizeInput(this.sponsorConfig?.templates?.[campaign.sponsorId]?.name || campaign.sponsorId),
             placement: this.formatPlacementName(campaign.placement),
             dateRange: {
                 start: campaign.startDate,
@@ -3813,7 +3849,7 @@ class AdminDashboardManager {
         
         const a = document.createElement('a');
         a.href = url;
-        a.download = `campaign-report-${campaign.name.replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `campaign-report-${this.sanitizeInput(campaign.name).replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         
         URL.revokeObjectURL(url);
@@ -3848,7 +3884,7 @@ class AdminDashboardManager {
                         
                         <div class="modal-body">
                             <div class="optimization-intro">
-                                <p>AI analysis of campaign "${campaign.name}" suggests the following optimizations:</p>
+                                <p>AI analysis of campaign "${this.escapeHtml(campaign.name)}" suggests the following optimizations:</p>
                             </div>
                             
                             <div class="suggestions-list">
@@ -3856,7 +3892,7 @@ class AdminDashboardManager {
                                     <div class="suggestion-item">
                                         <div class="suggestion-icon">💡</div>
                                         <div class="suggestion-content">
-                                            <div class="suggestion-text">${suggestion}</div>
+                                            <div class="suggestion-text">${this.escapeHtml(suggestion)}</div>
                                             <div class="suggestion-actions">
                                                 <button class="btn btn-sm btn-primary apply-suggestion" data-suggestion="${index}">Apply</button>
                                                 <button class="btn btn-sm btn-secondary dismiss-suggestion" data-suggestion="${index}">Dismiss</button>
@@ -3995,7 +4031,7 @@ class AdminDashboardManager {
         
         const a = document.createElement('a');
         a.href = url;
-        a.download = `campaign-analytics-${campaign.name.replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `campaign-analytics-${this.sanitizeInput(campaign.name).replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         
         URL.revokeObjectURL(url);
@@ -4054,17 +4090,27 @@ class AdminDashboardManager {
     async handleCampaignFormSubmit(form, editCampaignId = null, isEnhanced = false) {
         try {
             const campaignData = {
-                name: this.escapeHtml(form.querySelector('#campaign-name')?.value || ''),
-                sponsorId: this.escapeHtml(form.querySelector('#campaign-sponsor')?.value || ''),
-                placement: this.escapeHtml(form.querySelector('#campaign-placement')?.value || ''),
-                startDate: this.escapeHtml(form.querySelector('#campaign-start-date')?.value || ''),
-                endDate: this.escapeHtml(form.querySelector('#campaign-end-date')?.value || ''),
-                budget: parseFloat(form.querySelector('#campaign-budget')?.value || 0),
-                dailyBudgetLimit: parseFloat(form.querySelector('#campaign-daily-budget')?.value || 0),
+                name: this.sanitizeInput(form.querySelector('#campaign-name')?.value || ''),
+                sponsorId: this.sanitizeInput(form.querySelector('#campaign-sponsor')?.value || ''),
+                placement: this.sanitizeInput(form.querySelector('#campaign-placement')?.value || ''),
+                startDate: this.sanitizeInput(form.querySelector('#campaign-start-date')?.value || ''),
+                endDate: this.sanitizeInput(form.querySelector('#campaign-end-date')?.value || ''),
+                budget: Math.max(0, parseFloat(form.querySelector('#campaign-budget')?.value || 0)),
+                dailyBudgetLimit: Math.max(0, parseFloat(form.querySelector('#campaign-daily-budget')?.value || 0)),
                 schedule: {
-                    type: this.escapeHtml(form.querySelector('#campaign-schedule')?.value || 'continuous')
+                    type: this.sanitizeInput(form.querySelector('#campaign-schedule')?.value || 'continuous')
                 }
             };
+            
+            // Validate required fields
+            if (!campaignData.name) {
+                this.showAdminMessage('Campaign name is required', 'error');
+                return;
+            }
+            if (!campaignData.sponsorId) {
+                this.showAdminMessage('Sponsor selection is required', 'error');
+                return;
+            }
 
             if (editCampaignId) {
                 await this.campaignManager.updateCampaign(editCampaignId, campaignData);
