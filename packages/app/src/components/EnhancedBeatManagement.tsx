@@ -25,6 +25,23 @@ interface Beat {
   audioUrl?: string
   isActive: boolean
   tags?: string[]
+  // Professional metadata fields
+  album?: string
+  releaseYear?: number
+  recordLabel?: string
+  mood?: string
+  energy?: number
+  key?: string
+  producer?: string
+  mixer?: string
+  featuredArtists?: string
+  explicit?: boolean
+  language?: string
+  timeSignature?: string
+  isrc?: string
+  copyrightHolder?: string
+  isNFT?: boolean
+  mintPending?: boolean
 }
 
 interface EnhancedBeatManagementProps {
@@ -388,41 +405,159 @@ export default function EnhancedBeatManagement({ onBeatUpdate }: EnhancedBeatMan
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-white rounded-lg p-6 w-full max-w-md"
+            className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-hidden"
           >
             <h3 className="text-lg font-semibold mb-4">Edit Beat</h3>
             
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  value={editingBeat.title}
-                  onChange={(e) => setEditingBeat({...editingBeat, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {/* Basic Info */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                  <input
+                    type="text"
+                    value={editingBeat.title}
+                    onChange={(e) => setEditingBeat({...editingBeat, title: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (ETH)</label>
+                  <input
+                    type="number"
+                    step="0.001"
+                    min="0.001"
+                    value={editingBeat.price}
+                    onChange={(e) => setEditingBeat({...editingBeat, price: parseFloat(e.target.value)})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+              
+              {/* Album & Release Info */}
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Album</label>
+                  <input
+                    type="text"
+                    value={editingBeat.album || ''}
+                    onChange={(e) => setEditingBeat({...editingBeat, album: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Release Year</label>
+                  <input
+                    type="number"
+                    value={editingBeat.releaseYear || new Date().getFullYear()}
+                    onChange={(e) => setEditingBeat({...editingBeat, releaseYear: parseInt(e.target.value)})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Record Label</label>
+                  <input
+                    type="text"
+                    value={editingBeat.recordLabel || ''}
+                    onChange={(e) => setEditingBeat({...editingBeat, recordLabel: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+              
+              {/* Musical Properties */}
+              <div className="grid grid-cols-4 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Genre</label>
+                  <select
+                    value={editingBeat.genre}
+                    onChange={(e) => setEditingBeat({...editingBeat, genre: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="hip-hop">Hip-Hop</option>
+                    <option value="electronic">Electronic</option>
+                    <option value="pop">Pop</option>
+                    <option value="rock">Rock</option>
+                    <option value="jazz">Jazz</option>
+                    <option value="r&b">R&B</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">BPM</label>
+                  <input
+                    type="number"
+                    value={editingBeat.bpm}
+                    onChange={(e) => setEditingBeat({...editingBeat, bpm: parseInt(e.target.value)})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Key</label>
+                  <select
+                    value={editingBeat.key || 'C'}
+                    onChange={(e) => setEditingBeat({...editingBeat, key: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="C">C Major</option>
+                    <option value="D">D Major</option>
+                    <option value="E">E Major</option>
+                    <option value="F">F Major</option>
+                    <option value="G">G Major</option>
+                    <option value="A">A Major</option>
+                    <option value="B">B Major</option>
+                    <option value="Am">A Minor</option>
+                    <option value="Cm">C Minor</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Mood</label>
+                  <select
+                    value={editingBeat.mood || 'neutral'}
+                    onChange={(e) => setEditingBeat({...editingBeat, mood: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="neutral">Neutral</option>
+                    <option value="energetic">Energetic</option>
+                    <option value="calm">Calm</option>
+                    <option value="dark">Dark</option>
+                    <option value="uplifting">Uplifting</option>
+                  </select>
+                </div>
+              </div>
+              
+              {/* Credits */}
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Producer</label>
+                  <input
+                    type="text"
+                    value={editingBeat.producer || ''}
+                    onChange={(e) => setEditingBeat({...editingBeat, producer: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Mixer</label>
+                  <input
+                    type="text"
+                    value={editingBeat.mixer || ''}
+                    onChange={(e) => setEditingBeat({...editingBeat, mixer: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Featured Artists</label>
+                  <input
+                    type="text"
+                    value={editingBeat.featuredArtists || ''}
+                    onChange={(e) => setEditingBeat({...editingBeat, featuredArtists: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Price (ETH)
-                </label>
-                <input
-                  type="number"
-                  step="0.001"
-                  min="0.001"
-                  value={editingBeat.price}
-                  onChange={(e) => setEditingBeat({...editingBeat, price: parseFloat(e.target.value)})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea
                   value={editingBeat.description}
                   onChange={(e) => setEditingBeat({...editingBeat, description: e.target.value})}
@@ -431,19 +566,29 @@ export default function EnhancedBeatManagement({ onBeatUpdate }: EnhancedBeatMan
                 />
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tags (comma separated)
-                </label>
-                <input
-                  type="text"
-                  value={editingBeat.tags?.join(', ') || ''}
-                  onChange={(e) => setEditingBeat({
-                    ...editingBeat, 
-                    tags: e.target.value.split(',').map(tag => tag.trim()).filter(Boolean)
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma separated)</label>
+                  <input
+                    type="text"
+                    value={editingBeat.tags?.join(', ') || ''}
+                    onChange={(e) => setEditingBeat({
+                      ...editingBeat, 
+                      tags: e.target.value.split(',').map(tag => tag.trim()).filter(Boolean)
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div className="flex items-center gap-4 pt-6">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={editingBeat.explicit || false}
+                      onChange={(e) => setEditingBeat({...editingBeat, explicit: e.target.checked})}
+                    />
+                    <span className="text-sm text-gray-700">Explicit Content</span>
+                  </label>
+                </div>
               </div>
             </div>
             

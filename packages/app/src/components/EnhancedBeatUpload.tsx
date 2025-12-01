@@ -84,8 +84,8 @@ Generated: ${new Date().toLocaleString()}`
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: formData.title,
-          artist: formData.stageName || 'Unknown Artist'
+          trackTitle: formData.title,
+          artistName: formData.stageName || 'Unknown Artist'
         })
       })
       
@@ -263,71 +263,89 @@ Generated: ${new Date().toLocaleString()}`
       {/* Step Content */}
       {currentStep === 0 && (
         <div>
-          <h2>🎵 Upload Your Audio File</h2>
+          <h2>🎵 Upload Audio & Complete Metadata</h2>
+          <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>Upload your audio file and fill in all metadata fields to create a professional, distribution-ready track.</p>
+          
           <div {...getRootProps()} style={{
-            border: '2px dashed #d1d5db', borderRadius: '0.5rem', padding: '3rem',
-            textAlign: 'center', cursor: 'pointer', background: audioFile ? '#f0fdf4' : '#f9fafb'
+            border: '2px dashed #d1d5db', borderRadius: '0.5rem', padding: '2rem',
+            textAlign: 'center', cursor: 'pointer', background: audioFile ? '#f0fdf4' : '#f9fafb',
+            marginBottom: '1.5rem'
           }}>
             <input {...getInputProps()} />
             {audioFile ? (
               <div>
                 <p style={{ color: '#059669', fontWeight: '500' }}>✓ {audioFile.name}</p>
                 <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                  {(audioFile.size / (1024 * 1024)).toFixed(1)} MB
+                  {(audioFile.size / (1024 * 1024)).toFixed(1)} MB • {audioFile.type}
                 </p>
               </div>
             ) : (
-              <p>Drop audio file here or click to browse</p>
+              <div>
+                <p style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>Drop audio file here or click to browse</p>
+                <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Supports MP3, WAV, M4A, AAC</p>
+              </div>
             )}
           </div>
-          
-          {audioFile && (
-            <div style={{ marginTop: '1rem' }}>
-              {/* Basic Info */}
+
+          {/* Professional Metadata Form - Always Visible */}
+          <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '0.75rem', border: '1px solid #e2e8f0' }}>
+            <h3 style={{ margin: '0 0 1.5rem 0', color: '#1f2937', fontSize: '1.1rem' }}>📋 Professional Metadata</h3>
+            
+            {/* Basic Info */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h4 style={{ margin: '0 0 0.75rem 0', color: '#374151', fontSize: '0.9rem', fontWeight: '600' }}>Basic Information</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                 <input
                   placeholder="Track Title *"
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
+                  required
                 />
                 <input
                   placeholder="Artist/Stage Name *"
                   value={formData.stageName}
                   onChange={(e) => setFormData({...formData, stageName: e.target.value})}
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
+                  required
                 />
               </div>
-              
-              {/* Album & Release Info */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            </div>
+            
+            {/* Album & Release Info */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h4 style={{ margin: '0 0 0.75rem 0', color: '#374151', fontSize: '0.9rem', fontWeight: '600' }}>Release Information</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                 <input
                   placeholder="Album/EP Name"
                   value={formData.album}
                   onChange={(e) => setFormData({...formData, album: e.target.value})}
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                 />
                 <input
                   type="number"
                   placeholder="Release Year"
                   value={formData.releaseYear}
                   onChange={(e) => setFormData({...formData, releaseYear: parseInt(e.target.value)})}
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                 />
                 <input
                   placeholder="Record Label"
                   value={formData.recordLabel}
                   onChange={(e) => setFormData({...formData, recordLabel: e.target.value})}
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                 />
               </div>
-              
-              {/* Musical Properties */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            </div>
+            
+            {/* Musical Properties */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h4 style={{ margin: '0 0 0.75rem 0', color: '#374151', fontSize: '0.9rem', fontWeight: '600' }}>Musical Properties</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
                 <select
                   value={formData.genre}
                   onChange={(e) => setFormData({...formData, genre: e.target.value})}
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                 >
                   <option value="hip-hop">Hip-Hop</option>
                   <option value="electronic">Electronic</option>
@@ -343,12 +361,12 @@ Generated: ${new Date().toLocaleString()}`
                   placeholder="BPM"
                   value={formData.bpm}
                   onChange={(e) => setFormData({...formData, bpm: parseInt(e.target.value)})}
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                 />
                 <select
                   value={formData.key}
                   onChange={(e) => setFormData({...formData, key: e.target.value})}
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                 >
                   <option value="C">C Major</option>
                   <option value="C#">C# Major</option>
@@ -368,7 +386,7 @@ Generated: ${new Date().toLocaleString()}`
                 <select
                   value={formData.mood}
                   onChange={(e) => setFormData({...formData, mood: e.target.value})}
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                 >
                   <option value="neutral">Neutral</option>
                   <option value="energetic">Energetic</option>
@@ -379,46 +397,49 @@ Generated: ${new Date().toLocaleString()}`
                   <option value="aggressive">Aggressive</option>
                 </select>
               </div>
-              
-              {/* Credits & Collaborations */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            </div>
+            
+            {/* Credits & Collaborations */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h4 style={{ margin: '0 0 0.75rem 0', color: '#374151', fontSize: '0.9rem', fontWeight: '600' }}>Credits & Collaborations</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                 <input
                   placeholder="Producer"
                   value={formData.producer}
                   onChange={(e) => setFormData({...formData, producer: e.target.value})}
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                 />
                 <input
                   placeholder="Mixer/Engineer"
                   value={formData.mixer}
                   onChange={(e) => setFormData({...formData, mixer: e.target.value})}
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                 />
                 <input
                   placeholder="Featured Artists"
                   value={formData.featuredArtists}
                   onChange={(e) => setFormData({...formData, featuredArtists: e.target.value})}
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                 />
               </div>
-              
-              {/* Description & Tags */}
-              <div style={{ marginBottom: '1rem' }}>
-                <textarea
-                  placeholder="Track Description (for marketing and distribution)"
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  rows={3}
-                  style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', resize: 'vertical' }}
-                />
-              </div>
-              
+            </div>
+            
+            {/* Description & Tags */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h4 style={{ margin: '0 0 0.75rem 0', color: '#374151', fontSize: '0.9rem', fontWeight: '600' }}>Description & Tags</h4>
+              <textarea
+                placeholder="Track Description (for marketing and distribution)"
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                rows={3}
+                style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', resize: 'vertical', background: 'white', marginBottom: '1rem' }}
+              />
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <input
                   placeholder="Tags (comma-separated)"
                   value={formData.tags}
                   onChange={(e) => setFormData({...formData, tags: e.target.value})}
-                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                 />
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -432,7 +453,7 @@ Generated: ${new Date().toLocaleString()}`
                   <select
                     value={formData.language}
                     onChange={(e) => setFormData({...formData, language: e.target.value})}
-                    style={{ padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                    style={{ padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                   >
                     <option value="en">English</option>
                     <option value="es">Spanish</option>
@@ -446,47 +467,76 @@ Generated: ${new Date().toLocaleString()}`
                   </select>
                 </div>
               </div>
-              
-              {/* Cover Art Upload */}
-              <div style={{ marginTop: '1rem', padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem', background: '#f9fafb' }}>
-                <h4 style={{ margin: '0 0 1rem 0', color: '#374151' }}>Cover Art (Optional)</h4>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                  <div style={{ flex: '1' }}>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleCoverArtUpload}
-                      style={{ 
-                        padding: '0.75rem', 
-                        border: '1px solid #d1d5db', 
-                        borderRadius: '0.375rem',
-                        width: '100%',
-                        background: 'white'
-                      }}
-                    />
-                    <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: '0.5rem 0 0 0' }}>
-                      JPG, PNG recommended. 1400x1400px minimum for best quality.
-                    </p>
-                  </div>
-                  {coverArtPreview && (
-                    <div style={{ 
-                      width: '100px', 
-                      height: '100px', 
-                      border: '2px solid #e5e7eb', 
-                      borderRadius: '0.5rem',
-                      overflow: 'hidden',
-                      background: 'white'
-                    }}>
-                      <img 
-                        src={coverArtPreview} 
-                        alt="Cover art preview" 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    </div>
-                  )}
+            </div>
+            
+            {/* Cover Art Upload */}
+            <div style={{ marginBottom: '1rem' }}>
+              <h4 style={{ margin: '0 0 0.75rem 0', color: '#374151', fontSize: '0.9rem', fontWeight: '600' }}>🎨 Cover Art</h4>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem', background: 'white' }}>
+                <div style={{ flex: '1' }}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverArtUpload}
+                    style={{ 
+                      padding: '0.75rem', 
+                      border: '1px solid #d1d5db', 
+                      borderRadius: '0.375rem',
+                      width: '100%',
+                      background: '#f9fafb'
+                    }}
+                  />
+                  <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: '0.5rem 0 0 0' }}>
+                    JPG, PNG recommended. 1400x1400px minimum for best quality.
+                  </p>
                 </div>
+                {coverArtPreview ? (
+                  <div style={{ 
+                    width: '100px', 
+                    height: '100px', 
+                    border: '2px solid #10b981', 
+                    borderRadius: '0.5rem',
+                    overflow: 'hidden',
+                    background: 'white'
+                  }}>
+                    <img 
+                      src={coverArtPreview} 
+                      alt="Cover art preview" 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </div>
+                ) : (
+                  <div style={{ 
+                    width: '100px', 
+                    height: '100px', 
+                    border: '2px dashed #d1d5db', 
+                    borderRadius: '0.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#f9fafb',
+                    color: '#9ca3af',
+                    fontSize: '2rem'
+                  }}>
+                    🎨
+                  </div>
+                )}
               </div>
             </div>
+          </div>
+          
+          {/* Continue Button */}
+          {(audioFile && formData.title && formData.stageName) && (
+            <button
+              onClick={() => setCurrentStep(1)}
+              style={{
+                background: '#10b981', color: 'white', padding: '0.75rem 1.5rem',
+                border: 'none', borderRadius: '0.375rem', cursor: 'pointer',
+                marginTop: '1.5rem', fontSize: '1rem', fontWeight: '500'
+              }}
+            >
+              Continue to License Generation →
+            </button>
           )}
         </div>
       )}
