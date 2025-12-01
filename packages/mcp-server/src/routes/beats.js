@@ -19,17 +19,27 @@ router.get('/beats', async (req, res) => {
 
     const { limit = 20, offset = 0, producer } = req.query;
 
-    let query = supabase
-      .from('beats')
-      .select('*')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false });
+    let data = []
+    let error = null
+    
+    try {
+      let query = supabase
+        .from('beats')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (producer) {
-      query = query.eq('producer_address', producer);
+      if (producer) {
+        query = query.eq('producer_address', producer);
+      }
+
+      const result = await query.range(offset, offset + limit - 1);
+      data = result.data
+      error = result.error
+    } catch (schemaError) {
+      console.warn('Beats schema error:', schemaError.message)
+      data = []
+      error = schemaError
     }
-
-    const { data, error } = await query.range(offset, offset + limit - 1);
 
     if (error) {
       console.error('Beats fetch error:', error);

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useFileUpload } from '@/hooks/useFileUpload.enhanced'
 import { useWeb3Auth } from '@/hooks/useWeb3Auth'
@@ -18,6 +18,7 @@ const WORKFLOW_STEPS = [
 ]
 
 export default function EnhancedBeatUpload() {
+  const [mounted, setMounted] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState({
     title: '', stageName: '', genre: 'hip-hop', bpm: 120, key: 'C', price: 0.05,
@@ -39,6 +40,18 @@ export default function EnhancedBeatUpload() {
   const { uploadBeatAudio } = useFileUpload()
   const { canUpload } = useBeatNFT()
   const { success, error } = useEnhancedToast()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1rem' }}>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>Loading...</div>
+      </div>
+    )
+  }
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: { 'audio/*': ['.mp3', '.wav', '.m4a'] },
@@ -134,8 +147,11 @@ Generated: ${new Date().toLocaleString()}`
     if (!audioFile) return
     
     try {
+      // Generate beat ID first
+      const beatId = Date.now().toString()
+      
       // Upload audio to IPFS
-      const audioUrl = await uploadBeatAudio(audioFile, Date.now().toString())
+      const audioUrl = await uploadBeatAudio(audioFile, beatId)
       
       // Upload cover art to IPFS if provided
       let coverArtUrl = ''
@@ -225,7 +241,6 @@ Generated: ${new Date().toLocaleString()}`
       }
 
       // Store metadata in localStorage first
-      const beatId = Date.now().toString()
       const metadataKey = `beat_metadata_${beatId}`
       localStorage.setItem(metadataKey, JSON.stringify(metadata))
       
