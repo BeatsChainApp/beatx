@@ -441,6 +441,57 @@ app.use('*', (req, res) => {
   });
 });
 
+// Add metadata storage endpoint
+app.post('/api/metadata/store', async (req, res) => {
+  try {
+    const { beat_id, enhanced_metadata } = req.body;
+    
+    if (!beat_id || !enhanced_metadata) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'beat_id and enhanced_metadata required' 
+      });
+    }
+    
+    if (supabaseClient) {
+      try {
+        const { getClient } = require('./services/supabaseClient');
+        const sb = getClient();
+        if (sb) {
+          const { error } = await sb
+            .from('beats')
+            .update({
+              mood: enhanced_metadata.mood,
+              energy_level: enhanced_metadata.energy,
+              professional_complete: enhanced_metadata.professional_complete,
+              distribution_ready: enhanced_metadata.distribution_ready,
+              duration_seconds: enhanced_metadata.duration,
+              bpm: enhanced_metadata.bpm,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', beat_id);
+            
+          if (error) throw error;
+        }
+      } catch (dbError) {
+        console.error('Database update failed:', dbError);
+        return res.status(500).json({ 
+          success: false, 
+          error: 'Database update failed' 
+        });
+      }
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Enhanced metadata stored successfully' 
+    });
+  } catch (error) {
+    console.error('Metadata storage error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Error handler
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);

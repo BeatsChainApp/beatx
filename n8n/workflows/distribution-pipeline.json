@@ -1,0 +1,215 @@
+{
+  "name": "Distribution Pipeline Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "distribution-prep",
+        "options": {}
+      },
+      "id": "webhook-distribution-trigger",
+      "name": "Distribution Preparation Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate metadata for distribution readiness\nconst metadata = $input.first().json.metadata;\n\nconst validation = {\n  // Required fields for DSPs\n  required_fields: {\n    title: !!metadata.title,\n    artist: !!metadata.artist,\n    album: !!metadata.album,\n    release_year: !!metadata.releaseYear,\n    genre: !!metadata.genre,\n    isrc: !!metadata.isrc\n  },\n  \n  // Professional fields\n  professional_fields: {\n    record_label: !!metadata.recordLabel,\n    producer: !!metadata.producer,\n    copyright_holder: !!metadata.copyrightHolder,\n    explicit: metadata.explicit !== undefined,\n    language: !!metadata.language\n  },\n  \n  // Technical requirements\n  technical_requirements: {\n    duration: metadata.duration > 30, // Minimum 30 seconds\n    cover_art: !!metadata.cover_image_url,\n    audio_quality: metadata.bitrate >= 128, // Minimum 128kbps\n    format_supported: ['mp3', 'wav', 'm4a'].includes(metadata.format)\n  }\n};\n\n// Calculate readiness score\nconst allChecks = {\n  ...validation.required_fields,\n  ...validation.professional_fields,\n  ...validation.technical_requirements\n};\n\nconst passedChecks = Object.values(allChecks).filter(Boolean).length;\nconst totalChecks = Object.keys(allChecks).length;\nconst readinessScore = Math.round((passedChecks / totalChecks) * 100);\n\n// Determine distribution readiness\nconst distributionReady = readinessScore >= 80;\nconst requiredFieldsComplete = Object.values(validation.required_fields).every(Boolean);\n\nreturn {\n  ...metadata,\n  validation,\n  readiness_score: readinessScore,\n  distribution_ready: distributionReady,\n  required_fields_complete: requiredFieldsComplete,\n  missing_fields: Object.entries(allChecks)\n    .filter(([key, value]) => !value)\n    .map(([key]) => key)\n};"
+      },
+      "id": "validate-distribution-readiness",
+      "name": "Validate Distribution Readiness",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "distribution-ready",
+              "leftValue": "={{ $json.distribution_ready }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              }
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "id": "distribution-ready-check",
+      "name": "Distribution Ready Check",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate distribution package\nconst metadata = $input.first().json;\n\n// Create DSP-ready metadata\nconst dspMetadata = {\n  // Spotify/Apple Music format\n  spotify: {\n    track_title: metadata.title,\n    artist_name: metadata.artist,\n    album_title: metadata.album,\n    release_date: `${metadata.releaseYear}-01-01`,\n    genre: metadata.genre,\n    isrc: metadata.isrc,\n    explicit: metadata.explicit || false,\n    language: metadata.language || 'en',\n    copyright: metadata.copyright_holder || metadata.artist,\n    producer: metadata.producer,\n    label: metadata.recordLabel || 'Independent'\n  },\n  \n  // YouTube Music format\n  youtube: {\n    title: metadata.title,\n    artist: metadata.artist,\n    album: metadata.album,\n    year: metadata.releaseYear,\n    genre: metadata.genre,\n    isrc: metadata.isrc,\n    content_rating: metadata.explicit ? 'explicit' : 'clean'\n  },\n  \n  // SoundCloud format\n  soundcloud: {\n    title: `${metadata.artist} - ${metadata.title}`,\n    description: metadata.description || `${metadata.title} by ${metadata.artist}`,\n    genre: metadata.genre,\n    tags: metadata.tags || [metadata.genre, metadata.artist],\n    release_date: `${metadata.releaseYear}-01-01`\n  }\n};\n\n// Generate delivery package\nconst deliveryPackage = {\n  metadata: dspMetadata,\n  assets: {\n    audio_file: metadata.audio_url,\n    cover_art: metadata.cover_image_url,\n    waveform: metadata.waveform_url || null\n  },\n  distribution_info: {\n    ready_for_distribution: true,\n    platforms: ['spotify', 'apple_music', 'youtube_music', 'soundcloud'],\n    estimated_delivery: '24-48 hours',\n    generated_at: new Date().toISOString()\n  }\n};\n\nreturn deliveryPackage;"
+      },
+      "id": "generate-distribution-package",
+      "name": "Generate Distribution Package",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.MCP_SERVER_URL }}/api/distribution/prepare",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "beat_id",
+              "value": "={{ $json.beat_id }}"
+            },
+            {
+              "name": "distribution_package",
+              "value": "={{ $json }}"
+            }
+          ]
+        }
+      },
+      "id": "store-distribution-package",
+      "name": "Store Distribution Package",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate improvement recommendations\nconst metadata = $input.first().json;\nconst missingFields = metadata.missing_fields || [];\n\nconst recommendations = {\n  priority_fixes: [],\n  suggestions: [],\n  readiness_score: metadata.readiness_score\n};\n\n// Priority fixes for required fields\nif (missingFields.includes('title')) {\n  recommendations.priority_fixes.push('Add track title');\n}\nif (missingFields.includes('artist')) {\n  recommendations.priority_fixes.push('Add artist name');\n}\nif (missingFields.includes('album')) {\n  recommendations.priority_fixes.push('Add album/EP name');\n}\nif (missingFields.includes('isrc')) {\n  recommendations.priority_fixes.push('Generate ISRC code');\n}\n\n// Suggestions for professional fields\nif (missingFields.includes('cover_art')) {\n  recommendations.suggestions.push('Upload high-quality cover art (1400x1400px)');\n}\nif (missingFields.includes('producer')) {\n  recommendations.suggestions.push('Add producer credits');\n}\nif (missingFields.includes('record_label')) {\n  recommendations.suggestions.push('Specify record label or use \"Independent\"');\n}\n\n// Technical suggestions\nif (missingFields.includes('audio_quality')) {\n  recommendations.suggestions.push('Ensure audio quality is at least 128kbps');\n}\nif (missingFields.includes('duration')) {\n  recommendations.suggestions.push('Track must be at least 30 seconds long');\n}\n\nreturn {\n  ...metadata,\n  recommendations,\n  next_steps: recommendations.priority_fixes.length > 0 \n    ? 'Complete priority fixes to enable distribution'\n    : 'Ready for distribution - consider suggestions for better placement'\n};"
+      },
+      "id": "generate-improvement-recommendations",
+      "name": "Generate Improvement Recommendations",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.MCP_SERVER_URL }}/api/distribution/recommendations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "beat_id",
+              "value": "={{ $json.beat_id }}"
+            },
+            {
+              "name": "recommendations",
+              "value": "={{ $json.recommendations }}"
+            },
+            {
+              "name": "readiness_score",
+              "value": "={{ $json.readiness_score }}"
+            }
+          ]
+        }
+      },
+      "id": "store-recommendations",
+      "name": "Store Recommendations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 400]
+    }
+  ],
+  "connections": {
+    "Distribution Preparation Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Distribution Readiness",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Distribution Readiness": {
+      "main": [
+        [
+          {
+            "node": "Distribution Ready Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Distribution Ready Check": {
+      "main": [
+        [
+          {
+            "node": "Generate Distribution Package",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generate Improvement Recommendations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Distribution Package": {
+      "main": [
+        [
+          {
+            "node": "Store Distribution Package",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Improvement Recommendations": {
+      "main": [
+        [
+          {
+            "node": "Store Recommendations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["distribution", "automation", "dsp"],
+  "triggerCount": 1,
+  "updatedAt": "2025-01-14T12:00:00.000Z",
+  "versionId": "1"
+}
