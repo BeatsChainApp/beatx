@@ -1,0 +1,264 @@
+{
+  "timestamp": "2025-12-01T16:52:39.637Z",
+  "summary": {
+    "successes": 36,
+    "warnings": 0,
+    "issues": 0
+  },
+  "successes": [
+    {
+      "type": "SUCCESS",
+      "component": "Chrome Extension OAuth",
+      "message": "OAuth2 configuration in manifest properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.628Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Chrome Extension OAuth",
+      "message": "Google Client ID configured properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.628Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "App OAuth",
+      "message": "Google Client ID in production env properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.628Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Chrome Extension Auth",
+      "message": "Unified authentication manager exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.629Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "App Auth",
+      "message": "Unified auth context exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.629Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Chrome Extension Wallet",
+      "message": "Unified wallet generation properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.631Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "App Wallet",
+      "message": "Web3 wallet provider exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.631Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "App Wallet",
+      "message": "WalletConnect project ID properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.631Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Database Schema",
+      "message": "Combined migrations file exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Database Config",
+      "message": "Supabase URL configured properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "MCP Server Config",
+      "message": "Supabase URL in MCP server properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Database Schema",
+      "message": "Success table creation properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Database Schema",
+      "message": "ISRC registry table modification properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Chrome Extension Onboarding",
+      "message": "Extension onboarding manager exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "App Onboarding",
+      "message": "App onboarding manager exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "App Onboarding",
+      "message": "Onboarding provider component exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "App Layout",
+      "message": "Onboarding provider mounted in layout properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Chrome Extension UI",
+      "message": "Main popup HTML exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Chrome Extension UI",
+      "message": "Main popup JavaScript exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "App UI",
+      "message": "Sign-in modal component exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "App UI",
+      "message": "App onboarding modal exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "App Layout",
+      "message": "Unified auth provider mounted properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.632Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Admin Dashboard",
+      "message": "Admin dashboard page exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.633Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Admin Dashboard",
+      "message": "Protected route component exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.633Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Admin Dashboard",
+      "message": "Super admin wallet configured properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.633Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Admin Dashboard",
+      "message": "Super admin wallets array defined properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.636Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "MCP Server",
+      "message": "Main server file exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.636Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "MCP Server",
+      "message": "Docker configuration exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.636Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "MCP Server",
+      "message": "Railway deployment config exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.636Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "MCP Server",
+      "message": "MCP server URL configured in app properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.636Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Data Pipelines",
+      "message": "User onboarding workflow exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.636Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Data Pipelines",
+      "message": "Extension onboarding workflow exists",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.636Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Data Pipelines",
+      "message": "Found 19 API routes",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.637Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Extension-Backend Integration",
+      "message": "Backend client integration in extension properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.637Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "App-Wallet Integration",
+      "message": "Wallet integration in unified auth properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.637Z"
+    },
+    {
+      "type": "SUCCESS",
+      "component": "Extension-MCP Integration",
+      "message": "MCP server URL in extension permissions properly configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:52:39.637Z"
+    }
+  ],
+  "warnings": [],
+  "issues": []
+}

@@ -6,7 +6,7 @@ import { useSIWE } from '@/context/SIWEContext'
 // Super admin wallets for role-based access
 const SUPER_ADMIN_WALLETS = [
   '0xc84799A904EeB5C57aBBBc40176E7dB8be202C10', // Admin wallet from extension
-  '0x1234567890123456789012345678901234567890', // Backup admin wallet
+  '0xC84799A904EeB5C57aBBBc40176E7dB8be202C10', // Same wallet (case variation)
 ]
 
 interface Web3User {
@@ -32,12 +32,17 @@ export function useWeb3Auth() {
   const getRole = (walletAddress: string): Web3User['role'] => {
     if (typeof window === 'undefined') return 'user'
     
-    if (SUPER_ADMIN_WALLETS.includes(walletAddress.toLowerCase())) {
+    // Check if wallet is super admin (case insensitive)
+    const normalizedAddress = walletAddress.toLowerCase()
+    const isAdmin = SUPER_ADMIN_WALLETS.some(addr => addr.toLowerCase() === normalizedAddress)
+    
+    if (isAdmin) {
+      console.log('🔑 Admin wallet detected:', walletAddress)
       return 'super_admin'
     }
     
     try {
-      const profileKey = `web3_profile_${walletAddress.toLowerCase()}`
+      const profileKey = `web3_profile_${normalizedAddress}`
       const profile = localStorage.getItem(profileKey)
       if (profile) {
         const parsed = JSON.parse(profile)

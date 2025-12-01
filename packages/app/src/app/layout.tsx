@@ -10,6 +10,7 @@ import { SIWEProvider } from '@/context/SIWEContext'
 import { UnifiedAuthProvider } from '@/context/UnifiedAuthContext'
 import { NotificationProvider } from '@/context/NotificationsEnhanced'
 import { PurchaseProvider } from '@/context/PurchaseContext'
+import { OnboardingProvider } from '@/components/OnboardingProvider'
 import { ClientOnly } from '@/components/ClientOnly'
 import { BeatMetadataSync } from '@/components/BeatMetadataSync'
 import CookieConsentBanner from '@/components/CookieConsentBanner'
@@ -149,16 +150,18 @@ export default function RootLayout(props: PropsWithChildren) {
               <SimpleAuthProvider>
                 <SIWEProvider>
                   <UnifiedAuthProvider>
-                    <NotificationProvider>
-                      <PurchaseProvider>
+                    <OnboardingProvider>
+                      <NotificationProvider>
+                        <PurchaseProvider>
                         <BeatMetadataSync />
                         <SuperAdminSetup />
                         <Layout>{props.children}</Layout>
                         <CookieConsentBanner />
                         <PWAInstallPrompt />
                         <Toaster position="top-right" />
-                      </PurchaseProvider>
-                    </NotificationProvider>
+                        </PurchaseProvider>
+                      </NotificationProvider>
+                    </OnboardingProvider>
                   </UnifiedAuthProvider>
                 </SIWEProvider>
               </SimpleAuthProvider>

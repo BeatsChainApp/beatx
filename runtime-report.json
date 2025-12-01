@@ -1,0 +1,167 @@
+{
+  "timestamp": "2025-12-01T16:53:48.992Z",
+  "summary": {
+    "successes": 22,
+    "issues": 4
+  },
+  "successes": [
+    {
+      "type": "SUCCESS",
+      "message": "Environment file properly configured",
+      "details": "./packages/app/.env.production",
+      "timestamp": "2025-12-01T16:53:47.072Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Required variable NEXT_PUBLIC_SUPABASE_URL is set",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:47.073Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Required variable NEXT_PUBLIC_SUPABASE_ANON_KEY is set",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:47.073Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Required variable NEXT_PUBLIC_GOOGLE_CLIENT_ID is set",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:47.073Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Required variable NEXT_PUBLIC_MCP_SERVER_URL is set",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:47.074Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Environment file properly configured",
+      "details": "./packages/app/.env.local",
+      "timestamp": "2025-12-01T16:53:47.074Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Required variable NEXT_PUBLIC_SUPABASE_URL is set",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:47.074Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Required variable NEXT_PUBLIC_SUPABASE_ANON_KEY is set",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:47.074Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Required variable NEXT_PUBLIC_GOOGLE_CLIENT_ID is set",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:47.074Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Required variable NEXT_PUBLIC_MCP_SERVER_URL is set",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:47.074Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Database migrations are ready for deployment",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:47.448Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "MCP Server Health Check is accessible",
+      "details": "Status: 200",
+      "timestamp": "2025-12-01T16:53:48.248Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Chrome extension OAuth2 configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:48.987Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Chrome extension has required permissions",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:48.987Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Chrome extension can access MCP server",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:48.987Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Required dependency wagmi is installed",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:48.990Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Required dependency viem is installed",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:48.991Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Required dependency @supabase/supabase-js is installed",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:48.991Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Build script is configured",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:48.991Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Super admin wallet configured in ./packages/app/.env.production",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:48.991Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Super admin wallet configured in ./packages/app/.env.local",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:48.991Z"
+    },
+    {
+      "type": "SUCCESS",
+      "message": "Admin page has proper role protection",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:48.991Z"
+    }
+  ],
+  "issues": [
+    {
+      "type": "ERROR",
+      "message": "Supabase REST API returned error",
+      "details": "Status: 401",
+      "timestamp": "2025-12-01T16:53:47.448Z"
+    },
+    {
+      "type": "ERROR",
+      "message": "Database migrations need to be applied to Supabase",
+      "details": "Run migrations in Supabase SQL editor",
+      "timestamp": "2025-12-01T16:53:47.448Z"
+    },
+    {
+      "type": "ERROR",
+      "message": "MCP Server Analytics API returned error",
+      "details": "Status: 503",
+      "timestamp": "2025-12-01T16:53:48.986Z"
+    },
+    {
+      "type": "ERROR",
+      "message": "Required dependency @web3modal/wagmi is missing",
+      "details": null,
+      "timestamp": "2025-12-01T16:53:48.990Z"
+    }
+  ]
+}
