@@ -1,9 +1,7 @@
 [build]
-builder = "nixpacks"
-buildCommand = "cd packages/mcp-server && npm install"
+builder = "dockerfile"
 
 [deploy]
-startCommand = "cd packages/mcp-server && npm start"
 healthcheckPath = "/healthz"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
