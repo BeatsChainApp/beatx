@@ -38,45 +38,66 @@ router.post('/isrc/generate', async (req, res) => {
       });
     }
     
-    const { data: lastISRC } = await supabase
-      .from('isrc_registry')
-      .select('designation_code')
-      .order('designation_code', { ascending: false })
-      .limit(1)
-      .single()
+    try {
+      const { data: lastISRC } = await supabase
+        .from('isrc_registry')
+        .select('designation_code')
+        .order('designation_code', { ascending: false })
+        .limit(1)
+        .single()
 
-    const nextDesignation = lastISRC ? (parseInt(lastISRC.designation_code) + 1) : 1
-    const designationCode = nextDesignation.toString().padStart(5, '0')
-    
-    const isrcCode = `${countryCode}-${registrantCode}-${year}-${designationCode}`
+      const nextDesignation = lastISRC ? (parseInt(lastISRC.designation_code) + 1) : 1
+      const designationCode = nextDesignation.toString().padStart(5, '0')
+      
+      const isrcCode = `${countryCode}-${registrantCode}-${year}-${designationCode}`
 
-    // Store in database
-    const { error } = await supabase
-      .from('isrc_registry')
-      .insert({
+      // Store in database
+      const { error } = await supabase
+        .from('isrc_registry')
+        .insert({
+          isrc: isrcCode,
+          track_title: trackTitle,
+          artist_name: artistName,
+          country_code: countryCode,
+          registrant_code: registrantCode,
+          year: year,
+          designation_code: designationCode,
+          generated_at: new Date().toISOString(),
+          used: false
+        })
+
+      if (error) throw error
+
+      res.json({
+        success: true,
         isrc: isrcCode,
-        track_title: trackTitle,
-        artist_name: artistName,
-        country_code: countryCode,
-        registrant_code: registrantCode,
-        year: year,
-        designation_code: designationCode,
-        generated_at: new Date().toISOString(),
-        used: false
+        breakdown: {
+          countryCode,
+          registrantCode,
+          year,
+          designationCode
+        }
       })
-
-    if (error) throw error
-
-    res.json({
-      success: true,
-      isrc: isrcCode,
-      breakdown: {
-        countryCode,
-        registrantCode,
-        year,
-        designationCode
-      }
-    })
+    } catch (dbError) {
+      console.warn('Database error, using fallback ISRC generation:', dbError.message)
+      
+      // Fallback to random designation when database fails
+      const nextDesignation = Math.floor(Math.random() * 99999) + 1;
+      const designationCode = nextDesignation.toString().padStart(5, '0');
+      const isrcCode = `${countryCode}-${registrantCode}-${year}-${designationCode}`;
+      
+      return res.json({
+        success: true,
+        isrc: isrcCode,
+        breakdown: {
+          countryCode,
+          registrantCode,
+          year,
+          designationCode
+        },
+        note: 'Generated with fallback (database unavailable)'
+      });
+    }
 
   } catch (error) {
     console.error('ISRC generation error:', error)
