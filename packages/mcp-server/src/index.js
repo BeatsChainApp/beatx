@@ -79,10 +79,16 @@ let tokenExchange = null;
 let supabaseClient = null;
 
 try {
-  IpfsPinner = require('./services/ipfsPinner');
-  console.log('✅ IPFS Pinner service loaded');
+  // Try Pinata first (more reliable)
+  if (process.env.PINATA_JWT) {
+    IpfsPinner = require('./services/pinataPinner');
+    console.log('✅ Pinata IPFS service loaded');
+  } else {
+    IpfsPinner = require('./services/ipfsPinner');
+    console.log('✅ Web3.Storage IPFS service loaded');
+  }
 } catch (e) {
-  console.warn('❌ IPFS Pinner service failed:', e.message);
+  console.warn('❌ IPFS service failed:', e.message);
 }
 
 try {
@@ -120,7 +126,7 @@ if (IpfsPinner) {
       const payload = req.body;
       if (!payload) return res.status(400).json({ success: false, message: 'body required' });
 
-      const pinner = new IpfsPinner(process.env.WEB3STORAGE_TOKEN || process.env.PINATA_JWT);
+      const pinner = new IpfsPinner(process.env.PINATA_JWT || process.env.WEB3STORAGE_TOKEN);
       const result = await pinner.pinJSON(payload);
       
       // Log success to Supabase
@@ -151,7 +157,7 @@ if (IpfsPinner) {
       
       if (!req.file) return res.status(400).json({ success: false, message: 'file required' });
 
-      const pinner = new IpfsPinner(process.env.WEB3STORAGE_TOKEN || process.env.PINATA_JWT);
+      const pinner = new IpfsPinner(process.env.PINATA_JWT || process.env.WEB3STORAGE_TOKEN);
       const fileResult = await pinner.pinFile(req.file.path, req.file.originalname);
 
       const meta = {
