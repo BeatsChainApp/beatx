@@ -29,6 +29,8 @@ export default function EnhancedBeatUpload() {
     featuredArtists: '', tags: ''
   })
   const [audioFile, setAudioFile] = useState<File | null>(null)
+  const [coverArt, setCoverArt] = useState<File | null>(null)
+  const [coverArtPreview, setCoverArtPreview] = useState<string>('')
   const [isrcCode, setIsrcCode] = useState('')
   const [licenseTerms, setLicenseTerms] = useState('')
   const [professionalServices, setProfessionalServices] = useState<any>(null)
@@ -46,6 +48,18 @@ export default function EnhancedBeatUpload() {
       if (files[0]) setCurrentStep(1)
     }
   })
+
+  const handleCoverArtUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      setCoverArt(file)
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setCoverArtPreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
   const generateLicense = async () => {
     const template = `BEATSCHAIN MUSIC NFT LICENSING AGREEMENT
@@ -102,12 +116,40 @@ Generated: ${new Date().toLocaleString()}`
     if (!audioFile) return
     
     try {
-      // Upload to IPFS with integrated metadata
+      // Upload audio to IPFS
       const audioUrl = await uploadBeatAudio(audioFile, Date.now().toString())
+      
+      // Upload cover art to IPFS if provided
+      let coverArtUrl = ''
+      if (coverArt) {
+        try {
+          const coverFormData = new FormData()
+          coverFormData.append('file', coverArt)
+          coverFormData.append('platform', 'app')
+          coverFormData.append('metadata', JSON.stringify({
+            type: 'cover_art',
+            track_title: formData.title,
+            artist: formData.stageName
+          }))
+          
+          const coverResponse = await fetch(`${process.env.NEXT_PUBLIC_MCP_SERVER_URL}/api/upload`, {
+            method: 'POST',
+            body: coverFormData
+          })
+          
+          if (coverResponse.ok) {
+            const coverResult = await coverResponse.json()
+            coverArtUrl = coverResult.file.url || `https://gateway.pinata.cloud/ipfs/${coverResult.file.cid}`
+          }
+        } catch (coverError) {
+          console.warn('Cover art upload failed:', coverError)
+        }
+      }
       
       const metadata = {
         name: formData.title,
         description: formData.description || `${formData.title} by ${formData.stageName}`,
+        image: coverArtUrl || `https://via.placeholder.com/400x400/1f2937/ffffff?text=${encodeURIComponent(formData.title)}`,
         audio: audioUrl,
         attributes: [
           // Basic Info
@@ -132,6 +174,7 @@ Generated: ${new Date().toLocaleString()}`
           // Technical & Legal
           { trait_type: 'Language', value: formData.language },
           { trait_type: 'Explicit', value: formData.explicit ? 'Yes' : 'No' },
+          { trait_type: 'Cover Art', value: coverArtUrl ? 'Custom' : 'Generated' },
           { trait_type: 'ISRC', value: isrcCode },
           { trait_type: 'Professional Services', value: 'Yes' },
           { trait_type: 'Sponsor Revenue', value: '$2.50' }
@@ -148,6 +191,8 @@ Generated: ${new Date().toLocaleString()}`
           explicit: formData.explicit,
           description: formData.description,
           tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : [],
+          cover_art_url: coverArtUrl,
+          has_custom_artwork: !!coverArtUrl,
           credits: {
             producer: formData.producer,
             mixer: formData.mixer,
@@ -399,6 +444,46 @@ Generated: ${new Date().toLocaleString()}`
                     <option value="ko">Korean</option>
                     <option value="zh">Chinese</option>
                   </select>
+                </div>
+              </div>
+              
+              {/* Cover Art Upload */}
+              <div style={{ marginTop: '1rem', padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem', background: '#f9fafb' }}>
+                <h4 style={{ margin: '0 0 1rem 0', color: '#374151' }}>Cover Art (Optional)</h4>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                  <div style={{ flex: '1' }}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCoverArtUpload}
+                      style={{ 
+                        padding: '0.75rem', 
+                        border: '1px solid #d1d5db', 
+                        borderRadius: '0.375rem',
+                        width: '100%',
+                        background: 'white'
+                      }}
+                    />
+                    <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: '0.5rem 0 0 0' }}>
+                      JPG, PNG recommended. 1400x1400px minimum for best quality.
+                    </p>
+                  </div>
+                  {coverArtPreview && (
+                    <div style={{ 
+                      width: '100px', 
+                      height: '100px', 
+                      border: '2px solid #e5e7eb', 
+                      borderRadius: '0.5rem',
+                      overflow: 'hidden',
+                      background: 'white'
+                    }}>
+                      <img 
+                        src={coverArtPreview} 
+                        alt="Cover art preview" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
