@@ -1,0 +1,102 @@
+{
+  "timestamp": "2025-12-01T18:07:45.939Z",
+  "summary": {
+    "passed": 15,
+    "failed": 0,
+    "warnings": 0,
+    "total": 15,
+    "successRate": "100.0"
+  },
+  "results": [
+    {
+      "test": "Core Library: lib/audio-analysis.ts",
+      "status": "PASS",
+      "message": "Library structure valid",
+      "timestamp": "2025-12-01T18:07:45.935Z"
+    },
+    {
+      "test": "Core Library: lib/isrc-manager.ts",
+      "status": "PASS",
+      "message": "Library structure valid",
+      "timestamp": "2025-12-01T18:07:45.935Z"
+    },
+    {
+      "test": "Core Library: lib/revenue-tracker.ts",
+      "status": "PASS",
+      "message": "Library structure valid",
+      "timestamp": "2025-12-01T18:07:45.935Z"
+    },
+    {
+      "test": "Core Library: lib/n8n-integration.ts",
+      "status": "PASS",
+      "message": "Library structure valid",
+      "timestamp": "2025-12-01T18:07:45.935Z"
+    },
+    {
+      "test": "Component: components/radio/RadioSubmissionWizard.tsx",
+      "status": "PASS",
+      "message": "React component structure valid",
+      "timestamp": "2025-12-01T18:07:45.936Z"
+    },
+    {
+      "test": "Component: components/radio/SplitsheetManager.tsx",
+      "status": "PASS",
+      "message": "React component structure valid",
+      "timestamp": "2025-12-01T18:07:45.936Z"
+    },
+    {
+      "test": "Component: components/producer/RadioSubmissionCard.tsx",
+      "status": "PASS",
+      "message": "React component structure valid",
+      "timestamp": "2025-12-01T18:07:45.936Z"
+    },
+    {
+      "test": "API Route: app/api/radio/submit/route.ts",
+      "status": "PASS",
+      "message": "API route structure valid",
+      "timestamp": "2025-12-01T18:07:45.937Z"
+    },
+    {
+      "test": "API Route: app/api/radio/isrc/generate/route.ts",
+      "status": "PASS",
+      "message": "API route structure valid",
+      "timestamp": "2025-12-01T18:07:45.937Z"
+    },
+    {
+      "test": "Page: app/radio/submit/page.tsx",
+      "status": "PASS",
+      "message": "Page structure valid",
+      "timestamp": "2025-12-01T18:07:45.937Z"
+    },
+    {
+      "test": "Page: app/radio/analytics/page.tsx",
+      "status": "PASS",
+      "message": "Page structure valid",
+      "timestamp": "2025-12-01T18:07:45.937Z"
+    },
+    {
+      "test": "Integration: Producers Page",
+      "status": "PASS",
+      "message": "Radio card integrated",
+      "timestamp": "2025-12-01T18:07:45.938Z"
+    },
+    {
+      "test": "Integration: Campaign Manager",
+      "status": "PASS",
+      "message": "Radio placements integrated",
+      "timestamp": "2025-12-01T18:07:45.938Z"
+    },
+    {
+      "test": "No Breaking Changes: app/producers/page.tsx",
+      "status": "PASS",
+      "message": "File structure intact",
+      "timestamp": "2025-12-01T18:07:45.939Z"
+    },
+    {
+      "test": "No Breaking Changes: components/admin/CampaignManager.tsx",
+      "status": "PASS",
+      "message": "File structure intact",
+      "timestamp": "2025-12-01T18:07:45.939Z"
+    }
+  ]
+}

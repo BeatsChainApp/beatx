@@ -8,6 +8,7 @@ import { Pagination } from '@/components/Pagination'
 import { dataProvider } from '@/adapters/unifiedDataProvider'
 import { Producer } from '@/types/data'
 import { client } from '@/lib/sanity-client'
+import RadioSubmissionCard from '@/components/producer/RadioSubmissionCard'
 
 export default function ProducersPage() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -137,6 +138,11 @@ export default function ProducersPage() {
       )}
 
       <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+
+      {/* Radio Submission Card */}
+      <div style={{ marginBottom: '2rem' }}>
+        <RadioSubmissionCard />
+      </div>
 
       {/* Filters */}
       <div style={{

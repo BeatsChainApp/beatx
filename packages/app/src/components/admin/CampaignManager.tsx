@@ -26,7 +26,8 @@ const APP_PLACEMENTS = {
   'gasless_mint_offer': 'Gasless Minting Upsell',
   'dashboard_sidebar': 'Dashboard Sidebar',
   'mint_success': 'After Successful Mint',
-  'marketplace_listing': 'Marketplace Listing Prompt'
+  'marketplace_listing': 'Marketplace Listing Prompt',
+  ...RADIO_PLACEMENTS
 }
 
 export default function CampaignManager() {

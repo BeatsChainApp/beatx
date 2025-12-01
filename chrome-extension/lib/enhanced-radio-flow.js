@@ -12,8 +12,9 @@ class EnhancedRadioFlow {
             'splitsheets',      // 2 - NEW
             'samro',           // 3 - NEW
             'isrc',            // 4 - Enhanced existing
-            'package',         // 5 - Existing
-            'download'         // 6 - Existing
+            'signatures',      // 5 - NEW - Digital/Manual signatures
+            'package',         // 6 - Existing
+            'download'         // 7 - Existing
         ];
         this.stepData = {};
         this.sponsorPlacements = new Map();
@@ -30,6 +31,9 @@ class EnhancedRadioFlow {
         
         // Add new SAMRO step  
         this.addSAMROStep(app);
+        
+        // Add signature step
+        this.addSignatureStep(app);
         
         // Enhance sponsor placements
         this.enhanceSponsorPlacements(app);
@@ -80,9 +84,10 @@ class EnhancedRadioFlow {
 
         // Enhance generateRadioPackage to include new components
         app.generateRadioPackage = async () => {
-            // Include splitsheet and SAMRO data in package
+            // Include splitsheet, SAMRO, and signature data in package
             await this.prepareSplitsheetData();
             await this.prepareSAMROData();
+            await this.prepareSignatureData();
             
             const result = await this.originalMethods.generateRadioPackage.call(app);
             
@@ -90,6 +95,7 @@ class EnhancedRadioFlow {
                 // Add new components to package
                 result.splitsheets = this.stepData.splitsheets;
                 result.samroDocumentation = this.stepData.samro;
+                result.signatures = this.stepData.signatures;
             }
             
             return result;
@@ -530,9 +536,9 @@ class EnhancedRadioFlow {
                     this.displaySAMROSponsor();
                 }, 1200);
                 
-                // Advance to ISRC step
+                // Advance to signature step
                 setTimeout(() => {
-                    this.showISRCStep();
+                    this.showSignatureStep();
                 }, 4000);
                 
             } else {
@@ -553,7 +559,24 @@ class EnhancedRadioFlow {
             createdBy: 'BeatsChain Chrome Extension Enhanced Radio Flow'
         };
         
-        this.showISRCStep();
+        this.showSignatureStep();
+    }
+
+    addSignatureStep(app) {
+        // Initialize signature manager
+        if (window.SignatureManager) {
+            this.signatureManager = window.SignatureManager.enhanceRadioFlow(this);
+            this.signatureManager.addSignatureStep();
+        }
+    }
+
+    showSignatureStep() {
+        if (this.signatureManager) {
+            this.signatureManager.showSignatureStep();
+        } else {
+            // Fallback to ISRC if signature manager not available
+            this.showISRCStep();
+        }
     }
 
     showISRCStep() {
@@ -584,6 +607,23 @@ class EnhancedRadioFlow {
         if (this.stepData.samro && !this.stepData.samro.skipped) {
             // Store SAMRO package for inclusion
             this.app.radioSAMROPackage = this.stepData.samro.package;
+        }
+    }
+
+    async prepareSignatureData() {
+        // Prepare signature data for package inclusion
+        const signatures = this.app.radioSignatures || JSON.parse(localStorage.getItem('radio-signatures') || '{}');
+        
+        if (signatures && !signatures.skipped) {
+            this.stepData.signatures = {
+                ...signatures,
+                packageComponent: 'signatures',
+                radioSubmission: true,
+                preparedAt: new Date().toISOString()
+            };
+            
+            // Store for package generation
+            this.app.radioSignaturePackage = this.stepData.signatures;
         }
     }
 

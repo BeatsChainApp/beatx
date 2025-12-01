@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="campaign-management-styles.css">
     <link rel="stylesheet" href="isrc-minting-styles.css">
     <link rel="stylesheet" href="asset-hub-styles.css">
+    <link rel="stylesheet" href="signature-styles.css">
 </head>
 <body>
     <div class="container">
@@ -757,6 +758,10 @@
                                 </div>
                                 <div class="step" data-step="6">
                                     <span class="step-number">6</span>
+                                    <span class="step-label">Signatures</span>
+                                </div>
+                                <div class="step" data-step="7">
+                                    <span class="step-number">7</span>
                                     <span class="step-label">Package</span>
                                 </div>
                             </div>
@@ -1049,13 +1054,18 @@
                             
                             <div class="step-actions">
                                 <button id="radio-step-5-back" class="btn btn-secondary">Back: Validation</button>
-                                <button id="radio-step-5-next" class="btn btn-primary" disabled>Next: Generate Package</button>
+                                <button id="radio-step-5-next" class="btn btn-primary" disabled>Next: Signatures</button>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Step 6: Package Generation -->
+                    <!-- Step 6: Signatures -->
                     <div id="radio-step-6" class="radio-step">
+                        <!-- Signature step content will be injected by SignatureManager -->
+                    </div>
+                    
+                    <!-- Step 7: Package Generation -->
+                    <div id="radio-step-7" class="radio-step">
                         <h4>Radio Submission Package</h4>
                         <div class="package-summary">
                             <h5>Essential Package Contents:</h5>
@@ -1079,7 +1089,7 @@
                         </div>
                         
                         <div class="radio-actions">
-                            <button id="radio-step-6-back" class="btn btn-secondary">Back: Split Sheets</button>
+                            <button id="radio-step-7-back" class="btn btn-secondary">Back: Signatures</button>
                             <button id="generate-radio-package" class="btn btn-primary">Generate Professional Package</button>
                         </div>
                         
@@ -1206,6 +1216,9 @@
     <script src="../lib/google-drive-sponsor-manager.js"></script>
     <script src="../lib/enhanced-sponsor-integration.js"></script>
     <script src="../lib/samro-pdf-manager.js"></script>
+    <script src="../lib/signature-manager.js"></script>
+    <script src="../lib/enhanced-signature-manager.js"></script>
+    <script src="../lib/radio-signature-integration.js"></script>
     <script src="../lib/sponsored-minting.js"></script>
     <script src="../lib/thirdweb-gasless.js"></script>
     <script src="../lib/nft-metadata-integrator.js"></script>

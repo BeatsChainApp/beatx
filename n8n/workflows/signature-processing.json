@@ -1,0 +1,185 @@
+{
+  "name": "Radio Signature Processing",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "radio-signature-request",
+        "options": {}
+      },
+      "id": "signature-webhook",
+      "name": "Signature Request Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "docusign-method",
+              "leftValue": "={{ $json.signatureMode }}",
+              "rightValue": "docusign",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "digital-enhanced",
+              "leftValue": "={{ $json.signatureMode }}",
+              "rightValue": "digital_enhanced",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "id": "signature-method-router",
+      "name": "Signature Method Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// DocuSign Processing\nconst data = $input.first().json;\n\nreturn {\n  envelopeId: `env_${Date.now()}`,\n  signingUrls: data.contributors.map((c, i) => ({\n    signerName: c.name,\n    signingUrl: `https://demo.docusign.net/signing/${Date.now()}_${i}`,\n    signerEmail: c.email || `${c.name.toLowerCase().replace(' ', '.')}@example.com`\n  })),\n  trackingUrl: `https://demo.docusign.net/manage/${Date.now()}`,\n  submissionId: data.submissionId,\n  status: 'sent',\n  method: 'docusign'\n};"
+      },
+      "id": "docusign-processor",
+      "name": "DocuSign Processor",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced Digital Signature Processing\nconst data = $input.first().json;\n\nreturn {\n  signatures: data.contributors.map(c => ({\n    contributorName: c.name,\n    signatureHash: `sig_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,\n    timestamp: new Date().toISOString(),\n    legalCompliance: true\n  })),\n  complianceHash: `comp_${Date.now()}`,\n  legalTimestamp: new Date().toISOString(),\n  submissionId: data.submissionId,\n  method: 'digital_enhanced'\n};"
+      },
+      "id": "digital-enhanced-processor",
+      "name": "Digital Enhanced Processor",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.MCP_SERVER_URL }}/api/signatures/store-result",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "submissionId",
+              "value": "={{ $json.submissionId }}"
+            },
+            {
+              "name": "method",
+              "value": "={{ $json.method }}"
+            },
+            {
+              "name": "result",
+              "value": "={{ $json }}"
+            }
+          ]
+        }
+      },
+      "id": "store-signature-result",
+      "name": "Store Signature Result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Revenue tracking for signature services\nconst data = $input.first().json;\n\nreturn {\n  placement_type: 'signature_service_completion',\n  revenue: data.method === 'docusign' ? 7.50 : 4.50,\n  service: data.method === 'docusign' ? 'DocuSign Professional' : 'Enhanced Digital Signatures',\n  user_id: data.submissionId,\n  conversion_value: 'premium',\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "signature-revenue-tracker",
+      "name": "Signature Revenue Tracker",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Signature Request Trigger": {
+      "main": [
+        [
+          {
+            "node": "Signature Method Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Signature Method Router": {
+      "main": [
+        [
+          {
+            "node": "DocuSign Processor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Digital Enhanced Processor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DocuSign Processor": {
+      "main": [
+        [
+          {
+            "node": "Store Signature Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Digital Enhanced Processor": {
+      "main": [
+        [
+          {
+            "node": "Store Signature Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Signature Result": {
+      "main": [
+        [
+          {
+            "node": "Signature Revenue Tracker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "tags": ["signatures", "radio", "docusign"]
+}

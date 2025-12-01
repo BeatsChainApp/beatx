@@ -248,6 +248,9 @@ routes.forEach(({ path: routePath, mount, name }) => {
   safeMount(routeFile, mount);
 });
 
+// Load signatures route
+safeMount('signatures', '/api');
+
 // Load Supabase-dependent routes
 if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
   supabaseRoutes.forEach(({ path: routePath, mount, name }) => {
