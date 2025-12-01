@@ -80,7 +80,12 @@ Generated: ${new Date().toLocaleString()}`
 
   const generateISRC = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_MCP_SERVER_URL}/api/isrc/generate`, {
+      const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL
+      if (!mcpUrl) {
+        throw new Error('MCP server not configured')
+      }
+      
+      const response = await fetch(`${mcpUrl}/api/isrc/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -89,16 +94,29 @@ Generated: ${new Date().toLocaleString()}`
         })
       })
       
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`)
+      }
+      
       const result = await response.json()
-      if (result.success) {
+      if (result.success && result.isrc) {
         setIsrcCode(result.isrc)
         setCurrentStep(3)
         success('ISRC generated successfully!')
+        return
       }
+      
+      throw new Error('Invalid response from server')
     } catch (err) {
-      error('ISRC generation failed, using fallback')
-      setIsrcCode(`ZA-80G-${new Date().getFullYear().toString().slice(-2)}-${String(Date.now()).slice(-5)}`)
+      console.warn('ISRC generation failed:', err)
+      // Generate fallback ISRC
+      const year = new Date().getFullYear().toString().slice(-2)
+      const sequence = String(Date.now()).slice(-5)
+      const fallbackISRC = `ZA-80G-${year}-${sequence}`
+      
+      setIsrcCode(fallbackISRC)
       setCurrentStep(3)
+      error('MCP server unavailable, using fallback ISRC')
     }
   }
 
@@ -143,6 +161,7 @@ Generated: ${new Date().toLocaleString()}`
           }
         } catch (coverError) {
           console.warn('Cover art upload failed:', coverError)
+          error('Cover art upload failed, continuing without custom artwork')
         }
       }
       
@@ -205,25 +224,56 @@ Generated: ${new Date().toLocaleString()}`
         professionalServices
       }
 
+      // Store metadata in localStorage first
+      const beatId = Date.now().toString()
+      const metadataKey = `beat_metadata_${beatId}`
+      localStorage.setItem(metadataKey, JSON.stringify(metadata))
+      
       // Attempt gasless minting with enhanced metadata
       const mintResponse = await fetch('/api/mint-beat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           producer: user?.address,
-          metadata,
+          metadataUri: `local:${beatId}`,
           price: formData.price,
-          isrc: isrcCode,
-          professionalServices: true
+          genre: formData.genre,
+          bpm: formData.bpm,
+          key: formData.key,
+          creditsToUse: 1
         })
       })
 
       if (mintResponse.ok) {
+        const mintResult = await mintResponse.json()
+        console.log('Mint successful:', mintResult)
         setCurrentStep(5)
         success('NFT minted successfully with professional services!')
+      } else {
+        const errorResult = await mintResponse.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('Mint failed:', errorResult)
+        throw new Error(errorResult.error || 'Minting failed')
       }
     } catch (err) {
-      error('Minting failed, beat saved locally')
+      console.error('Minting error:', err)
+      // Beat is still saved locally with all metadata
+      error(`Minting failed: ${err.message}. Beat saved locally with all metadata.`)
+      
+      // Store the complete beat data locally as backup
+      const beatBackup = {
+        id: beatId,
+        title: formData.title,
+        artist: formData.stageName,
+        metadata,
+        audioUrl,
+        coverArtUrl,
+        isrc: isrcCode,
+        createdAt: new Date().toISOString(),
+        status: 'local_only'
+      }
+      
+      const backupKey = `beat_backup_${beatId}`
+      localStorage.setItem(backupKey, JSON.stringify(beatBackup))
     }
   }
 
