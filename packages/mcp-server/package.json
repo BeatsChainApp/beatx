@@ -9,12 +9,14 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.81.1",
     "cors": "^2.8.5",
+    "cross-fetch": "^4.0.0",
     "dotenv": "^16.4.5",
     "ethers": "^5.7.2",
     "express": "^4.21.2",
     "multer": "^1.4.5-lts.1",
     "node-fetch": "^3.3.2",
     "pg": "^8.11.3",
+    "tus-js-client": "^3.1.1",
     "web3.storage": "^4.5.5"
   },
   "engines": {

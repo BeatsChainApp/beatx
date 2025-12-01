@@ -120,8 +120,23 @@ if (IpfsPinner) {
       const payload = req.body;
       if (!payload) return res.status(400).json({ success: false, message: 'body required' });
 
-      const pinner = new IpfsPinner(process.env.WEB3STORAGE_TOKEN || null);
+      const pinner = new IpfsPinner(process.env.WEB3STORAGE_TOKEN || process.env.PINATA_JWT);
       const result = await pinner.pinJSON(payload);
+      
+      // Log success to Supabase
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('success').insert({
+            event: 'ipfs_pin',
+            status: 'completed',
+            metadata: { cid: result.cid || result.hash },
+            details: { payload, result }
+          });
+        } catch (logErr) {
+          console.warn('Success logging failed:', logErr.message);
+        }
+      }
+      
       res.json({ success: true, ipfs: result });
     } catch (err) {
       console.error('pin error', err);
@@ -132,20 +147,50 @@ if (IpfsPinner) {
   app.post('/api/upload', upload.single('file'), async (req, res) => {
     try {
       const metadata = req.body.metadata ? JSON.parse(req.body.metadata) : {};
+      const platform = req.body.platform || 'app'; // extension or app
+      
       if (!req.file) return res.status(400).json({ success: false, message: 'file required' });
 
-      const pinner = new IpfsPinner(process.env.WEB3STORAGE_TOKEN || null);
+      const pinner = new IpfsPinner(process.env.WEB3STORAGE_TOKEN || process.env.PINATA_JWT);
       const fileResult = await pinner.pinFile(req.file.path, req.file.originalname);
 
       const meta = {
         ...metadata,
+        platform,
         originalName: req.file.originalname,
         size: req.file.size,
+        mimeType: req.file.mimetype,
+        uploadedAt: new Date().toISOString(),
         ipfs: fileResult
       };
 
       const metaResult = await pinner.pinJSON(meta);
-      res.json({ success: true, file: fileResult, metadata: metaResult });
+      
+      // Log success to Supabase with platform info
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('success').insert({
+            event: `${platform}_upload`,
+            status: 'completed',
+            metadata: { 
+              filename: req.file.originalname,
+              size: req.file.size,
+              platform,
+              ipfs_cid: fileResult.cid || fileResult.hash
+            },
+            details: { meta, fileResult, metaResult }
+          });
+        } catch (logErr) {
+          console.warn('Success logging failed:', logErr.message);
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        file: fileResult, 
+        metadata: metaResult,
+        platform 
+      });
     } catch (err) {
       console.error('upload error', err);
       res.status(500).json({ success: false, message: err.message });
@@ -231,6 +276,45 @@ specialRoutes.forEach(({ path: routePath, mount, name, requires }) => {
         });
       });
     }
+  }
+});
+
+// Upload pipeline status endpoint
+app.get('/api/upload/status', async (req, res) => {
+  try {
+    const status = {
+      ipfs: {
+        available: !!IpfsPinner,
+        pinata_configured: !!process.env.PINATA_JWT,
+        web3storage_configured: !!process.env.WEB3STORAGE_TOKEN
+      },
+      livepeer: {
+        available: !!process.env.LIVEPEER_API_KEY,
+        tus_client: !!require('tus-js-client')
+      },
+      supabase: {
+        available: !!supabaseClient,
+        url_configured: !!process.env.SUPABASE_URL
+      },
+      platforms: {
+        extension: 'ready',
+        app: 'ready'
+      }
+    };
+    
+    // Test database connection
+    if (supabaseClient) {
+      try {
+        const { data, error } = await supabaseClient.from('success').select('count').limit(1);
+        status.supabase.connection = error ? 'error' : 'connected';
+      } catch (e) {
+        status.supabase.connection = 'error';
+      }
+    }
+    
+    res.json({ success: true, status, timestamp: Date.now() });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

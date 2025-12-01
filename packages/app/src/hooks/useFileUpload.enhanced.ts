@@ -23,6 +23,50 @@ export function useFileUpload() {
     setCurrentOperation('Preparing audio file')
     
     try {
+      // Prefer Livepeer uploads via MCP server (server performs TUS upload)
+      const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL || ''
+      const hasLivepeerViaMCP = !!mcpUrl
+
+      if (hasLivepeerViaMCP) {
+        try {
+          setCurrentOperation('Uploading to Livepeer via MCP')
+          setProgress(5)
+
+          const uploadEndpoint = `${mcpUrl.replace(/\/$/, '')}/api/livepeer/upload-file`
+          const form = new FormData()
+          form.append('file', file)
+          form.append('name', file.name)
+          form.append('metadata', JSON.stringify({ filename: file.name, size: file.size, mime: file.type }))
+
+          const resp = await fetch(uploadEndpoint, {
+            method: 'POST',
+            body: form
+          })
+
+          const json = await resp.json()
+          if (json && json.success && json.asset) {
+            const asset = json.asset
+            const assetId = asset.assetId || asset.asset?.id || asset.id
+
+            // Persist mapping locally as backup
+            try {
+              const lpKey = `beat_livepeer_${beatId}`
+              localStorage.setItem(lpKey, JSON.stringify({ assetId, asset }))
+            } catch (e) {
+              console.warn('Failed to persist livepeer asset mapping to localStorage:', e?.message)
+            }
+
+            setProgress(100)
+            setUploading(false)
+
+            // Return a deterministic identifier that the rest of the app can read and resolve later
+            return `livepeer:${assetId}`
+          }
+        } catch (lpError) {
+          console.warn('Livepeer upload via MCP failed, falling back to IPFS/localStorage:', lpError)
+        }
+      }
+
       // Check if IPFS is configured
       const hasIPFSConfig = process.env.NEXT_PUBLIC_PINATA_JWT && process.env.NEXT_PUBLIC_IPFS_GATEWAY
       

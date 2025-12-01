@@ -11,10 +11,12 @@ const fs = require('fs');
 let tus = null;
 try {
   tus = require('tus-js-client');
-  console.log('✅ TUS client loaded for Livepeer uploads');
+  console.log('✅ TUS client available for Livepeer uploads');
 } catch (e) {
   console.warn('⚠️ TUS client not available:', e.message);
 }
+
+const fetch = require('cross-fetch');
 
 // POST /api/livepeer/upload
 // body: { ipfsCid, name, metadata }

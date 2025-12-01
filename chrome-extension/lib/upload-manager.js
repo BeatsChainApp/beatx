@@ -116,40 +116,33 @@ class UploadManager {
     }
 
     async uploadToIPFS(file, metadata) {
-        // Use Pinata IPFS service instead of local storage
+        // Use MCP server upload endpoint
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('pinataMetadata', JSON.stringify({
-            name: metadata.title || file.name,
-            keyvalues: {
-                artist: metadata.artist,
-                genre: metadata.genre,
-                bpm: metadata.bpm
-            }
+        formData.append('platform', 'extension');
+        formData.append('metadata', JSON.stringify({
+            title: metadata.title || file.name,
+            artist: metadata.artist,
+            genre: metadata.genre,
+            bpm: metadata.bpm,
+            uploadedAt: new Date().toISOString()
         }));
         
-        const response = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+        const mcpUrl = 'https://beatschain-mcp-server-production.up.railway.app';
+        const response = await fetch(`${mcpUrl}/api/upload`, {
             method: 'POST',
-            headers: {
-                'pinata_api_key': process.env.PINATA_API_KEY || 'demo-key',
-                'pinata_secret_api_key': process.env.PINATA_SECRET_KEY || 'demo-secret'
-            },
             body: formData
         });
         
         if (!response.ok) {
-            // Fallback to local processing if IPFS fails
-            console.warn('IPFS upload failed, using local processing');
-            return {
-                cid: 'local-' + Date.now(),
-                url: URL.createObjectURL(file)
-            };
+            throw new Error(`Upload failed: ${response.statusText}`);
         }
         
         const result = await response.json();
         return {
-            cid: result.IpfsHash,
-            url: `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`
+            cid: result.file.cid || result.file.hash,
+            url: result.file.url || `https://gateway.pinata.cloud/ipfs/${result.file.cid}`,
+            metadata: result.metadata
         };
     }
 
@@ -320,7 +313,7 @@ class UploadManager {
 // Enhanced MCP Client for campaign integration
 class MCPClient {
     constructor() {
-        this.baseUrl = process.env.MCP_SERVER_URL || 'http://localhost:3001';
+        this.baseUrl = 'https://beatschain-mcp-server-production.up.railway.app';
     }
 
     async trackRevenue(data) {
