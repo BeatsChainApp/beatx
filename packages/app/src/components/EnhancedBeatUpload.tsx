@@ -18,27 +18,6 @@ const WORKFLOW_STEPS = [
 ]
 
 export default function EnhancedBeatUpload() {
-  // Add CSS for mobile responsiveness
-  const mobileStyles = `
-    @media (max-width: 768px) {
-      .upload-container {
-        padding: 0.5rem !important;
-      }
-      .metadata-form {
-        padding: 1rem !important;
-      }
-      .hero-section {
-        padding: 1.5rem !important;
-        text-align: center !important;
-      }
-      .hero-title {
-        font-size: 2rem !important;
-      }
-      .cover-art-container {
-        flex-direction: column !important;
-      }
-    }
-  `
   const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState({
     title: '', stageName: '', genre: 'hip-hop', bpm: 120, key: 'C', price: 0.05,
@@ -544,7 +523,6 @@ Generated: ${new Date().toLocaleString()}`
               <h4 style={{ margin: '0 0 0.75rem 0', color: '#374151', fontSize: '0.9rem', fontWeight: '600' }}>🎨 Cover Art</h4>
               <div style={{ 
                 display: 'flex', 
-                flexDirection: window.innerWidth < 768 ? 'column' : 'row',
                 gap: '1rem', 
                 alignItems: 'flex-start', 
                 padding: '1rem', 
@@ -730,6 +708,5 @@ Generated: ${new Date().toLocaleString()}`
         </div>
       )}
     </div>
-    </>
   )
 }
