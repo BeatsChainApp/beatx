@@ -238,7 +238,8 @@ const supabaseRoutes = [
 const specialRoutes = [
   { path: './routes/thirdweb', mount: '/api', name: 'Thirdweb', requires: 'ethers' },
   { path: './routes/campaigns', mount: '/api', name: 'Campaigns' },
-  { path: './routes/professional', mount: '/api', name: 'Professional' }
+  { path: './routes/professional', mount: '/api', name: 'Professional' },
+  { path: './routes/enhanced-radio', mount: '/api', name: 'Enhanced Radio' }
 ];
 
 // Load basic routes (use safeMount helper)
@@ -445,6 +446,238 @@ app.use('*', (req, res) => {
     method: req.method,
     hint: 'Visit /api for available endpoints'
   });
+});
+
+// Enhanced Radio Flow endpoints
+app.post('/api/enhanced-radio/splitsheets', async (req, res) => {
+  try {
+    const { contributors, track_metadata, user_id } = req.body;
+    
+    if (!contributors || !Array.isArray(contributors)) {
+      return res.status(400).json({ success: false, message: 'contributors array required' });
+    }
+    
+    // Validate splitsheet data
+    const totalPercentage = contributors.reduce((sum, c) => sum + (c.percentage || 0), 0);
+    if (Math.abs(totalPercentage - 100) > 0.01) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Total percentage must equal 100% (current: ${totalPercentage}%)` 
+      });
+    }
+    
+    // Validate ID numbers for SAMRO compliance
+    const idValidationErrors = [];
+    contributors.forEach((c, i) => {
+      if (!c.name?.trim()) idValidationErrors.push(`Contributor ${i+1}: Name required`);
+      if (!c.idNumber?.trim()) idValidationErrors.push(`Contributor ${i+1}: ID/Passport required`);
+      
+      // Validate ID format (SA ID 13 digits or Passport 6-9 alphanumeric)
+      if (c.idNumber?.trim()) {
+        const saIdPattern = /^[0-9]{13}$/;
+        const passportPattern = /^[A-Z0-9]{6,9}$/;
+        if (!saIdPattern.test(c.idNumber) && !passportPattern.test(c.idNumber)) {
+          idValidationErrors.push(`Contributor ${i+1}: Invalid ID format (SA ID: 13 digits, Passport: 6-9 chars)`);
+        }
+      }
+    });
+    
+    if (idValidationErrors.length > 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `ID validation failed: ${idValidationErrors.join(', ')}` 
+      });
+    }
+    
+    const splitsheetData = {
+      contributors,
+      track_metadata,
+      user_id,
+      total_percentage: totalPercentage,
+      created_at: new Date().toISOString(),
+      flow_type: 'enhanced_radio'
+    };
+    
+    // Store in Supabase if available
+    if (supabaseClient) {
+      try {
+        const { getClient } = require('./services/supabaseClient');
+        const sb = getClient();
+        if (sb) {
+          const { error } = await sb
+            .from('radio_splitsheets')
+            .insert(splitsheetData);
+          if (error) throw error;
+        }
+      } catch (dbError) {
+        console.warn('Splitsheet database storage failed:', dbError);
+      }
+    }
+    
+    res.json({ 
+      success: true, 
+      splitsheet_id: `splitsheet_${Date.now()}`,
+      data: splitsheetData
+    });
+  } catch (error) {
+    console.error('Splitsheet processing error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/enhanced-radio/samro', async (req, res) => {
+  try {
+    const { contributors, track_metadata, samro_member_number, user_id } = req.body;
+    
+    if (!contributors || !track_metadata) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'contributors and track_metadata required' 
+      });
+    }
+    
+    const samroData = {
+      contributors,
+      track_metadata,
+      samro_member_number: samro_member_number || null,
+      user_id,
+      document_generated: true,
+      created_at: new Date().toISOString(),
+      flow_type: 'enhanced_radio'
+    };
+    
+    // Store in Supabase if available
+    if (supabaseClient) {
+      try {
+        const { getClient } = require('./services/supabaseClient');
+        const sb = getClient();
+        if (sb) {
+          const { error } = await sb
+            .from('radio_samro_documents')
+            .insert(samroData);
+          if (error) throw error;
+        }
+      } catch (dbError) {
+        console.warn('SAMRO database storage failed:', dbError);
+      }
+    }
+    
+    res.json({ 
+      success: true, 
+      samro_id: `samro_${Date.now()}`,
+      data: samroData,
+      pdf_generated: true
+    });
+  } catch (error) {
+    console.error('SAMRO processing error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/enhanced-radio/package', async (req, res) => {
+  try {
+    const { 
+      track_metadata, 
+      splitsheets, 
+      samro_data, 
+      isrc_data, 
+      user_id,
+      package_components 
+    } = req.body;
+    
+    if (!track_metadata) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'track_metadata required' 
+      });
+    }
+    
+    const packageData = {
+      track_metadata,
+      splitsheets: splitsheets || null,
+      samro_data: samro_data || null,
+      isrc_data: isrc_data || null,
+      user_id,
+      package_components: package_components || [],
+      has_enhanced_components: !!(splitsheets || samro_data),
+      created_at: new Date().toISOString(),
+      flow_type: 'enhanced_radio',
+      package_id: `radio_package_${Date.now()}`
+    };
+    
+    // Store in Supabase if available
+    if (supabaseClient) {
+      try {
+        const { getClient } = require('./services/supabaseClient');
+        const sb = getClient();
+        if (sb) {
+          const { error } = await sb
+            .from('radio_packages')
+            .insert(packageData);
+          if (error) throw error;
+        }
+      } catch (dbError) {
+        console.warn('Package database storage failed:', dbError);
+      }
+    }
+    
+    res.json({ 
+      success: true, 
+      package_id: packageData.package_id,
+      data: packageData,
+      enhanced: packageData.has_enhanced_components
+    });
+  } catch (error) {
+    console.error('Package processing error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Enhanced revenue tracking for new placements
+app.post('/api/campaigns/track-enhanced-revenue', async (req, res) => {
+  try {
+    const { type, amount, metadata } = req.body;
+    
+    if (!type || !amount) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'type and amount required' 
+      });
+    }
+    
+    const revenueData = {
+      type,
+      amount: parseFloat(amount),
+      metadata: metadata || {},
+      timestamp: new Date().toISOString(),
+      flow_type: metadata?.flow_type || 'enhanced_radio'
+    };
+    
+    // Store in Supabase if available
+    if (supabaseClient) {
+      try {
+        const { getClient } = require('./services/supabaseClient');
+        const sb = getClient();
+        if (sb) {
+          const { error } = await sb
+            .from('enhanced_revenue_tracking')
+            .insert(revenueData);
+          if (error) throw error;
+        }
+      } catch (dbError) {
+        console.warn('Revenue tracking database storage failed:', dbError);
+      }
+    }
+    
+    res.json({ 
+      success: true, 
+      revenue_id: `revenue_${Date.now()}`,
+      data: revenueData
+    });
+  } catch (error) {
+    console.error('Enhanced revenue tracking error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 // Add metadata storage endpoint

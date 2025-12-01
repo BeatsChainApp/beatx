@@ -97,8 +97,9 @@ class SAMROPDFManager {
             contribution: this.mapRoleToContribution(contributor.role),
             percentage: `${contributor.percentage || 0}%`,
             signature: '_________________________',
-            idNumber: '_________________________',
-            samroNumber: contributor.samroNumber || 'Not provided'
+            idNumber: contributor.idNumber || '_________________________',
+            samroNumber: contributor.samroNumber || 'Not provided',
+            idType: this.detectIdType(contributor.idNumber)
         }));
     }
 
@@ -111,6 +112,21 @@ class SAMROPDFManager {
         };
         
         return roleMapping[role] || 'Music and Lyrics';
+    }
+    
+    detectIdType(idNumber) {
+        if (!idNumber) return 'Not provided';
+        
+        const saIdPattern = /^[0-9]{13}$/;
+        const passportPattern = /^[A-Z0-9]{6,9}$/;
+        
+        if (saIdPattern.test(idNumber)) {
+            return 'South African ID';
+        } else if (passportPattern.test(idNumber)) {
+            return 'Passport';
+        } else {
+            return 'Invalid format';
+        }
     }
 
     generateInstructionSheet(userData, contributorsData) {
@@ -227,7 +243,7 @@ Professional Music Industry Tools
             validation.errors.push(`Total percentage must equal 100% (current: ${totalPercentage}%)`);
         }
 
-        // Check required fields
+        // Check required fields including ID numbers
         contributorsData.forEach((contributor, index) => {
             if (!contributor.name || contributor.name.trim().length < 2) {
                 validation.isValid = false;
@@ -237,6 +253,20 @@ Professional Music Industry Tools
             if (!contributor.percentage || contributor.percentage <= 0) {
                 validation.isValid = false;
                 validation.errors.push(`Composer ${index + 1}: Valid percentage is required`);
+            }
+            
+            // ID number validation (critical for SAMRO compliance)
+            if (!contributor.idNumber || contributor.idNumber.trim().length === 0) {
+                validation.isValid = false;
+                validation.errors.push(`Composer ${index + 1}: ID/Passport number is required for SAMRO compliance`);
+            } else {
+                // Validate ID format
+                const saIdPattern = /^[0-9]{13}$/;
+                const passportPattern = /^[A-Z0-9]{6,9}$/;
+                if (!saIdPattern.test(contributor.idNumber) && !passportPattern.test(contributor.idNumber)) {
+                    validation.isValid = false;
+                    validation.errors.push(`Composer ${index + 1}: Invalid ID format (SA ID: 13 digits, Passport: 6-9 alphanumeric)`);
+                }
             }
 
             if (!contributor.samroNumber || contributor.samroNumber.trim().length === 0) {

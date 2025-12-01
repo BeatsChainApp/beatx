@@ -1,0 +1,364 @@
+{
+  "name": "Enhanced Radio Submission Placements",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "enhanced-radio-placement",
+        "options": {}
+      },
+      "id": "webhook-enhanced-radio-trigger",
+      "name": "Enhanced Radio Placement Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "after-splitsheet-entry",
+              "leftValue": "={{ $json.placement_type }}",
+              "rightValue": "after_splitsheet_entry",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "after-samro-generation",
+              "leftValue": "={{ $json.placement_type }}",
+              "rightValue": "after_samro_generation",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "after-isrc-enhanced",
+              "leftValue": "={{ $json.placement_type }}",
+              "rightValue": "after_isrc_enhanced",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "package-component-complete",
+              "leftValue": "={{ $json.placement_type }}",
+              "rightValue": "package_component_complete",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "radio-submission-complete",
+              "leftValue": "={{ $json.placement_type }}",
+              "rightValue": "radio_submission_complete",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "id": "enhanced-placement-router",
+      "name": "Enhanced Placement Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Splitsheet Entry Placement Processing\nconst placementData = $input.first().json;\n\nreturn {\n  placement_type: 'after_splitsheet_entry',\n  revenue: 3.50,\n  service: 'Legal Protection Services',\n  user_id: placementData.user_id,\n  conversion_value: 'high',\n  attribution: {\n    source: 'splitsheet_form',\n    step: 'splitsheet_management',\n    timestamp: new Date().toISOString(),\n    flow_type: 'enhanced_radio'\n  },\n  campaign_data: {\n    title: 'Music Legal Protection Services',\n    description: 'Professional legal review and copyright protection for radio submissions',\n    cta: 'Protect Your Music',\n    target_audience: 'radio_submitters',\n    service_category: 'legal_services'\n  },\n  enhanced_context: {\n    contributors_count: placementData.contributors_count || 1,\n    total_percentage: placementData.total_percentage || 100,\n    has_multiple_contributors: (placementData.contributors_count || 1) > 1\n  }\n};"
+      },
+      "id": "splitsheet-entry-processor",
+      "name": "Splitsheet Entry Processor",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 100]
+    },
+    {
+      "parameters": {
+        "jsCode": "// SAMRO Generation Placement Processing\nconst placementData = $input.first().json;\n\nreturn {\n  placement_type: 'after_samro_generation',\n  revenue: 4.00,\n  service: 'SAMRO Compliance Services',\n  user_id: placementData.user_id,\n  conversion_value: 'very_high',\n  attribution: {\n    source: 'samro_documentation',\n    step: 'samro_compliance',\n    timestamp: new Date().toISOString(),\n    flow_type: 'enhanced_radio'\n  },\n  campaign_data: {\n    title: 'SAMRO Compliance Pro',\n    description: 'Expert SAMRO documentation and compliance services for South African radio',\n    cta: 'Get Expert Help',\n    target_audience: 'sa_radio_submitters',\n    service_category: 'compliance_services'\n  },\n  enhanced_context: {\n    has_samro_member_number: !!placementData.samro_member_number,\n    document_generated: placementData.document_generated || false,\n    compliance_level: placementData.samro_member_number ? 'professional' : 'basic'\n  }\n};"
+      },
+      "id": "samro-generation-processor",
+      "name": "SAMRO Generation Processor",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced ISRC Placement Processing\nconst placementData = $input.first().json;\n\nreturn {\n  placement_type: 'after_isrc_enhanced',\n  revenue: 2.50,\n  service: 'Professional ISRC Services',\n  user_id: placementData.user_id,\n  conversion_value: 'high',\n  attribution: {\n    source: 'isrc_generation',\n    step: 'isrc_enhanced',\n    timestamp: new Date().toISOString(),\n    flow_type: 'enhanced_radio'\n  },\n  campaign_data: {\n    title: 'Professional ISRC Services',\n    description: 'Expert ISRC registration and music industry compliance for radio submissions',\n    cta: 'Upgrade ISRC Services',\n    target_audience: 'professional_radio_submitters',\n    service_category: 'isrc_services'\n  },\n  enhanced_context: {\n    isrc_generated: placementData.isrc_generated || false,\n    isrc_format: placementData.isrc_format || 'ZA-BTC-YY-NNNNN',\n    has_splitsheets: placementData.has_splitsheets || false,\n    has_samro_docs: placementData.has_samro_docs || false\n  }\n};"
+      },
+      "id": "isrc-enhanced-processor",
+      "name": "ISRC Enhanced Processor",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Package Component Complete Processing\nconst placementData = $input.first().json;\n\nreturn {\n  placement_type: 'package_component_complete',\n  revenue: 5.50,\n  service: 'Premium Package Services',\n  user_id: placementData.user_id,\n  conversion_value: 'very_high',\n  attribution: {\n    source: 'package_generation',\n    step: 'component_completion',\n    timestamp: new Date().toISOString(),\n    flow_type: 'enhanced_radio'\n  },\n  campaign_data: {\n    title: 'Premium Radio Package Services',\n    description: 'Enhanced radio submission packages with professional documentation',\n    cta: 'Upgrade Package',\n    target_audience: 'complete_radio_submitters',\n    service_category: 'package_services'\n  },\n  enhanced_context: {\n    package_components: placementData.package_components || [],\n    has_splitsheets: placementData.has_splitsheets || false,\n    has_samro_docs: placementData.has_samro_docs || false,\n    component_count: (placementData.package_components || []).length,\n    completion_level: 'enhanced'\n  }\n};"
+      },
+      "id": "package-component-processor",
+      "name": "Package Component Processor",\n      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Radio Submission Complete Processing\nconst placementData = $input.first().json;\n\nreturn {\n  placement_type: 'radio_submission_complete',\n  revenue: 6.00,\n  service: 'Radio Promotion Services',\n  user_id: placementData.user_id,\n  conversion_value: 'maximum',\n  attribution: {\n    source: 'submission_complete',\n    step: 'radio_success',\n    timestamp: new Date().toISOString(),\n    flow_type: 'enhanced_radio'\n  },\n  campaign_data: {\n    title: 'Radio Promotion & Analytics',\n    description: 'Professional radio promotion campaigns with guaranteed airplay tracking',\n    cta: 'Promote Your Music',\n    target_audience: 'successful_radio_submitters',\n    service_category: 'promotion_services'\n  },\n  enhanced_context: {\n    submission_complete: true,\n    package_size: placementData.package_size || 0,\n    file_count: placementData.file_count || 0,\n    has_enhanced_components: placementData.has_enhanced_components || false,\n    success_level: 'complete_enhanced_submission'\n  }\n};"
+      },
+      "id": "radio-submission-complete-processor",
+      "name": "Radio Submission Complete Processor",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 500]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.MCP_SERVER_URL }}/api/campaigns/track-revenue",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Enhanced-Radio-Flow",
+              "value": "true"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "={{ $json.placement_type }}"
+            },
+            {
+              "name": "amount",
+              "value": "={{ $json.revenue }}"
+            },
+            {
+              "name": "metadata",
+              "value": "={{ { placement_type: $json.placement_type, service: $json.service, user_id: $json.user_id, conversion_value: $json.conversion_value, attribution: $json.attribution, campaign_data: $json.campaign_data, enhanced_context: $json.enhanced_context } }}"
+            }
+          ]
+        }
+      },
+      "id": "track-enhanced-revenue",
+      "name": "Track Enhanced Revenue",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/enhanced_radio_placements",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "placement_type",
+              "value": "={{ $json.placement_type }}"
+            },
+            {
+              "name": "user_id",
+              "value": "={{ $json.user_id }}"
+            },
+            {
+              "name": "revenue",
+              "value": "={{ $json.revenue }}"
+            },
+            {
+              "name": "service",
+              "value": "={{ $json.service }}"
+            },
+            {
+              "name": "conversion_value",
+              "value": "={{ $json.conversion_value }}"
+            },
+            {
+              "name": "attribution",
+              "value": "={{ $json.attribution }}"
+            },
+            {
+              "name": "campaign_data",
+              "value": "={{ $json.campaign_data }}"
+            },
+            {
+              "name": "enhanced_context",
+              "value": "={{ $json.enhanced_context }}"
+            },
+            {
+              "name": "flow_type",
+              "value": "enhanced_radio"
+            },
+            {
+              "name": "created_at",
+              "value": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "id": "log-enhanced-analytics",
+      "name": "Log Enhanced Analytics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Enhanced Radio Placement Trigger": {
+      "main": [
+        [
+          {
+            "node": "Enhanced Placement Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enhanced Placement Router": {
+      "main": [
+        [
+          {
+            "node": "Splitsheet Entry Processor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SAMRO Generation Processor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ISRC Enhanced Processor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Package Component Processor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Radio Submission Complete Processor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Splitsheet Entry Processor": {
+      "main": [
+        [
+          {
+            "node": "Track Enhanced Revenue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SAMRO Generation Processor": {
+      "main": [
+        [
+          {
+            "node": "Track Enhanced Revenue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ISRC Enhanced Processor": {
+      "main": [
+        [
+          {
+            "node": "Track Enhanced Revenue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Package Component Processor": {
+      "main": [
+        [
+          {
+            "node": "Track Enhanced Revenue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Radio Submission Complete Processor": {
+      "main": [
+        [
+          {
+            "node": "Track Enhanced Revenue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Track Enhanced Revenue": {
+      "main": [
+        [
+          {
+            "node": "Log Enhanced Analytics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["enhanced", "radio", "splitsheets", "samro", "placements"],
+  "triggerCount": 1,
+  "updatedAt": "2025-01-14T15:00:00.000Z",
+  "versionId": "2.0"
+}
