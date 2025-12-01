@@ -20,7 +20,13 @@ const WORKFLOW_STEPS = [
 export default function EnhancedBeatUpload() {
   const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState({
-    title: '', stageName: '', genre: 'hip-hop', bpm: 120, key: 'C', price: 0.05
+    title: '', stageName: '', genre: 'hip-hop', bpm: 120, key: 'C', price: 0.05,
+    // Professional metadata fields
+    album: '', releaseYear: new Date().getFullYear(), recordLabel: '',
+    mood: 'neutral', energy: 5, timeSignature: '4/4',
+    language: 'en', explicit: false, description: '',
+    producer: '', mixer: '', copyrightHolder: '',
+    featuredArtists: '', tags: ''
   })
   const [audioFile, setAudioFile] = useState<File | null>(null)
   const [isrcCode, setIsrcCode] = useState('')
@@ -101,15 +107,54 @@ Generated: ${new Date().toLocaleString()}`
       
       const metadata = {
         name: formData.title,
-        description: `${formData.title} by ${formData.stageName}`,
+        description: formData.description || `${formData.title} by ${formData.stageName}`,
         audio: audioUrl,
         attributes: [
+          // Basic Info
+          { trait_type: 'Artist', value: formData.stageName },
+          { trait_type: 'Album', value: formData.album },
+          { trait_type: 'Release Year', value: formData.releaseYear },
+          { trait_type: 'Record Label', value: formData.recordLabel || 'Independent' },
+          
+          // Musical Properties
           { trait_type: 'Genre', value: formData.genre },
           { trait_type: 'BPM', value: formData.bpm },
+          { trait_type: 'Key', value: formData.key },
+          { trait_type: 'Mood', value: formData.mood },
+          { trait_type: 'Energy Level', value: formData.energy },
+          { trait_type: 'Time Signature', value: formData.timeSignature },
+          
+          // Credits
+          { trait_type: 'Producer', value: formData.producer || 'Not specified' },
+          { trait_type: 'Mixer', value: formData.mixer || 'Not specified' },
+          { trait_type: 'Featured Artists', value: formData.featuredArtists || 'None' },
+          
+          // Technical & Legal
+          { trait_type: 'Language', value: formData.language },
+          { trait_type: 'Explicit', value: formData.explicit ? 'Yes' : 'No' },
           { trait_type: 'ISRC', value: isrcCode },
           { trait_type: 'Professional Services', value: 'Yes' },
           { trait_type: 'Sponsor Revenue', value: '$2.50' }
         ],
+        // Extended metadata
+        professional_metadata: {
+          album: formData.album,
+          release_year: formData.releaseYear,
+          record_label: formData.recordLabel,
+          mood: formData.mood,
+          energy: formData.energy,
+          time_signature: formData.timeSignature,
+          language: formData.language,
+          explicit: formData.explicit,
+          description: formData.description,
+          tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : [],
+          credits: {
+            producer: formData.producer,
+            mixer: formData.mixer,
+            featured_artists: formData.featuredArtists ? formData.featuredArtists.split(',').map(artist => artist.trim()) : [],
+            copyright_holder: formData.copyrightHolder || formData.stageName
+          }
+        },
         license: licenseTerms,
         isrc: isrcCode,
         professionalServices
@@ -192,19 +237,170 @@ Generated: ${new Date().toLocaleString()}`
           </div>
           
           {audioFile && (
-            <div style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <input
-                placeholder="Track Title"
-                value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
-                style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
-              />
-              <input
-                placeholder="Artist/Stage Name"
-                value={formData.stageName}
-                onChange={(e) => setFormData({...formData, stageName: e.target.value})}
-                style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
-              />
+            <div style={{ marginTop: '1rem' }}>
+              {/* Basic Info */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <input
+                  placeholder="Track Title *"
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                />
+                <input
+                  placeholder="Artist/Stage Name *"
+                  value={formData.stageName}
+                  onChange={(e) => setFormData({...formData, stageName: e.target.value})}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                />
+              </div>
+              
+              {/* Album & Release Info */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <input
+                  placeholder="Album/EP Name"
+                  value={formData.album}
+                  onChange={(e) => setFormData({...formData, album: e.target.value})}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                />
+                <input
+                  type="number"
+                  placeholder="Release Year"
+                  value={formData.releaseYear}
+                  onChange={(e) => setFormData({...formData, releaseYear: parseInt(e.target.value)})}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                />
+                <input
+                  placeholder="Record Label"
+                  value={formData.recordLabel}
+                  onChange={(e) => setFormData({...formData, recordLabel: e.target.value})}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                />
+              </div>
+              
+              {/* Musical Properties */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <select
+                  value={formData.genre}
+                  onChange={(e) => setFormData({...formData, genre: e.target.value})}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                >
+                  <option value="hip-hop">Hip-Hop</option>
+                  <option value="electronic">Electronic</option>
+                  <option value="pop">Pop</option>
+                  <option value="rock">Rock</option>
+                  <option value="jazz">Jazz</option>
+                  <option value="classical">Classical</option>
+                  <option value="country">Country</option>
+                  <option value="r&b">R&B</option>
+                </select>
+                <input
+                  type="number"
+                  placeholder="BPM"
+                  value={formData.bpm}
+                  onChange={(e) => setFormData({...formData, bpm: parseInt(e.target.value)})}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                />
+                <select
+                  value={formData.key}
+                  onChange={(e) => setFormData({...formData, key: e.target.value})}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                >
+                  <option value="C">C Major</option>
+                  <option value="C#">C# Major</option>
+                  <option value="D">D Major</option>
+                  <option value="D#">D# Major</option>
+                  <option value="E">E Major</option>
+                  <option value="F">F Major</option>
+                  <option value="F#">F# Major</option>
+                  <option value="G">G Major</option>
+                  <option value="G#">G# Major</option>
+                  <option value="A">A Major</option>
+                  <option value="A#">A# Major</option>
+                  <option value="B">B Major</option>
+                  <option value="Cm">C Minor</option>
+                  <option value="Am">A Minor</option>
+                </select>
+                <select
+                  value={formData.mood}
+                  onChange={(e) => setFormData({...formData, mood: e.target.value})}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                >
+                  <option value="neutral">Neutral</option>
+                  <option value="energetic">Energetic</option>
+                  <option value="calm">Calm</option>
+                  <option value="dark">Dark</option>
+                  <option value="uplifting">Uplifting</option>
+                  <option value="melancholic">Melancholic</option>
+                  <option value="aggressive">Aggressive</option>
+                </select>
+              </div>
+              
+              {/* Credits & Collaborations */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <input
+                  placeholder="Producer"
+                  value={formData.producer}
+                  onChange={(e) => setFormData({...formData, producer: e.target.value})}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                />
+                <input
+                  placeholder="Mixer/Engineer"
+                  value={formData.mixer}
+                  onChange={(e) => setFormData({...formData, mixer: e.target.value})}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                />
+                <input
+                  placeholder="Featured Artists"
+                  value={formData.featuredArtists}
+                  onChange={(e) => setFormData({...formData, featuredArtists: e.target.value})}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                />
+              </div>
+              
+              {/* Description & Tags */}
+              <div style={{ marginBottom: '1rem' }}>
+                <textarea
+                  placeholder="Track Description (for marketing and distribution)"
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  rows={3}
+                  style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', resize: 'vertical' }}
+                />
+              </div>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <input
+                  placeholder="Tags (comma-separated)"
+                  value={formData.tags}
+                  onChange={(e) => setFormData({...formData, tags: e.target.value})}
+                  style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input
+                      type="checkbox"
+                      checked={formData.explicit}
+                      onChange={(e) => setFormData({...formData, explicit: e.target.checked})}
+                    />
+                    Explicit Content
+                  </label>
+                  <select
+                    value={formData.language}
+                    onChange={(e) => setFormData({...formData, language: e.target.value})}
+                    style={{ padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                  >
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="de">German</option>
+                    <option value="it">Italian</option>
+                    <option value="pt">Portuguese</option>
+                    <option value="ja">Japanese</option>
+                    <option value="ko">Korean</option>
+                    <option value="zh">Chinese</option>
+                  </select>
+                </div>
+              </div>
             </div>
           )}
         </div>

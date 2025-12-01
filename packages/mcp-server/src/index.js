@@ -161,7 +161,17 @@ if (IpfsPinner) {
         size: req.file.size,
         mimeType: req.file.mimetype,
         uploadedAt: new Date().toISOString(),
-        ipfs: fileResult
+        ipfs: fileResult,
+        
+        // Professional metadata validation
+        professional_complete: !!(metadata.title && metadata.artist && metadata.genre),
+        distribution_ready: !!(metadata.title && metadata.artist && metadata.album && metadata.releaseYear),
+        
+        // Technical metadata
+        technical: {
+          format: req.file.mimetype,
+          size_mb: (req.file.size / (1024 * 1024)).toFixed(2)
+        }
       };
 
       const metaResult = await pinner.pinJSON(meta);
@@ -347,6 +357,77 @@ app.get('/api', (req, res) => {
       ]
     }
   });
+});
+
+// Add metadata validation endpoint
+app.post('/api/metadata/validate', async (req, res) => {
+  try {
+    const { metadata } = req.body;
+    if (!metadata) {
+      return res.status(400).json({ success: false, message: 'metadata required' });
+    }
+    
+    const validation = {
+      required_fields: {
+        title: !!metadata.title,
+        artist: !!metadata.artist,
+        genre: !!metadata.genre
+      },
+      professional_fields: {
+        album: !!metadata.album,
+        release_year: !!metadata.releaseYear,
+        record_label: !!metadata.recordLabel,
+        bpm: !!metadata.bpm,
+        key: !!metadata.key
+      },
+      distribution_ready: !!(
+        metadata.title && metadata.artist && metadata.album && 
+        metadata.releaseYear && metadata.genre
+      ),
+      completeness_score: 0
+    };
+    
+    // Calculate completeness score
+    const allFields = { ...validation.required_fields, ...validation.professional_fields };
+    const completedFields = Object.values(allFields).filter(Boolean).length;
+    const totalFields = Object.keys(allFields).length;
+    validation.completeness_score = Math.round((completedFields / totalFields) * 100);
+    
+    res.json({ success: true, validation });
+  } catch (error) {
+    console.error('Metadata validation error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Add metadata extraction endpoint
+app.post('/api/metadata/extract', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'file required' });
+    }
+    
+    const extractedMetadata = {
+      duration: 0,
+      bitrate: 0,
+      sample_rate: 0,
+      format: req.file.mimetype,
+      size: req.file.size,
+      bpm: null,
+      key: null,
+      mood: null,
+      energy: null
+    };
+    
+    res.json({ 
+      success: true, 
+      extracted: extractedMetadata,
+      message: 'Audio analysis features coming soon' 
+    });
+  } catch (error) {
+    console.error('Metadata extraction error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 // Catch-all 404 handler
