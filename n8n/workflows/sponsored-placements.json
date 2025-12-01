@@ -1,390 +1,55 @@
 {
-  "name": "Sponsored Content Placements Automation",
+  "name": "Sponsored Placements",
   "nodes": [
     {
       "parameters": {
-        "path": "sponsored-placement",
-        "options": {}
+        "httpMethod": "POST",
+        "path": "/webhook/user-interaction"
       },
-      "id": "webhook-placement-trigger",
-      "name": "Sponsored Placement Trigger",
+      "id": "interaction-webhook",
+      "name": "User Interaction",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
       "position": [240, 300]
     },
     {
       "parameters": {
         "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "id": "upload-start",
-              "leftValue": "={{ $json.placement_type }}",
-              "rightValue": "upload_start",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            },
-            {
-              "id": "metadata-complete",
-              "leftValue": "={{ $json.placement_type }}",
-              "rightValue": "metadata_complete",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            },
-            {
-              "id": "license-step",
-              "leftValue": "={{ $json.placement_type }}",
-              "rightValue": "license_step",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            },
-            {
-              "id": "professional-services",
-              "leftValue": "={{ $json.placement_type }}",
-              "rightValue": "professional_services",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            },
-            {
-              "id": "pre-mint",
-              "leftValue": "={{ $json.placement_type }}",
-              "rightValue": "pre_mint",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            },
-            {
-              "id": "success",
-              "leftValue": "={{ $json.placement_type }}",
-              "rightValue": "success",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            }
+          "string": [
+            {"value1": "={{$json.context}}", "operation": "equal", "value2": "extension"}
           ]
-        },
-        "combineOperation": "any"
+        }
       },
-      "id": "placement-router",
-      "name": "Placement Router",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3,
+      "id": "context-filter",
+      "name": "Filter by Context",
+      "type": "n8n-nodes-base.if",
       "position": [460, 300]
     },
     {
       "parameters": {
-        "jsCode": "// Upload Start Placement Processing\nconst placementData = $input.first().json;\n\nreturn {\n  placement_type: 'upload_start',\n  revenue: 2.50,\n  service: 'Professional Upload Service',\n  user_id: placementData.user_id,\n  conversion_value: 'high',\n  attribution: {\n    source: 'upload_form',\n    step: 0,\n    timestamp: new Date().toISOString()\n  },\n  campaign_data: {\n    title: 'Professional Upload Service',\n    description: 'ISRC codes, professional metadata, distribution-ready files',\n    cta: 'Learn More',\n    target_audience: 'new_uploaders'\n  }\n};"
+        "url": "={{$env.MCP_SERVER_URL}}/api/sponsors/get-placement",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {"name": "userId", "value": "={{$json.userId}}"},
+            {"name": "context", "value": "={{$json.context}}"},
+            {"name": "action", "value": "={{$json.action}}"},
+            {"name": "consentGiven", "value": "={{$json.consentGiven}}"}
+          ]
+        }
       },
-      "id": "upload-start-processor",
-      "name": "Upload Start Processor",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [680, 100]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Metadata Complete Placement Processing\nconst placementData = $input.first().json;\n\nreturn {\n  placement_type: 'metadata_complete',\n  revenue: 5.00,\n  service: 'Premium NFT Features',\n  user_id: placementData.user_id,\n  conversion_value: 'very_high',\n  attribution: {\n    source: 'metadata_form',\n    step: 1,\n    timestamp: new Date().toISOString()\n  },\n  campaign_data: {\n    title: 'Premium NFT Features',\n    description: 'Gasless minting, advanced analytics, priority support',\n    cta: 'Upgrade Now',\n    target_audience: 'engaged_users'\n  }\n};"
-      },
-      "id": "metadata-complete-processor",
-      "name": "Metadata Complete Processor",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [680, 200]
-    },
-    {
-      "parameters": {
-        "jsCode": "// License Step Placement Processing\nconst placementData = $input.first().json;\n\nreturn {\n  placement_type: 'license_step',\n  revenue: 3.50,\n  service: 'Legal Protection Service',\n  user_id: placementData.user_id,\n  conversion_value: 'high',\n  attribution: {\n    source: 'license_generation',\n    step: 2,\n    timestamp: new Date().toISOString()\n  },\n  campaign_data: {\n    title: 'Legal Protection Service',\n    description: 'Comprehensive legal coverage and copyright protection',\n    cta: 'Protect Now',\n    target_audience: 'professional_artists'\n  }\n};"
-      },
-      "id": "license-step-processor",
-      "name": "License Step Processor",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "id": "get-sponsor-content",
+      "name": "Get Sponsor Content",
+      "type": "n8n-nodes-base.httpRequest",
       "position": [680, 300]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Professional Services Placement Processing\nconst placementData = $input.first().json;\n\nreturn {\n  placement_type: 'professional_services',\n  revenue: 7.50,\n  service: 'Distribution Network',\n  user_id: placementData.user_id,\n  conversion_value: 'very_high',\n  attribution: {\n    source: 'professional_services',\n    step: 3,\n    timestamp: new Date().toISOString()\n  },\n  campaign_data: {\n    title: 'Distribution Network',\n    description: 'Spotify, Apple Music, and 150+ platforms',\n    cta: 'Distribute',\n    target_audience: 'distribution_ready'\n  }\n};"
-      },
-      "id": "professional-services-processor",
-      "name": "Professional Services Processor",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [680, 400]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Pre-Mint Placement Processing\nconst placementData = $input.first().json;\n\nreturn {\n  placement_type: 'pre_mint',\n  revenue: 4.00,\n  service: 'Analytics & Promotion',\n  user_id: placementData.user_id,\n  conversion_value: 'high',\n  attribution: {\n    source: 'pre_minting',\n    step: 4,\n    timestamp: new Date().toISOString()\n  },\n  campaign_data: {\n    title: 'Analytics & Promotion',\n    description: 'Track performance and boost your music',\n    cta: 'Promote',\n    target_audience: 'ready_to_mint'\n  }\n};"
-      },
-      "id": "pre-mint-processor",
-      "name": "Pre-Mint Processor",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [680, 500]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Success Placement Processing\nconst placementData = $input.first().json;\n\nreturn {\n  placement_type: 'success',\n  revenue: 1.50,\n  service: 'Success Sharing',\n  user_id: placementData.user_id,\n  conversion_value: 'medium',\n  attribution: {\n    source: 'success_page',\n    step: 5,\n    timestamp: new Date().toISOString()\n  },\n  campaign_data: {\n    title: 'Congratulations!',\n    description: 'Share your success and connect with other artists',\n    cta: 'Share Now',\n    target_audience: 'successful_minters'\n  }\n};"
-      },
-      "id": "success-processor",
-      "name": "Success Processor",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [680, 600]
-    },
-    {
-      "parameters": {
-        "url": "={{ $env.MCP_SERVER_URL }}/api/campaigns/track-revenue",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "type",
-              "value": "={{ $json.placement_type }}"
-            },
-            {
-              "name": "amount",
-              "value": "={{ $json.revenue }}"
-            },
-            {
-              "name": "metadata",
-              "value": "={{ { placement_type: $json.placement_type, service: $json.service, user_id: $json.user_id, conversion_value: $json.conversion_value, attribution: $json.attribution, campaign_data: $json.campaign_data } }}"
-            }
-          ]
-        }
-      },
-      "id": "track-placement-revenue",
-      "name": "Track Placement Revenue",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [900, 350]
-    },
-    {
-      "parameters": {
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/sponsored_placements",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "placement_type",
-              "value": "={{ $json.placement_type }}"
-            },
-            {
-              "name": "user_id",
-              "value": "={{ $json.user_id }}"
-            },
-            {
-              "name": "revenue",
-              "value": "={{ $json.revenue }}"
-            },
-            {
-              "name": "service",
-              "value": "={{ $json.service }}"
-            },
-            {
-              "name": "conversion_value",
-              "value": "={{ $json.conversion_value }}"
-            },
-            {
-              "name": "attribution",
-              "value": "={{ $json.attribution }}"
-            },
-            {
-              "name": "campaign_data",
-              "value": "={{ $json.campaign_data }}"
-            },
-            {
-              "name": "created_at",
-              "value": "={{ new Date().toISOString() }}"
-            }
-          ]
-        }
-      },
-      "id": "log-placement-analytics",
-      "name": "Log Placement Analytics",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [1120, 350]
     }
   ],
   "connections": {
-    "Sponsored Placement Trigger": {
-      "main": [
-        [
-          {
-            "node": "Placement Router",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "User Interaction": {
+      "main": [["Filter by Context"]]
     },
-    "Placement Router": {
-      "main": [
-        [
-          {
-            "node": "Upload Start Processor",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Metadata Complete Processor",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "License Step Processor",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Professional Services Processor",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Pre-Mint Processor",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Success Processor",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Upload Start Processor": {
-      "main": [
-        [
-          {
-            "node": "Track Placement Revenue",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Metadata Complete Processor": {
-      "main": [
-        [
-          {
-            "node": "Track Placement Revenue",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "License Step Processor": {
-      "main": [
-        [
-          {
-            "node": "Track Placement Revenue",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Professional Services Processor": {
-      "main": [
-        [
-          {
-            "node": "Track Placement Revenue",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Pre-Mint Processor": {
-      "main": [
-        [
-          {
-            "node": "Track Placement Revenue",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Success Processor": {
-      "main": [
-        [
-          {
-            "node": "Track Placement Revenue",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Track Placement Revenue": {
-      "main": [
-        [
-          {
-            "node": "Log Placement Analytics",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Filter by Context": {
+      "main": [["Get Sponsor Content"]]
     }
   },
-  "pinData": {},
-  "settings": {
-    "executionOrder": "v1"
-  },
-  "staticData": null,
-  "tags": ["sponsored", "placements", "revenue"],
-  "triggerCount": 1,
-  "updatedAt": "2025-01-14T12:00:00.000Z",
-  "versionId": "1"
+  "active": true
 }

@@ -47,7 +47,14 @@ class UnifiedAuthenticationManager {
         }
     }
 
-    determineUserRole(email) {
+    determineUserRole(email, walletAddress = null) {
+        // Use unified RBAC for role determination
+        if (typeof window !== 'undefined' && window.UnifiedRBAC) {
+            const rbac = new window.UnifiedRBAC('extension');
+            return rbac.determineRole(email, walletAddress).toLowerCase();
+        }
+        
+        // Fallback for extension context
         const adminEmails = [
             'admin@beatschain.com',
             'developer@beatschain.com', 
@@ -55,7 +62,9 @@ class UnifiedAuthenticationManager {
             'deannecoole5@gmail.com',
             'sihle.zuma680@gmail.com'
         ];
-        return adminEmails.includes(email) ? 'admin' : 'user';
+        
+        if (adminEmails.includes(email)) return 'admin';
+        return email.includes('@') ? 'artist' : 'user';
     }
 
     async signInWithGoogle(forceAccountSelection = false) {
@@ -385,6 +394,47 @@ class UnifiedAuthenticationManager {
     async getWalletBalance() {
         return '0.0000';
     }
+}
+
+// Load RBAC system
+if (typeof window !== 'undefined') {
+    // Load unified RBAC for extension context
+    window.UnifiedRBAC = class UnifiedRBAC {
+        constructor(context = 'extension') {
+            this.context = context;
+            this.roles = {
+                SUPER_ADMIN: 100,
+                ADMIN: 90,
+                ARTIST: 50,
+                USER: 10
+            };
+            this.permissions = {
+                SUPER_ADMIN: ['*'],
+                ADMIN: ['admin_panel', 'user_management', 'extension_admin'],
+                ARTIST: ['nft_mint', 'radio_submit', 'isrc_generate', 'wallet_manage'],
+                USER: ['nft_mint_limited', 'radio_submit_limited']
+            };
+        }
+        
+        determineRole(email, walletAddress = null) {
+            const adminEmails = [
+                'admin@beatschain.com',
+                'developer@beatschain.com', 
+                'info@unamifoundation.org',
+                'deannecoole5@gmail.com',
+                'sihle.zuma680@gmail.com'
+            ];
+            
+            if (adminEmails.includes(email)) return 'SUPER_ADMIN';
+            if (walletAddress === '0xc84799A904EeB5C57aBBBc40176E7dB8be202C10') return 'ADMIN';
+            return email.includes('@') ? 'ARTIST' : 'USER';
+        }
+        
+        hasPermission(userRole, permission) {
+            const userPermissions = this.permissions[userRole] || [];
+            return userPermissions.includes('*') || userPermissions.includes(permission);
+        }
+    };
 }
 
 // Export for Chrome extension compatibility

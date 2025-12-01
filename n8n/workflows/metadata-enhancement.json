@@ -1,194 +1,58 @@
 {
-  "name": "Metadata Enhancement Pipeline",
+  "name": "Metadata Enhancement",
   "nodes": [
     {
       "parameters": {
-        "path": "metadata-enhance",
-        "options": {}
+        "httpMethod": "POST",
+        "path": "/webhook/audio-uploaded"
       },
-      "id": "webhook-metadata-trigger",
-      "name": "Metadata Enhancement Trigger",
+      "id": "audio-webhook",
+      "name": "Audio Uploaded",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
       "position": [240, 300]
     },
     {
       "parameters": {
-        "url": "={{ $env.MCP_SERVER_URL }}/api/metadata/extract",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
+        "url": "={{$env.MCP_SERVER_URL}}/api/ai/analyze-audio",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
-            {
-              "name": "file_path",
-              "value": "={{ $json.file_path }}"
-            },
-            {
-              "name": "metadata",
-              "value": "={{ $json.metadata }}"
-            }
+            {"name": "audioUrl", "value": "={{$json.audioUrl}}"},
+            {"name": "filename", "value": "={{$json.filename}}"}
           ]
         }
       },
-      "id": "extract-audio-metadata",
-      "name": "Extract Audio Metadata",
+      "id": "analyze-audio",
+      "name": "AI Audio Analysis",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
       "position": [460, 300]
     },
     {
       "parameters": {
-        "jsCode": "// AI-powered metadata enhancement\nconst inputData = $input.first().json;\nconst extractedMetadata = inputData.extracted || {};\nconst userMetadata = inputData.metadata || {};\n\n// Enhance with AI analysis\nconst enhancedMetadata = {\n  ...userMetadata,\n  ...extractedMetadata,\n  \n  // AI-enhanced fields\n  mood: extractedMetadata.mood || inferMoodFromGenre(userMetadata.genre),\n  energy: extractedMetadata.energy || inferEnergyFromBPM(userMetadata.bpm),\n  danceability: calculateDanceability(userMetadata.bpm, userMetadata.genre),\n  valence: inferValenceFromMood(extractedMetadata.mood || userMetadata.mood),\n  \n  // Professional enhancements\n  distribution_ready: checkDistributionReadiness(userMetadata),\n  professional_complete: checkProfessionalCompleteness(userMetadata),\n  \n  // Timestamp\n  enhanced_at: new Date().toISOString()\n};\n\nfunction inferMoodFromGenre(genre) {\n  const moodMap = {\n    'electronic': 'energetic',\n    'hip-hop': 'confident',\n    'jazz': 'sophisticated',\n    'rock': 'powerful',\n    'pop': 'uplifting',\n    'classical': 'elegant'\n  };\n  return moodMap[genre?.toLowerCase()] || 'neutral';\n}\n\nfunction inferEnergyFromBPM(bpm) {\n  if (!bpm) return 5;\n  if (bpm < 80) return 2;\n  if (bpm < 100) return 4;\n  if (bpm < 120) return 6;\n  if (bpm < 140) return 8;\n  return 9;\n}\n\nfunction calculateDanceability(bpm, genre) {\n  const danceGenres = ['electronic', 'house', 'techno', 'disco', 'funk'];\n  const isDanceGenre = danceGenres.includes(genre?.toLowerCase());\n  const bpmFactor = bpm ? Math.min(bpm / 128, 1) : 0.5;\n  return isDanceGenre ? Math.min(bpmFactor + 0.3, 1) : bpmFactor;\n}\n\nfunction inferValenceFromMood(mood) {\n  const valenceMap = {\n    'uplifting': 0.8,\n    'energetic': 0.7,\n    'happy': 0.9,\n    'neutral': 0.5,\n    'melancholic': 0.2,\n    'dark': 0.1,\n    'aggressive': 0.3\n  };\n  return valenceMap[mood?.toLowerCase()] || 0.5;\n}\n\nfunction checkDistributionReadiness(metadata) {\n  const required = ['title', 'artist', 'album', 'releaseYear', 'genre'];\n  return required.every(field => metadata[field]);\n}\n\nfunction checkProfessionalCompleteness(metadata) {\n  const professional = ['title', 'artist', 'genre', 'bpm', 'producer', 'recordLabel'];\n  return professional.filter(field => metadata[field]).length >= 4;\n}\n\nreturn enhancedMetadata;"
-      },
-      "id": "ai-metadata-enhancement",
-      "name": "AI Metadata Enhancement",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [680, 300]
-    },
-    {
-      "parameters": {
-        "url": "={{ $env.MCP_SERVER_URL }}/api/metadata/store",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
+        "url": "={{$env.MCP_SERVER_URL}}/api/metadata/enhance",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
-            {
-              "name": "beat_id",
-              "value": "={{ $json.beat_id }}"
-            },
-            {
-              "name": "enhanced_metadata",
-              "value": "={{ $json }}"
-            }
+            {"name": "audioId", "value": "={{$json.audioId}}"},
+            {"name": "analysis", "value": "={{$json.analysis}}"},
+            {"name": "genre", "value": "={{$json.detectedGenre}}"},
+            {"name": "bpm", "value": "={{$json.bpm}}"}
           ]
         }
       },
-      "id": "store-enhanced-metadata",
-      "name": "Store Enhanced Metadata",
+      "id": "enhance-metadata",
+      "name": "Enhance Metadata",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [900, 300]
-    },
-    {
-      "parameters": {
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/beats",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            },
-            {
-              "name": "Prefer",
-              "value": "return=minimal"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "mood",
-              "value": "={{ $json.mood }}"
-            },
-            {
-              "name": "energy_level",
-              "value": "={{ $json.energy }}"
-            },
-            {
-              "name": "professional_complete",
-              "value": "={{ $json.professional_complete }}"
-            },
-            {
-              "name": "distribution_ready",
-              "value": "={{ $json.distribution_ready }}"
-            }
-          ]
-        },
-        "method": "PATCH"
-      },
-      "id": "update-supabase-metadata",
-      "name": "Update Supabase Metadata",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [1120, 300]
+      "position": [680, 300]
     }
   ],
   "connections": {
-    "Metadata Enhancement Trigger": {
-      "main": [
-        [
-          {
-            "node": "Extract Audio Metadata",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Audio Uploaded": {
+      "main": [["AI Audio Analysis"]]
     },
-    "Extract Audio Metadata": {
-      "main": [
-        [
-          {
-            "node": "AI Metadata Enhancement",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "AI Metadata Enhancement": {
-      "main": [
-        [
-          {
-            "node": "Store Enhanced Metadata",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Store Enhanced Metadata": {
-      "main": [
-        [
-          {
-            "node": "Update Supabase Metadata",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "AI Audio Analysis": {
+      "main": [["Enhance Metadata"]]
     }
   },
-  "pinData": {},
-  "settings": {
-    "executionOrder": "v1"
-  },
-  "staticData": null,
-  "tags": ["metadata", "enhancement", "ai"],
-  "triggerCount": 1,
-  "updatedAt": "2025-01-14T12:00:00.000Z",
-  "versionId": "1"
+  "active": true
 }

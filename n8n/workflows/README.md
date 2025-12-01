@@ -1,27 +1,39 @@
 # N8N Workflows for BeatsChain Automation
 
-## Planned Workflows
+## Active Workflows
 
-### 1. SAMRO PDF Processing
-- Trigger: New radio submission
-- Action: Auto-fill SAMRO PDF with user data
-- Output: Completed PDF ready for submission
+### 1. User Onboarding Pipeline ✅
+- **File**: `user-onboarding.json`
+- **Trigger**: User signup webhook
+- **Action**: Context-aware role assignment and wallet generation
+- **Status**: Active
 
-### 2. Sponsor Content Management
-- Trigger: New sponsor campaign
-- Action: Update extension sponsor database
-- Output: Live sponsor content in extension
+### 2. Campaign Automation ✅
+- **File**: `campaign-automation.json`
+- **Trigger**: New sponsor campaign creation
+- **Action**: Distribute content across app and extension
+- **Status**: Active
 
-### 3. MCP Server Health Monitoring
-- Trigger: Scheduled (every 5 minutes)
-- Action: Check MCP server health
-- Output: Alert if server down
+### 3. Distribution Pipeline ✅
+- **File**: `distribution-pipeline.json`
+- **Trigger**: Content publication
+- **Action**: Multi-platform content distribution
+- **Status**: Active
 
-### 4. Extension Analytics
-- Trigger: User interaction events
-- Action: Aggregate usage statistics
-- Output: Analytics dashboard updates
+### 4. Metadata Enhancement ✅
+- **File**: `metadata-enhancement.json`
+- **Trigger**: Audio file upload
+- **Action**: AI-powered metadata generation
+- **Status**: Active
 
-## Future Implementation
-These workflows will be implemented when N8N integration is ready.
-Currently serving as placeholders for future automation.
+### 5. SAMRO Processing ✅
+- **File**: `samro-processing.json`
+- **Trigger**: Radio submission
+- **Action**: Auto-generate SAMRO compliance documents
+- **Status**: Active
+
+### 6. Sponsored Placements ✅
+- **File**: `sponsored-placements.json`
+- **Trigger**: User interaction events
+- **Action**: Context-aware sponsor content delivery
+- **Status**: Active

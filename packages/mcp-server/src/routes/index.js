@@ -12,5 +12,8 @@ module.exports = (req, res) => {
     return res.status(500).json({ ok: false, message: 'Failed to enumerate routes' });
   }
 
+  // Add onboarding sponsors route
+  entries.push('/api/onboarding');
+
   res.json({ ok: true, active: entries });
 };

@@ -433,6 +433,13 @@ class BeatsChainApp {
                 this.setupAuthContextCollapse();
             }, 200);
             
+            // Initialize Onboarding Manager
+            if (window.OnboardingManager) {
+                this.onboardingManager = new OnboardingManager();
+                await this.onboardingManager.initialize();
+                console.log('✅ Onboarding Manager initialized');
+            }
+            
             this.isInitialized = true;
             console.log('BeatsChain initialized successfully');
         } catch (error) {

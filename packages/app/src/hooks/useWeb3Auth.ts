@@ -5,7 +5,8 @@ import { useSIWE } from '@/context/SIWEContext'
 
 // Super admin wallets for role-based access
 const SUPER_ADMIN_WALLETS = [
-  '0x1234567890123456789012345678901234567890', // Replace with actual wallet
+  '0xc84799A904EeB5C57aBBBc40176E7dB8be202C10', // Admin wallet from extension
+  '0x1234567890123456789012345678901234567890', // Backup admin wallet
 ]
 
 interface Web3User {

@@ -741,6 +741,15 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Load RBAC routes
+try {
+  const rbacRoutes = require('./routes/rbac');
+  app.use('/api/rbac', rbacRoutes);
+  console.log('✅ RBAC routes loaded');
+} catch (e) {
+  console.log('ℹ️ RBAC routes not found');
+}
+
 // Load additional routes if they exist
 try {
   const indexRoute = require('./routes/index');

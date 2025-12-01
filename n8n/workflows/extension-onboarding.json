@@ -1,0 +1,199 @@
+{
+  "name": "Extension Onboarding with Sponsors",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/webhook/extension-onboarding",
+        "responseMode": "responseNode"
+      },
+      "id": "onboarding-webhook",
+      "name": "Extension Onboarding Start",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.context}}",
+              "operation": "equal",
+              "value2": "extension"
+            }
+          ]
+        }
+      },
+      "id": "context-filter",
+      "name": "Filter Extension Context",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/sponsors/onboarding",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-client-context",
+              "value": "extension"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "step",
+              "value": "={{$json.step}}"
+            },
+            {
+              "name": "userRole",
+              "value": "={{$json.role || 'artist'}}"
+            },
+            {
+              "name": "consentGiven",
+              "value": "={{$json.consentGiven}}"
+            }
+          ]
+        }
+      },
+      "id": "get-onboarding-sponsors",
+      "name": "Get Onboarding Sponsors",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.step}}",
+              "operation": "equal",
+              "value2": "role_selection"
+            }
+          ]
+        }
+      },
+      "id": "role-check",
+      "name": "Check Role Selection",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/sponsors/role-specific",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "role",
+              "value": "={{$json.role}}"
+            },
+            {
+              "name": "context",
+              "value": "extension"
+            }
+          ]
+        }
+      },
+      "id": "get-role-sponsors",
+      "name": "Get Role-Specific Sponsors",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/analytics/onboarding",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "userId",
+              "value": "={{$json.userId}}"
+            },
+            {
+              "name": "step",
+              "value": "={{$json.step}}"
+            },
+            {
+              "name": "context",
+              "value": "extension"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{new Date().toISOString()}}"
+            }
+          ]
+        }
+      },
+      "id": "track-onboarding",
+      "name": "Track Onboarding Progress",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1120, 400]
+    }
+  ],
+  "connections": {
+    "Extension Onboarding Start": {
+      "main": [
+        [
+          {
+            "node": "Filter Extension Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Extension Context": {
+      "main": [
+        [
+          {
+            "node": "Get Onboarding Sponsors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Onboarding Sponsors": {
+      "main": [
+        [
+          {
+            "node": "Check Role Selection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Role Selection": {
+      "main": [
+        [
+          {
+            "node": "Get Role-Specific Sponsors",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Track Onboarding Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "1"
+}

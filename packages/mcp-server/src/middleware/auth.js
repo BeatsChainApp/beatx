@@ -1,4 +1,5 @@
 const realTimeSync = require('../services/realTimeSync');
+const { UnifiedRBAC } = require('../../shared/auth/unified-rbac');
 
 const verifySession = async (req, res, next) => {
   try {
@@ -11,7 +12,7 @@ const verifySession = async (req, res, next) => {
       });
     }
 
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    const token = authHeader.substring(7);
     const validation = await realTimeSync.validateSession(token);
     
     if (!validation.valid) {
@@ -21,8 +22,16 @@ const verifySession = async (req, res, next) => {
       });
     }
 
+    // Determine context and role
+    const context = req.headers['x-client-context'] || 'app';
+    const rbac = new UnifiedRBAC(context);
+    const role = rbac.determineRole(validation.email, validation.userAddress);
+
     req.userAddress = validation.userAddress;
+    req.userEmail = validation.email;
+    req.userRole = role;
     req.sessionToken = token;
+    req.rbac = rbac;
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);
@@ -31,6 +40,20 @@ const verifySession = async (req, res, next) => {
       error: 'Authentication failed' 
     });
   }
+};
+
+const requirePermission = (permission) => {
+  return (req, res, next) => {
+    if (!req.rbac || !req.userRole) {
+      return res.status(401).json({ success: false, error: 'Authentication required' });
+    }
+    
+    if (!req.rbac.hasPermission(req.userRole, permission)) {
+      return res.status(403).json({ success: false, error: 'Insufficient permissions' });
+    }
+    
+    next();
+  };
 };
 
 const optionalAuth = async (req, res, next) => {
@@ -57,5 +80,6 @@ const optionalAuth = async (req, res, next) => {
 module.exports = {
   verifySession,
   optionalAuth,
-  authenticateUser: verifySession // Alias for compatibility
+  requirePermission,
+  authenticateUser: verifySession
 };

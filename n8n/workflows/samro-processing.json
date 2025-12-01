@@ -1,34 +1,59 @@
 {
-  "name": "BeatsChain SAMRO Processing",
+  "name": "SAMRO Processing",
   "nodes": [
     {
-      "parameters": {},
-      "name": "Webhook",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/webhook/radio-submission"
+      },
+      "id": "radio-webhook",
+      "name": "Radio Submission",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
       "position": [240, 300]
     },
     {
       "parameters": {
-        "functionCode": "// Process SAMRO PDF data\nreturn items;"
+        "url": "={{$env.MCP_SERVER_URL}}/api/samro/generate-pdf",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {"name": "trackTitle", "value": "={{$json.title}}"},
+            {"name": "artistName", "value": "={{$json.artist}}"},
+            {"name": "isrc", "value": "={{$json.isrc}}"},
+            {"name": "contributors", "value": "={{$json.contributors}}"}
+          ]
+        }
       },
-      "name": "Process SAMRO Data",
-      "type": "n8n-nodes-base.function",
-      "typeVersion": 1,
+      "id": "generate-samro-pdf",
+      "name": "Generate SAMRO PDF",
+      "type": "n8n-nodes-base.httpRequest",
       "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/radio/package",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {"name": "submissionId", "value": "={{$json.submissionId}}"},
+            {"name": "samroPdf", "value": "={{$json.pdfUrl}}"},
+            {"name": "status", "value": "ready"}
+          ]
+        }
+      },
+      "id": "complete-package",
+      "name": "Complete Radio Package",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [680, 300]
     }
   ],
   "connections": {
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "Process SAMRO Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Radio Submission": {
+      "main": [["Generate SAMRO PDF"]]
+    },
+    "Generate SAMRO PDF": {
+      "main": [["Complete Radio Package"]]
     }
-  }
+  },
+  "active": true
 }

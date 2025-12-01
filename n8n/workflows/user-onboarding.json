@@ -1,0 +1,141 @@
+{
+  "name": "User Onboarding Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/webhook/user-signup",
+        "responseMode": "responseNode"
+      },
+      "id": "webhook-signup",
+      "name": "User Signup Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.context}}",
+              "operation": "equal",
+              "value2": "app"
+            }
+          ]
+        }
+      },
+      "id": "context-check",
+      "name": "Check Context",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/users",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-client-context",
+              "value": "={{$json.context}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "={{$json.email}}"
+            },
+            {
+              "name": "role",
+              "value": "={{$json.context === 'app' ? 'PRODUCER' : 'ARTIST'}}"
+            },
+            {
+              "name": "wallet_address",
+              "value": "={{$json.walletAddress}}"
+            }
+          ]
+        }
+      },
+      "id": "create-user",
+      "name": "Create User Profile",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/wallets/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$json.sessionToken}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "userId",
+              "value": "={{$json.userId}}"
+            },
+            {
+              "name": "role",
+              "value": "={{$json.role}}"
+            }
+          ]
+        }
+      },
+      "id": "generate-wallet",
+      "name": "Generate Wallet",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "User Signup Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Context": {
+      "main": [
+        [
+          {
+            "node": "Create User Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create User Profile": {
+      "main": [
+        [
+          {
+            "node": "Generate Wallet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "1"
+}
