@@ -1,14 +1,11 @@
-[variables]
-NODE_VERSION = "20"
-
 [phases.setup]
-nixPkgs = ["nodejs-20_x", "npm-9_x"]
+nixPkgs = ['nodejs_20', 'npm']
 
 [phases.install]
-cmds = ["npm ci --legacy-peer-deps"]
+cmds = ['cd packages/mcp-server && npm install']
 
 [phases.build]
-cmds = ["echo 'Build complete'"]
+cmds = ['echo "No build step required for MCP server"']
 
 [start]
-cmd = "npm start"
+cmd = 'cd packages/mcp-server && npm start'
