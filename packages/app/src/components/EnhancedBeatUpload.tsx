@@ -18,6 +18,27 @@ const WORKFLOW_STEPS = [
 ]
 
 export default function EnhancedBeatUpload() {
+  // Add CSS for mobile responsiveness
+  const mobileStyles = `
+    @media (max-width: 768px) {
+      .upload-container {
+        padding: 0.5rem !important;
+      }
+      .metadata-form {
+        padding: 1rem !important;
+      }
+      .hero-section {
+        padding: 1.5rem !important;
+        text-align: center !important;
+      }
+      .hero-title {
+        font-size: 2rem !important;
+      }
+      .cover-art-container {
+        flex-direction: column !important;
+      }
+    }
+  `
   const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState({
     title: '', stageName: '', genre: 'hip-hop', bpm: 120, key: 'C', price: 0.05,
@@ -45,7 +66,7 @@ export default function EnhancedBeatUpload() {
     maxFiles: 1,
     onDrop: (files) => {
       setAudioFile(files[0])
-      if (files[0]) setCurrentStep(1)
+      // Don't auto-advance to next step
     }
   })
 
@@ -228,7 +249,35 @@ Generated: ${new Date().toLocaleString()}`
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1rem' }}>
+      {/* Hero Section */}
+      <div style={{ 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+        borderRadius: '1rem', 
+        padding: '2rem', 
+        marginBottom: '2rem',
+        color: 'white',
+        textAlign: 'center'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+          <a 
+            href="/dashboard" 
+            style={{ 
+              color: 'white', 
+              textDecoration: 'none', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem',
+              fontSize: '0.9rem'
+            }}
+          >
+            ← Back to Dashboard
+          </a>
+          <span style={{ fontSize: '0.9rem', opacity: 0.8 }}>Professional Upload</span>
+        </div>
+        <h1 style={{ fontSize: '2.5rem', margin: '0 0 0.5rem 0', fontWeight: 'bold' }}>🎵 Upload Your Beat</h1>
+        <p style={{ fontSize: '1.1rem', opacity: 0.9, margin: 0 }}>Create professional, distribution-ready tracks with comprehensive metadata</p>
+      </div>
       {/* Workflow Progress */}
       <div style={{ marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
@@ -294,7 +343,12 @@ Generated: ${new Date().toLocaleString()}`
             {/* Basic Info */}
             <div style={{ marginBottom: '1.5rem' }}>
               <h4 style={{ margin: '0 0 0.75rem 0', color: '#374151', fontSize: '0.9rem', fontWeight: '600' }}>Basic Information</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+                gap: '1rem', 
+                marginBottom: '1rem' 
+              }}>
                 <input
                   placeholder="Track Title *"
                   value={formData.title}
@@ -315,7 +369,11 @@ Generated: ${new Date().toLocaleString()}`
             {/* Album & Release Info */}
             <div style={{ marginBottom: '1.5rem' }}>
               <h4 style={{ margin: '0 0 0.75rem 0', color: '#374151', fontSize: '0.9rem', fontWeight: '600' }}>Release Information</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                gap: '1rem' 
+              }}>
                 <input
                   placeholder="Album/EP Name"
                   value={formData.album}
@@ -341,7 +399,11 @@ Generated: ${new Date().toLocaleString()}`
             {/* Musical Properties */}
             <div style={{ marginBottom: '1.5rem' }}>
               <h4 style={{ margin: '0 0 0.75rem 0', color: '#374151', fontSize: '0.9rem', fontWeight: '600' }}>Musical Properties</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
+                gap: '1rem' 
+              }}>
                 <select
                   value={formData.genre}
                   onChange={(e) => setFormData({...formData, genre: e.target.value})}
@@ -402,7 +464,11 @@ Generated: ${new Date().toLocaleString()}`
             {/* Credits & Collaborations */}
             <div style={{ marginBottom: '1.5rem' }}>
               <h4 style={{ margin: '0 0 0.75rem 0', color: '#374151', fontSize: '0.9rem', fontWeight: '600' }}>Credits & Collaborations</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                gap: '1rem' 
+              }}>
                 <input
                   placeholder="Producer"
                   value={formData.producer}
@@ -434,7 +500,11 @@ Generated: ${new Date().toLocaleString()}`
                 rows={3}
                 style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', resize: 'vertical', background: 'white', marginBottom: '1rem' }}
               />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+                gap: '1rem' 
+              }}>
                 <input
                   placeholder="Tags (comma-separated)"
                   value={formData.tags}
@@ -472,7 +542,16 @@ Generated: ${new Date().toLocaleString()}`
             {/* Cover Art Upload */}
             <div style={{ marginBottom: '1rem' }}>
               <h4 style={{ margin: '0 0 0.75rem 0', color: '#374151', fontSize: '0.9rem', fontWeight: '600' }}>🎨 Cover Art</h4>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', padding: '1rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem', background: 'white' }}>
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+                gap: '1rem', 
+                alignItems: 'flex-start', 
+                padding: '1rem', 
+                border: '1px solid #e5e7eb', 
+                borderRadius: '0.5rem', 
+                background: 'white' 
+              }}>
                 <div style={{ flex: '1' }}>
                   <input
                     type="file"
@@ -651,5 +730,6 @@ Generated: ${new Date().toLocaleString()}`
         </div>
       )}
     </div>
+    </>
   )
 }
