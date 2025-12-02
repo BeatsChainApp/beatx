@@ -19,6 +19,14 @@ interface Campaign {
   }
 }
 
+const RADIO_PLACEMENTS = {
+  'radio_submission_start': 'Radio Submission Entry',
+  'radio_metadata_complete': 'After Metadata Completion',
+  'radio_splitsheet_prompt': 'Split Sheet Creation',
+  'radio_samro_upsell': 'SAMRO Documentation',
+  'radio_package_complete': 'Package Completion'
+}
+
 const APP_PLACEMENTS = {
   'upload_start': 'Upload Page Entry',
   'file_validation': 'After File Validation',

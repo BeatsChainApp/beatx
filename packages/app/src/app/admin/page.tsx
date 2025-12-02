@@ -6,20 +6,29 @@ import { useRouter } from 'next/navigation'
 import CampaignManager from '@/components/admin/CampaignManager'
 
 export default function AdminDashboard() {
-  const { user, isAuthenticated } = useUnifiedAuth()
+  const { user, isAuthenticated, loading } = useUnifiedAuth()
   const router = useRouter()
   const [analytics, setAnalytics] = useState<any>(null)
   const [campaigns, setCampaigns] = useState<any[]>([])
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    if (!isAuthenticated || (user?.role !== 'admin' && user?.role !== 'super_admin')) {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+    
+    if (!loading && (!isAuthenticated || (user?.role !== 'admin' && user?.role !== 'super_admin'))) {
       router.push('/dashboard')
       return
     }
     
-    loadAnalytics()
-    loadCampaigns()
-  }, [user, isAuthenticated])
+    if (isAuthenticated && (user?.role === 'admin' || user?.role === 'super_admin')) {
+      loadAnalytics()
+      loadCampaigns()
+    }
+  }, [user, isAuthenticated, loading, mounted])
 
   const loadAnalytics = async () => {
     try {
@@ -41,8 +50,12 @@ export default function AdminDashboard() {
     }
   }
 
+  if (!mounted || loading) {
+    return <div className="p-8">Loading...</div>
+  }
+
   if (!isAuthenticated || (user?.role !== 'admin' && user?.role !== 'super_admin')) {
-    return <div>Access denied</div>
+    return <div className="p-8">Access denied</div>
   }
 
   return (
