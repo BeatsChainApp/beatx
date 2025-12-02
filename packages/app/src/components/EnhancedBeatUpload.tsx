@@ -6,6 +6,7 @@ import { useFileUpload } from '@/hooks/useFileUpload.enhanced'
 import { useWeb3Auth } from '@/hooks/useWeb3Auth'
 import { useBeatNFT } from '@/hooks/useBeatNFT.enhanced'
 import { useEnhancedToast } from '@/hooks/useToast.enhanced'
+import { sanitizeHtml, sanitizeFileName, validateUrl, validateFormData } from '@/lib/security-utils'
 
 // Replicate Extension's 6-Step Workflow
 const WORKFLOW_STEPS = [
@@ -45,8 +46,8 @@ export default function EnhancedBeatUpload() {
   const user = authHook.user || null
   const uploadBeatAudio = uploadHook.uploadBeatAudio || (() => Promise.reject('Upload not available'))
   const canUpload = nftHook.canUpload || false
-  const success = toastHook.success || ((msg: string) => console.log('Success:', msg))
-  const error = toastHook.error || ((msg: string) => console.error('Error:', msg))
+  const success = toastHook.success || ((msg: string) => console.log('Success:', msg?.replace(/[\r\n]/g, ' ')))
+  const error = toastHook.error || ((msg: string) => console.error('Error:', msg?.replace(/[\r\n]/g, ' ')))
 
   useEffect(() => {
     setMounted(true)
@@ -116,6 +117,10 @@ Generated: ${new Date().toLocaleString()}`
         throw new Error('MCP server not configured')
       }
       
+      if (!validateUrl(`${mcpUrl}/api/isrc/generate`)) {
+        throw new Error('Invalid MCP server URL')
+      }
+      
       const response = await fetch(`${mcpUrl}/api/isrc/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -139,7 +144,7 @@ Generated: ${new Date().toLocaleString()}`
       
       throw new Error('Invalid response from server')
     } catch (err) {
-      console.warn('ISRC generation failed:', err)
+      console.warn('ISRC generation failed:', String(err).replace(/[\r\n]/g, ' '))
       // Generate fallback ISRC
       const year = new Date().getFullYear().toString().slice(-2)
       const sequence = String(Date.now()).slice(-5)
@@ -164,6 +169,13 @@ Generated: ${new Date().toLocaleString()}`
   const mintNFT = async () => {
     if (!audioFile) return
     
+    // Validate required form data
+    const validation = validateFormData(formData)
+    if (!validation.isValid) {
+      error(`Validation failed: ${validation.errors.join(', ')}`)
+      return
+    }
+    
     try {
       // Generate beat ID first
       const beatId = Date.now().toString()
@@ -184,7 +196,12 @@ Generated: ${new Date().toLocaleString()}`
             artist: formData.stageName
           }))
           
-          const coverResponse = await fetch(`${process.env.NEXT_PUBLIC_MCP_SERVER_URL}/api/upload`, {
+          const uploadUrl = `${process.env.NEXT_PUBLIC_MCP_SERVER_URL}/api/upload`
+          if (!validateUrl(uploadUrl)) {
+            throw new Error('Invalid upload URL')
+          }
+          
+          const coverResponse = await fetch(uploadUrl, {
             method: 'POST',
             body: coverFormData
           })
@@ -279,7 +296,12 @@ Generated: ${new Date().toLocaleString()}`
           created_at: new Date().toISOString()
         }
 
-        const beatResp = await fetch(`${mcpUrl.replace(/\/$/, '')}/api/beats`, {
+        const beatsUrl = `${mcpUrl.replace(/\/$/, '')}/api/beats`
+        if (!validateUrl(beatsUrl)) {
+          throw new Error('Invalid beats API URL')
+        }
+        
+        const beatResp = await fetch(beatsUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(beatPayload)
@@ -330,8 +352,8 @@ Generated: ${new Date().toLocaleString()}`
         throw new Error(errorResult.error || 'Minting failed')
       }
       } catch (err) {
-        console.error('Minting error:', err)
-        error(`Minting failed: ${err.message}. Beat retained locally as fallback.`)
+        console.error('Minting error:', String(err).replace(/[\r\n]/g, ' '))
+        error(`Minting failed: ${err?.message || String(err)}. Beat retained locally as fallback.`)
 
         // Store the complete beat data locally as backup (best-effort)
         try {
@@ -429,9 +451,9 @@ Generated: ${new Date().toLocaleString()}`
             <input {...getInputProps()} />
             {audioFile ? (
               <div>
-                <p style={{ color: '#059669', fontWeight: '500' }}>✓ {audioFile.name}</p>
+                <p style={{ color: '#059669', fontWeight: '500' }}>✓ {sanitizeHtml(sanitizeFileName(audioFile.name))}</p>
                 <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                  {(audioFile.size / (1024 * 1024)).toFixed(1)} MB • {audioFile.type}
+                  {(audioFile.size / (1024 * 1024)).toFixed(1)} MB • {sanitizeHtml(audioFile.type)}
                 </p>
               </div>
             ) : (
