@@ -4,8 +4,12 @@ BEGIN
   -- Add producer_address column if it doesn't exist
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'beats' AND column_name = 'producer_address') THEN
     ALTER TABLE beats ADD COLUMN producer_address text;
-    -- Migrate existing data if needed
-    UPDATE beats SET producer_address = COALESCE(producer_id, creator_address, wallet_address) WHERE producer_address IS NULL;
+    -- Migrate existing data if needed (check which columns exist first)
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'beats' AND column_name = 'producer_id') THEN
+      UPDATE beats SET producer_address = producer_id WHERE producer_address IS NULL;
+    ELSIF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'beats' AND column_name = 'wallet_address') THEN
+      UPDATE beats SET producer_address = wallet_address WHERE producer_address IS NULL;
+    END IF;
   END IF;
 
   -- Add other missing columns
