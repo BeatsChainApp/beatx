@@ -85,7 +85,21 @@ export default function ProtectedRoute({
     )
   }
 
-  // Check wallet requirement (after suspension check)
+  // Check authentication first - prioritize social login
+  if (!isAuthenticated) {
+    return fallback || (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center p-8 max-w-md">
+          <div className="text-6xl mb-4">🔒</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Sign In Required</h2>
+          <p className="text-gray-600 mb-6">Connect with Google or your preferred wallet to access this area.</p>
+          <w3m-button size="md" label="Connect with Google" />
+        </div>
+      </div>
+    )
+  }
+
+  // Optional wallet requirement (only if explicitly needed)
   if (requireWallet && !wallet.isConnected) {
     return fallback || (
       <div>
@@ -114,50 +128,6 @@ export default function ProtectedRoute({
               <w3m-button size="lg" label="Connect Wallet" />
             </div>
           </div>
-        </div>
-      </div>
-    )
-  } else if (requireWallet && wallet.isConnected && !isAuthenticated) {
-    // Wallet is connected but not authenticated
-    return fallback || (
-      <div>
-        {/* Hero Section */}
-        <div style={{
-          background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-          minHeight: '60vh',
-          display: 'flex',
-          alignItems: 'center',
-          color: 'white',
-          position: 'relative'
-        }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)' }}></div>
-          <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '4rem 2rem', position: 'relative', zIndex: 1, textAlign: 'center' }}>
-            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>✍️</div>
-            <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-              Sign Message with Wallet
-            </h1>
-            <p style={{ fontSize: '1.25rem', opacity: 0.9, marginBottom: '2rem' }}>
-              Your wallet is connected. Please sign a message to verify your identity.
-            </p>
-            <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '1rem', marginBottom: '2rem', maxWidth: '500px', margin: '0 auto 2rem' }}>
-              <p style={{ fontSize: '1rem' }}>This signature doesn't cost any gas fees and keeps your account secure</p>
-            </div>
-            <w3m-button size="md" label="Connect with Google" />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Check authentication - use embedded wallet with Google OAuth2
-  if (!isAuthenticated) {
-    return fallback || (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center p-8 max-w-md">
-          <div className="text-6xl mb-4">🔒</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Sign In Required</h2>
-          <p className="text-gray-600 mb-6">Connect with Google or your preferred wallet to access this area.</p>
-          <w3m-button size="md" label="Connect Wallet" />
         </div>
       </div>
     )

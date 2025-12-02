@@ -294,7 +294,7 @@ function AdminSettingsContent() {
             {activeTab === 'blockchain' && (
               <div className="space-y-6">
                 <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="font-medium text-blue-800 mb-2">Smart Contract V2 Status</h3>
+                  <h3 className="font-medium text-blue-800 mb-2">BeatNFT Smart Contract V2 Status</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-gray-600">Contract Address:</p>

@@ -1,0 +1,483 @@
+{
+  "name": "Enhanced Upload Form Workflow with WhatsApp",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/webhook/enhanced-upload",
+        "responseMode": "responseNode"
+      },
+      "id": "enhanced-upload-webhook",
+      "name": "Enhanced Upload Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.step}}",
+              "operation": "equal",
+              "value2": "professional_services"
+            }
+          ]
+        }
+      },
+      "id": "professional-services-check",
+      "name": "Check Professional Services",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/professional/isrc/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.MCP_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "trackTitle",
+              "value": "={{$json.title}}"
+            },
+            {
+              "name": "artistName",
+              "value": "={{$json.stageName}}"
+            },
+            {
+              "name": "userAddress",
+              "value": "={{$json.userAddress}}"
+            }
+          ]
+        }
+      },
+      "id": "generate-isrc",
+      "name": "Generate ISRC Code",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/professional/audio/analyze",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.MCP_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "audioFileUrl",
+              "value": "={{$json.audioUrl}}"
+            },
+            {
+              "name": "beatId",
+              "value": "={{$json.beatId}}"
+            }
+          ]
+        }
+      },
+      "id": "analyze-audio",
+      "name": "Analyze Audio File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.step}}",
+              "operation": "equal",
+              "value2": "upload_complete"
+            }
+          ]
+        }
+      },
+      "id": "upload-complete-check",
+      "name": "Check Upload Complete",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 600]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.facebook.com/v18.0/{{$env.WHATSAPP_PHONE_NUMBER_ID}}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.WHATSAPP_ACCESS_TOKEN}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "messaging_product",
+              "value": "whatsapp"
+            },
+            {
+              "name": "to",
+              "value": "={{$json.userPhone || '+27123456789'}}"
+            },
+            {
+              "name": "type",
+              "value": "template"
+            },
+            {
+              "name": "template",
+              "value": {
+                "name": "beat_upload_success",
+                "language": {
+                  "code": "en"
+                },
+                "components": [
+                  {
+                    "type": "body",
+                    "parameters": [
+                      {
+                        "type": "text",
+                        "text": "={{$json.title}}"
+                      },
+                      {
+                        "type": "text",
+                        "text": "={{$json.stageName}}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "id": "whatsapp-notification",
+      "name": "Send WhatsApp Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 600]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/beat_uploads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"
+            },
+            {
+              "name": "apikey",
+              "value": "{{$env.SUPABASE_ANON_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "beat_id",
+              "value": "={{$json.beatId}}"
+            },
+            {
+              "name": "title",
+              "value": "={{$json.title}}"
+            },
+            {
+              "name": "artist_name",
+              "value": "={{$json.stageName}}"
+            },
+            {
+              "name": "user_address",
+              "value": "={{$json.userAddress}}"
+            },
+            {
+              "name": "has_professional_services",
+              "value": "={{$json.hasProfessionalServices}}"
+            },
+            {
+              "name": "has_isrc",
+              "value": "={{$json.hasISRC}}"
+            },
+            {
+              "name": "upload_method",
+              "value": "enhanced_form"
+            },
+            {
+              "name": "created_at",
+              "value": "={{new Date().toISOString()}}"
+            }
+          ]
+        }
+      },
+      "id": "log-upload",
+      "name": "Log Upload to Database",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [900, 600]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.sponsorContentEnabled}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "sponsor-content-check",
+      "name": "Check Sponsor Content",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/professional/revenue/track",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.MCP_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "service",
+              "value": "sponsor_content"
+            },
+            {
+              "name": "amount",
+              "value": "={{$json.sponsorRevenue || 2.50}}"
+            },
+            {
+              "name": "beatId",
+              "value": "={{$json.beatId}}"
+            },
+            {
+              "name": "userAddress",
+              "value": "={{$json.userAddress}}"
+            },
+            {
+              "name": "metadata",
+              "value": {
+                "title": "={{$json.title}}",
+                "artist": "={{$json.stageName}}",
+                "uploadMethod": "enhanced_form"
+              }
+            }
+          ]
+        }
+      },
+      "id": "track-sponsor-revenue",
+      "name": "Track Sponsor Revenue",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/webhook/split-sheet-request",
+        "responseMode": "responseNode"
+      },
+      "id": "split-sheet-webhook",
+      "name": "Split Sheet Request Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 900]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/samro/split-sheet/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.MCP_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "beatId",
+              "value": "={{$json.beatId}}"
+            },
+            {
+              "name": "title",
+              "value": "={{$json.title}}"
+            },
+            {
+              "name": "producers",
+              "value": "={{$json.producers}}"
+            },
+            {
+              "name": "splits",
+              "value": "={{$json.splits}}"
+            }
+          ]
+        }
+      },
+      "id": "generate-split-sheet",
+      "name": "Generate SAMRO Split Sheet",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [460, 900]
+    }
+  ],
+  "connections": {
+    "Enhanced Upload Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check Professional Services",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Upload Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Professional Services": {
+      "main": [
+        [
+          {
+            "node": "Generate ISRC Code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Analyze Audio File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate ISRC Code": {
+      "main": [
+        [
+          {
+            "node": "Check Sponsor Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Audio File": {
+      "main": [
+        [
+          {
+            "node": "Check Sponsor Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Sponsor Content": {
+      "main": [
+        [
+          {
+            "node": "Track Sponsor Revenue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Upload Complete": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Notification": {
+      "main": [
+        [
+          {
+            "node": "Log Upload to Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Sheet Request Webhook": {
+      "main": [
+        [
+          {
+            "node": "Generate SAMRO Split Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "enhanced-upload-workflow",
+  "tags": [
+    {
+      "createdAt": "2025-01-30T12:00:00.000Z",
+      "updatedAt": "2025-01-30T12:00:00.000Z",
+      "id": "enhanced-upload",
+      "name": "Enhanced Upload"
+    }
+  ]
+}

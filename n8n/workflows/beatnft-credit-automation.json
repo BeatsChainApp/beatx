@@ -1,0 +1,512 @@
+{
+  "name": "BeatNFT Credit Management Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/webhook/credit-purchase",
+        "responseMode": "responseNode"
+      },
+      "id": "credit-purchase-webhook",
+      "name": "Credit Purchase Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.event}}",
+              "operation": "equal",
+              "value2": "credit_purchase"
+            }
+          ]
+        }
+      },
+      "id": "event-filter",
+      "name": "Filter Credit Events",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/credits/validate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.MCP_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "userAddress",
+              "value": "={{$json.userAddress}}"
+            },
+            {
+              "name": "credits",
+              "value": "={{$json.credits}}"
+            },
+            {
+              "name": "transactionHash",
+              "value": "={{$json.transactionHash}}"
+            }
+          ]
+        }
+      },
+      "id": "validate-purchase",
+      "name": "Validate Credit Purchase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.valid}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "validation-check",
+      "name": "Check Validation",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/credit_transactions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.SUPABASE_ANON_KEY}}"
+            },
+            {
+              "name": "apikey",
+              "value": "{{$env.SUPABASE_ANON_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "user_address",
+              "value": "={{$json.userAddress}}"
+            },
+            {
+              "name": "credits_purchased",
+              "value": "={{$json.credits}}"
+            },
+            {
+              "name": "transaction_hash",
+              "value": "={{$json.transactionHash}}"
+            },
+            {
+              "name": "status",
+              "value": "completed"
+            },
+            {
+              "name": "created_at",
+              "value": "={{new Date().toISOString()}}"
+            }
+          ]
+        }
+      },
+      "id": "log-transaction",
+      "name": "Log to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/notifications/send",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.MCP_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "userAddress",
+              "value": "={{$json.userAddress}}"
+            },
+            {
+              "name": "type",
+              "value": "credit_purchase_success"
+            },
+            {
+              "name": "title",
+              "value": "BeatNFT Credits Purchased"
+            },
+            {
+              "name": "message",
+              "value": "You successfully purchased {{$json.credits}} BeatNFT credits!"
+            }
+          ]
+        }
+      },
+      "id": "send-notification",
+      "name": "Send Success Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1120, 400]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/webhook/credit-usage",
+        "responseMode": "responseNode"
+      },
+      "id": "credit-usage-webhook",
+      "name": "Credit Usage Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 600]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.event}}",
+              "operation": "equal",
+              "value2": "credit_usage"
+            }
+          ]
+        }
+      },
+      "id": "usage-filter",
+      "name": "Filter Usage Events",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 600]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/credits/deduct",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.MCP_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "userAddress",
+              "value": "={{$json.userAddress}}"
+            },
+            {
+              "name": "credits",
+              "value": "={{$json.creditsUsed}}"
+            },
+            {
+              "name": "beatId",
+              "value": "={{$json.beatId}}"
+            },
+            {
+              "name": "fileSize",
+              "value": "={{$json.fileSize}}"
+            }
+          ]
+        }
+      },
+      "id": "deduct-credits",
+      "name": "Deduct Credits",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 600]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{$json.remainingCredits}}",
+              "operation": "smaller",
+              "value2": 5
+            }
+          ]
+        }
+      },
+      "id": "low-credit-check",
+      "name": "Check Low Credits",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 600]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/notifications/send",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.MCP_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "userAddress",
+              "value": "={{$json.userAddress}}"
+            },
+            {
+              "name": "type",
+              "value": "low_credits_warning"
+            },
+            {
+              "name": "title",
+              "value": "Low BeatNFT Credits"
+            },
+            {
+              "name": "message",
+              "value": "You have {{$json.remainingCredits}} credits left. Consider purchasing more to continue uploading."
+            }
+          ]
+        }
+      },
+      "id": "low-credit-notification",
+      "name": "Low Credit Warning",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1120, 700]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/webhook/admin-credit-grant",
+        "responseMode": "responseNode"
+      },
+      "id": "admin-grant-webhook",
+      "name": "Admin Credit Grant Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 900]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.adminRole}}",
+              "operation": "equal",
+              "value2": "admin"
+            }
+          ]
+        }
+      },
+      "id": "admin-auth-check",
+      "name": "Verify Admin Role",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 900]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/credits/grant",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.MCP_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "targetAddress",
+              "value": "={{$json.targetAddress}}"
+            },
+            {
+              "name": "credits",
+              "value": "={{$json.credits}}"
+            },
+            {
+              "name": "grantedBy",
+              "value": "={{$json.adminAddress}}"
+            },
+            {
+              "name": "reason",
+              "value": "={{$json.reason || 'Admin grant'}}"
+            }
+          ]
+        }
+      },
+      "id": "grant-credits",
+      "name": "Grant Marketing Credits",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 900]
+    }
+  ],
+  "connections": {
+    "Credit Purchase Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filter Credit Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Credit Events": {
+      "main": [
+        [
+          {
+            "node": "Validate Credit Purchase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Credit Purchase": {
+      "main": [
+        [
+          {
+            "node": "Check Validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Validation": {
+      "main": [
+        [
+          {
+            "node": "Log to Supabase",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Success Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Credit Usage Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filter Usage Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Usage Events": {
+      "main": [
+        [
+          {
+            "node": "Deduct Credits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deduct Credits": {
+      "main": [
+        [
+          {
+            "node": "Check Low Credits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Low Credits": {
+      "main": [
+        [
+          {
+            "node": "Low Credit Warning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Admin Credit Grant Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify Admin Role",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Admin Role": {
+      "main": [
+        [
+          {
+            "node": "Grant Marketing Credits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "beatnft-credit-automation",
+  "tags": [
+    {
+      "createdAt": "2025-01-30T10:00:00.000Z",
+      "updatedAt": "2025-01-30T10:00:00.000Z",
+      "id": "credit-management",
+      "name": "Credit Management"
+    }
+  ]
+}
