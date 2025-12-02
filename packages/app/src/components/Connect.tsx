@@ -1,5 +1,6 @@
 import React from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
+import GetStartedButton from './GetStartedButton'
 
 export function Connect() {
   const { isAuthenticated, user } = useUnifiedAuth()
@@ -22,5 +23,10 @@ export function Connect() {
     )
   }
 
-  return <w3m-button />
+  return (
+    <div className="flex items-center gap-2">
+      <GetStartedButton />
+      <w3m-button />
+    </div>
+  )
 }

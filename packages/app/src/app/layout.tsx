@@ -100,6 +100,7 @@ export default function RootLayout(props: PropsWithChildren) {
 
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <script src="/js/lib/enhanced-onboarding-manager.js" async defer></script>
         <script dangerouslySetInnerHTML={{
           __html: `
             if ('serviceWorker' in navigator) {
