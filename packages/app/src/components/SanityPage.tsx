@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 import { getPageBySlug } from '@/lib/sanity'
 import CmsHeroSection from './HeroSection'
 import CmsContentBlocks from './ContentBlocks'
-import ErrorBoundary from './ErrorBoundary'
+
 import type { CmsPageData } from '@/lib/sanity/types'
 
 interface SanityPageProps {
@@ -58,11 +58,9 @@ async function PageContent({ slug, fallback }: SanityPageProps) {
 
 export default function CmsPage({ slug, fallback }: SanityPageProps) {
   return (
-    <ErrorBoundary fallback={fallback}>
-      <Suspense fallback={<PageSkeleton />}>
-        <PageContent slug={slug} fallback={fallback} />
-      </Suspense>
-    </ErrorBoundary>
+    <Suspense fallback={<PageSkeleton />}>
+      <PageContent slug={slug} fallback={fallback} />
+    </Suspense>
   )
 }
 
