@@ -3,15 +3,17 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 import { useAccount } from 'wagmi'
 import { useSIWE } from './SIWEContext'
-import { useAuth } from './AuthContext'
 import { useWeb3Profile } from '@/hooks/useWeb3Profile'
 
-// Super admin wallets (add your wallet here)
+// Super admin wallets and emails
 const SUPER_ADMIN_WALLETS = [
   process.env.NEXT_PUBLIC_SUPER_ADMIN_WALLET?.toLowerCase(),
   '0xc84799a904eeb5c57abbbc40176e7db8be202c10', // Your wallet address
-  // Add more super admin wallets as needed
 ].filter(Boolean) as string[]
+
+const ADMIN_EMAILS = [
+  'info@unamifoundation.org'
+]
 
 interface UnifiedUser {
   address: string
@@ -60,14 +62,10 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
   
   const { address, isConnected } = useAccount()
   const siweContext = useSIWE()
-  const authContext = useAuth()
   const { profile: web3Profile, loading: profileLoading } = useWeb3Profile()
   
   const { user: siweUser, signIn: siweSignIn, signOut: siweSignOut, isAuthenticated: siweAuth } = siweContext || {
     user: null, signIn: async () => {}, signOut: async () => {}, isAuthenticated: false
-  }
-  const { user: firebaseUser, userProfile: firebaseProfile } = authContext || {
-    user: null, userProfile: null
   }
 
   const buildUnifiedUser = useCallback(() => {
@@ -78,15 +76,15 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     }
     
     // Prevent execution if hooks failed to initialize
-    if (!address && !firebaseUser) {
+    if (!address) {
       setUser(null)
       setLoading(false)
       return
     }
     
     // Prevent loops by checking if user data actually changed
-    const currentUserKey = `${address}-${web3Profile?.role}-${firebaseProfile?.role}`
-    const lastUserKey = user ? `${user.address}-${user.role}-${user.role}` : null
+    const currentUserKey = `${address}-${web3Profile?.role}`
+    const lastUserKey = user ? `${user.address}-${user.role}` : null
     
     if (currentUserKey === lastUserKey && user) {
       setLoading(false)
@@ -98,23 +96,6 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     try {
       // No wallet connected
       if (!address || !isConnected) {
-        // Check if Firebase user exists (legacy support)
-        if (firebaseUser && firebaseProfile) {
-          const legacyUser: UnifiedUser = {
-            address: firebaseProfile.walletAddress || '',
-            displayName: firebaseProfile.displayName,
-            email: firebaseProfile.email,
-            role: firebaseProfile.role as any,
-            permissions: ROLE_PERMISSIONS[firebaseProfile.role as keyof typeof ROLE_PERMISSIONS] || ROLE_PERMISSIONS.user,
-            isVerified: firebaseProfile.isVerified,
-            profileImage: firebaseProfile.profileImage,
-            createdAt: firebaseProfile.createdAt
-          }
-          setUser(legacyUser)
-          setLoading(false)
-          return
-        }
-        
         setUser(null)
         setLoading(false)
         return
@@ -127,16 +108,13 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
       if (SUPER_ADMIN_WALLETS.includes(address.toLowerCase())) {
         role = 'super_admin'
       }
+      // Check if email is admin (from Reown AppKit social login)
+      else if (web3Profile?.email && ADMIN_EMAILS.includes(web3Profile.email)) {
+        role = 'super_admin'
+      }
       // Then check Web3 profile
       else if (web3Profile?.role === 'admin' || web3Profile?.role === 'producer') {
         role = web3Profile.role as UnifiedUser['role']
-      }
-      // Then check Firebase profile for super admin email
-      else if (firebaseProfile?.email === 'info@unamifoundation.org') {
-        role = 'super_admin'
-      }
-      else if (firebaseProfile?.role && firebaseProfile.role !== 'user') {
-        role = firebaseProfile.role as UnifiedUser['role']
       }
       else if (web3Profile?.role) {
         role = web3Profile.role as UnifiedUser['role']
@@ -145,13 +123,13 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
       // Build unified user from available data
       const unifiedUser: UnifiedUser = {
         address,
-        displayName: web3Profile?.displayName || firebaseProfile?.displayName || `User ${address.slice(0, 6)}...${address.slice(-4)}`,
-        email: firebaseProfile?.email || web3Profile?.email,
+        displayName: web3Profile?.displayName || `User ${address.slice(0, 6)}...${address.slice(-4)}`,
+        email: web3Profile?.email,
         role,
         permissions: ROLE_PERMISSIONS[role],
-        isVerified: web3Profile?.isVerified || firebaseProfile?.isVerified || role === 'super_admin' || role === 'admin',
-        profileImage: web3Profile?.profileImage || firebaseProfile?.profileImage,
-        createdAt: web3Profile?.createdAt || firebaseProfile?.createdAt || new Date()
+        isVerified: web3Profile?.isVerified || role === 'super_admin' || role === 'admin',
+        profileImage: web3Profile?.profileImage,
+        createdAt: web3Profile?.createdAt || new Date()
       }
 
       setUser(unifiedUser)
@@ -161,10 +139,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
         upgradeProfileRole(address, role)
       }
       
-      // Auto-upgrade Firebase users with admin email
-      if (firebaseProfile?.email === 'info@unamifoundation.org' && role !== 'super_admin') {
-        upgradeProfileRole(firebaseProfile.email, 'super_admin')
-      }
+
       
     } catch (error) {
       console.error('Error building unified user:', error)
@@ -172,7 +147,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false)
     }
-  }, [address, isConnected, web3Profile?.role, firebaseProfile?.role, firebaseUser?.uid])
+  }, [address, isConnected, web3Profile?.role])
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -277,8 +252,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
   }
 
   const isAuthenticated = Boolean(
-    (isConnected && address && (siweAuth || SUPER_ADMIN_WALLETS.includes(address.toLowerCase()))) || // Web3 auth (super admins bypass SIWE)
-    (firebaseUser && firebaseProfile) // Firebase fallback
+    (isConnected && address && (siweAuth || SUPER_ADMIN_WALLETS.includes(address.toLowerCase()))) // Web3 auth (super admins bypass SIWE)
   ) && typeof window !== 'undefined'
 
   const value: UnifiedAuthContextType = {
