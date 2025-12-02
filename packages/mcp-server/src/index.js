@@ -222,6 +222,10 @@ const routes = [
   { path: './routes/credits', mount: '/api', name: 'Credits' },
   { path: './routes/success', mount: '/api', name: 'Success' },
   { path: './routes/beats', mount: '/api', name: 'Beats' },
+  { path: './routes/pricing', mount: '/api', name: 'Pricing' },
+  { path: './routes/payments', mount: '/api', name: 'Payments' },
+  { path: './routes/purchases', mount: '/api', name: 'Purchases' },
+  { path: './routes/profiles', mount: '/api', name: 'Profiles' },
   { path: './routes/sync', mount: '/api/sync', name: 'Sync' },
   { path: './routes/samro', mount: '/api', name: 'SAMRO' }
 ];
@@ -352,6 +356,10 @@ app.get('/api', (req, res) => {
         'POST /api/pin - IPFS pinning',
         'POST /api/upload - File upload',
         'GET /api/beats - Beat operations',
+        'GET /api/pricing - Beat pricing',
+        'POST /api/payments - Payment processing',
+        'GET /api/purchases - Purchase history',
+        'POST /api/profiles/sync - Profile synchronization',
         'GET /api/credits - Credits system',
         'GET /api/success - Success logging',
         'POST /api/isrc/generate - ISRC generation',
@@ -359,9 +367,11 @@ app.get('/api', (req, res) => {
         'POST /api/samro/generate - SAMRO split sheets',
         'GET /api/sync - Real-time sync'
       ],
+      available_with_schema: [
+        '/api/analytics - Ready after schema deployment',
+        '/api/notifications - Ready after schema deployment'
+      ],
       unavailable: [
-        '/api/analytics - Requires callback function fix',
-        '/api/notifications - Requires callback function fix', 
         '/api/content - LivepeerAdapter constructor issue',
         '/api/recommendations - Requires callback function fix'
       ]

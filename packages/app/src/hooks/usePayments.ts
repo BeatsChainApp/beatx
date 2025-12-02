@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { parseEther } from 'viem'
 import { useUnifiedAuth } from './useUnifiedAuth'
-import { useFirestore } from './useFirestore'
+// import { useFirestore } from './useFirestore' // Removed Firebase dependency
 
 interface PurchaseData {
   beatId: string
@@ -18,7 +18,7 @@ export function usePayments() {
   const [error, setError] = useState<string | null>(null)
   const { address } = useAccount()
   const { user } = useUnifiedAuth()
-  const { addPurchase } = useFirestore()
+  // const { addPurchase } = useFirestore() // Removed Firebase dependency
   const { writeContract, data: hash } = useWriteContract()
   const { isLoading: isConfirming } = useWaitForTransactionReceipt({ hash })
 
@@ -34,15 +34,22 @@ export function usePayments() {
       await new Promise(resolve => setTimeout(resolve, 2000))
       const mockHash = `0x${Math.random().toString(16).substr(2, 64)}`
 
-      // Record purchase in Firestore
-      await addPurchase({
-        beatId: purchaseData.beatId,
-        buyerId: user.uid,
-        producerId: purchaseData.producerId,
-        amount: purchaseData.price,
-        licenseType: purchaseData.licenseType,
-        transactionHash: mockHash
-      })
+      // Record purchase via MCP server
+      const response = await fetch(`${process.env.NEXT_PUBLIC_MCP_SERVER_URL || 'https://beatx-mcp-server-production.up.railway.app'}/api/payments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          beatId: purchaseData.beatId,
+          buyerAddress: address,
+          producerId: purchaseData.producerId,
+          amount: purchaseData.price,
+          licenseType: purchaseData.licenseType,
+          paymentMethod: 'crypto',
+          transactionHash: mockHash
+        })
+      });
+      
+      if (!response.ok) throw new Error('Payment recording failed')
 
       return { success: true, transactionHash: mockHash }
     } catch (err: any) {

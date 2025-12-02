@@ -1,125 +1,111 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useAccount } from 'wagmi'
+import { useState } from 'react'
 
-interface AnalyticsData {
-  beatPerformance: {
-    totalPlays: number
-    totalSales: number
-    totalRevenue: number
-    topBeat: string | null
-    averagePrice: number
-  }
-  marketTrends: {
-    popularGenres: Array<{ genre: string; count: number }>
-    priceRanges: Array<{ range: string; count: number }>
-    salesByMonth: Array<{ month: string; sales: number }>
-  }
-  userBehavior: {
-    conversionRate: number
-    averageSessionTime: number
-    bounceRate: number
-    returnVisitors: number
-  }
+const MCP_SERVER_URL = process.env.NEXT_PUBLIC_MCP_SERVER_URL || 'https://beatx-mcp-server-production.up.railway.app'
+
+interface AnalyticsOverview {
+  totalBeats: number
+  totalUsers: number
+  totalSales: number
+  totalRevenue: string
+}
+
+interface BeatAnalytics {
+  id: string
+  title: string
+  producer_name: string
+  genre: string
+  play_count: number
+  total_sales: number
+  total_revenue: string
+  avg_rating?: number
 }
 
 export function useAnalytics() {
-  const { address } = useAccount()
-  const [data, setData] = useState<AnalyticsData>({
-    beatPerformance: {
-      totalPlays: 0,
-      totalSales: 0,
-      totalRevenue: 0,
-      topBeat: null,
-      averagePrice: 0
-    },
-    marketTrends: {
-      popularGenres: [],
-      priceRanges: [],
-      salesByMonth: []
-    },
-    userBehavior: {
-      conversionRate: 0,
-      averageSessionTime: 0,
-      bounceRate: 0,
-      returnVisitors: 0
-    }
-  })
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const loadAnalytics = async () => {
-      if (typeof window === 'undefined') return
+  const getOverview = async (): Promise<AnalyticsOverview | null> => {
+    try {
+      setLoading(true)
+      setError(null)
 
-      try {
-        // Aggregate data from localStorage
-        const allBeats = JSON.parse(localStorage.getItem('all_beats') || '[]')
-        const transactions = JSON.parse(localStorage.getItem('credit_transactions') || '[]')
-        
-        // Beat Performance
-        const totalPlays = allBeats.reduce((sum: number, beat: any) => sum + (beat.plays || 0), 0)
-        const totalSales = transactions.length
-        const totalRevenue = transactions.reduce((sum: number, tx: any) => sum + (tx.cost || 0), 0)
-        const topBeat = allBeats.sort((a: any, b: any) => (b.plays || 0) - (a.plays || 0))[0]?.id || null
-        const averagePrice = allBeats.length > 0 ? allBeats.reduce((sum: number, beat: any) => sum + beat.price, 0) / allBeats.length : 0
+      const response = await fetch(`${MCP_SERVER_URL}/api/analytics/overview`)
+      const data = await response.json()
 
-        // Market Trends
-        const genreCounts = allBeats.reduce((acc: any, beat: any) => {
-          acc[beat.genre] = (acc[beat.genre] || 0) + 1
-          return acc
-        }, {})
-        const popularGenres = Object.entries(genreCounts).map(([genre, count]) => ({ genre, count: count as number }))
-
-        const priceRanges = [
-          { range: '0-0.05 ETH', count: allBeats.filter((b: any) => b.price <= 0.05).length },
-          { range: '0.05-0.1 ETH', count: allBeats.filter((b: any) => b.price > 0.05 && b.price <= 0.1).length },
-          { range: '0.1+ ETH', count: allBeats.filter((b: any) => b.price > 0.1).length }
-        ]
-
-        // Mock monthly sales data
-        const salesByMonth = [
-          { month: 'Nov', sales: Math.floor(totalSales * 0.3) },
-          { month: 'Dec', sales: Math.floor(totalSales * 0.7) }
-        ]
-
-        // User Behavior (mock data based on platform activity)
-        const conversionRate = totalSales > 0 ? (totalSales / Math.max(totalPlays, 1)) * 100 : 0
-        const averageSessionTime = 180 + Math.random() * 120 // 3-5 minutes
-        const bounceRate = 35 + Math.random() * 20 // 35-55%
-        const returnVisitors = Math.floor(totalSales * 0.6) // 60% return rate
-
-        setData({
-          beatPerformance: {
-            totalPlays,
-            totalSales,
-            totalRevenue,
-            topBeat,
-            averagePrice
-          },
-          marketTrends: {
-            popularGenres,
-            priceRanges,
-            salesByMonth
-          },
-          userBehavior: {
-            conversionRate,
-            averageSessionTime,
-            bounceRate,
-            returnVisitors
-          }
-        })
-      } catch (error) {
-        console.error('Analytics loading error:', error)
-      } finally {
-        setLoading(false)
+      if (data.success) {
+        return data.overview
       }
+      return null
+    } catch (err: any) {
+      setError(err.message)
+      return null
+    } finally {
+      setLoading(false)
     }
+  }
 
-    loadAnalytics()
-    const interval = setInterval(loadAnalytics, 30000) // Update every 30s
-    return () => clearInterval(interval)
-  }, [address])
+  const getBeatAnalytics = async (producer?: string): Promise<BeatAnalytics[]> => {
+    try {
+      setLoading(true)
+      const params = producer ? `?producer=${producer}` : ''
+      const response = await fetch(`${MCP_SERVER_URL}/api/analytics/beats${params}`)
+      const data = await response.json()
 
-  return { data, loading }
+      if (data.success) {
+        return data.analytics || []
+      }
+      return []
+    } catch (err: any) {
+      setError(err.message)
+      return []
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const trackEvent = async (eventType: string, metadata: any = {}, beatId?: string, userAddress?: string) => {
+    try {
+      await fetch(`${MCP_SERVER_URL}/api/analytics/track`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_type: eventType,
+          user_address: userAddress,
+          beat_id: beatId,
+          metadata
+        })
+      })
+    } catch (err) {
+      console.warn('Failed to track event:', err)
+    }
+  }
+
+  const getProducerAnalytics = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`${MCP_SERVER_URL}/api/analytics/producers`)
+      const data = await response.json()
+
+      if (data.success) {
+        return data.producers || []
+      }
+      return []
+    } catch (err: any) {
+      setError(err.message)
+      return []
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return {
+    loading,
+    error,
+    getOverview,
+    getBeatAnalytics,
+    getProducerAnalytics,
+    trackEvent
+  }
 }

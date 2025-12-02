@@ -115,6 +115,18 @@ export function useWeb3Profile() {
       // Save to localStorage
       localStorage.setItem(`web3_profile_${address}`, JSON.stringify(updatedProfile))
       setProfile(updatedProfile)
+      
+      // Sync to MCP server
+      try {
+        await fetch(`${process.env.NEXT_PUBLIC_MCP_SERVER_URL || 'https://beatx-mcp-server-production.up.railway.app'}/api/profiles/sync`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address, profile: updatedProfile })
+        })
+      } catch (syncError) {
+        console.warn('Profile sync failed:', syncError)
+      }
+      
       return true
 
     } catch (err: any) {
