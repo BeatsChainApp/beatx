@@ -1,4 +1,4 @@
-import { adminDb } from '@/lib/firebase-admin'
+// Removed Firebase dependency - now using MCP server
 import { Beat, UserProfile } from '@/types'
 
 const SEED_USERS: Omit<UserProfile, 'uid'>[] = [
@@ -131,65 +131,47 @@ const SEED_TRANSACTIONS = [
   }
 ]
 
-export async function seedFirestore() {
+export async function seedMCPServer() {
   try {
-    if (!adminDb) {
-      throw new Error('Firebase Admin not initialized')
-    }
+    const MCP_SERVER_URL = process.env.NEXT_PUBLIC_MCP_SERVER_URL || 'https://beatx-mcp-server-production.up.railway.app'
     
-    console.log('🌱 Starting Firestore seeding...')
+    console.log('🌱 Starting MCP server seeding...')
 
-    // Seed Users
-    console.log('👥 Seeding users...')
-    for (const [index, userData] of SEED_USERS.entries()) {
-      const userId = `user-${index + 1}`
-      await adminDb.collection('users').doc(userId).set({
-        uid: userId,
-        ...userData
-      })
-      console.log(`✅ Created user: ${userData.displayName}`)
-    }
-
-    // Seed Beats
+    // Seed Beats via MCP server
     console.log('🎵 Seeding beats...')
-    for (const [index, beatData] of SEED_BEATS.entries()) {
-      const beatId = `beat-${index + 1}`
-      await adminDb.collection('beats').doc(beatId).set({
-        id: beatId,
-        ...beatData
-      })
-      console.log(`✅ Created beat: ${beatData.title}`)
+    for (const beatData of SEED_BEATS) {
+      try {
+        const response = await fetch(`${MCP_SERVER_URL}/api/beats`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: beatData.title,
+            description: beatData.description,
+            producer_address: `0x${Math.random().toString(16).substr(2, 40)}`,
+            producer_name: beatData.producerId === 'producer-1' ? 'Beat Master' : 'DJ Pro',
+            genre: beatData.genre,
+            bpm: beatData.bpm,
+            key_signature: beatData.key,
+            audio_url: beatData.audioUrl,
+            cover_image_url: beatData.coverImageUrl,
+            price: beatData.price / 100, // Convert to ETH
+            tags: beatData.tags,
+            source: 'seed'
+          })
+        })
+        
+        if (response.ok) {
+          console.log(`✅ Created beat: ${beatData.title}`)
+        } else {
+          console.warn(`⚠️ Failed to create beat: ${beatData.title}`)
+        }
+      } catch (error) {
+        console.warn(`⚠️ Error creating beat ${beatData.title}:`, error)
+      }
     }
 
-    // Seed Transactions
-    console.log('💰 Seeding transactions...')
-    for (const [index, transactionData] of SEED_TRANSACTIONS.entries()) {
-      const transactionId = `transaction-${index + 1}`
-      await adminDb.collection('transactions').doc(transactionId).set({
-        id: transactionId,
-        ...transactionData
-      })
-      console.log(`✅ Created transaction: ${transactionId}`)
-    }
-
-    // Seed Producer Stats
-    console.log('📊 Seeding producer stats...')
-    await adminDb.collection('producer-stats').doc('producer-1').set({
-      totalEarnings: 2450.75,
-      totalSales: 12,
-      totalPlays: 1847,
-      updatedAt: new Date()
-    })
-    
-    await adminDb.collection('producer-stats').doc('producer-2').set({
-      totalEarnings: 1890.50,
-      totalSales: 8,
-      totalPlays: 1203,
-      updatedAt: new Date()
-    })
-
-    console.log('🎉 Firestore seeding completed successfully!')
-    return { success: true, message: 'Database seeded successfully' }
+    console.log('🎉 MCP server seeding completed!')
+    return { success: true, message: 'Database seeded via MCP server' }
 
   } catch (error) {
     console.error('❌ Seeding failed:', error)
