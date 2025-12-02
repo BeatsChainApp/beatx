@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 
 export default function UploadPage() {
   return (
-    <ProtectedRoute permission="upload" requireWallet={true}>
+    <ProtectedRoute permission="upload">
       <EnhancedBeatUpload />
     </ProtectedRoute>
   )

@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useWeb3Auth } from '@/hooks/useWeb3Auth'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useRouter } from 'next/navigation'
 import CampaignManager from '@/components/admin/CampaignManager'
 
 export default function AdminDashboard() {
-  const { user, isAuthenticated } = useWeb3Auth()
+  const { user, isAuthenticated } = useUnifiedAuth()
   const router = useRouter()
   const [analytics, setAnalytics] = useState<any>(null)
   const [campaigns, setCampaigns] = useState<any[]>([])

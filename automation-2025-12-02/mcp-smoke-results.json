@@ -22,8 +22,8 @@
       "body": {
         "success": true,
         "ipfs": {
-          "cid": "QmQZA3oJ5tUtT6LyBJsM9Gh3VV5FqAXofYhUbm2FqDrHJe",
-          "url": "https://gateway.pinata.cloud/ipfs/QmQZA3oJ5tUtT6LyBJsM9Gh3VV5FqAXofYhUbm2FqDrHJe"
+          "cid": "QmYKqiUisQDFd2kzbXCuHot1H7vdjAsYTRL68XbPGeqido",
+          "url": "https://gateway.pinata.cloud/ipfs/QmYKqiUisQDFd2kzbXCuHot1H7vdjAsYTRL68XbPGeqido"
         }
       }
     },
@@ -72,10 +72,10 @@
       "body": {
         "success": true,
         "beat": {
-          "id": "fallback-1764662649005",
-          "beat_id": "smoke-1764662648711",
+          "id": "fallback-1764662735914",
+          "beat_id": "smoke-1764662734528",
           "title": "Smoke Test Beat",
-          "created_at": "2025-12-02T08:04:09.005Z",
+          "created_at": "2025-12-02T08:05:35.914Z",
           "is_active": true
         },
         "warning": "Database unavailable - created mock beat",
@@ -84,5 +84,5 @@
     }
   ],
   "failed": 1,
-  "timestamp": 1764662649007
+  "timestamp": 1764662735916
 }

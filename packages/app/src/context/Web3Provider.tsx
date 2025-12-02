@@ -52,8 +52,8 @@ export function Web3Provider({ children, cookies }: Props) {
           },
           features: {
             analytics: false,
-            email: false,
-            socials: [],
+            email: true,
+            socials: ['google'],
             onramp: false,
             swaps: false,
             history: false

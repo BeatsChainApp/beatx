@@ -3,7 +3,7 @@
 import { ReactNode } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useUserAccessControl } from '@/hooks/useUserAccessControl'
-import SignInButton from './SignInButton'
+import { useAppKit } from '@reown/appkit/react'
 
 interface ProtectedRouteProps {
   children: ReactNode
@@ -142,27 +142,22 @@ export default function ProtectedRoute({
             <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '1rem', marginBottom: '2rem', maxWidth: '500px', margin: '0 auto 2rem' }}>
               <p style={{ fontSize: '1rem' }}>This signature doesn't cost any gas fees and keeps your account secure</p>
             </div>
-            <SignInButton signIn={signIn} />
+            <w3m-button size="md" label="Connect with Google" />
           </div>
         </div>
       </div>
     )
   }
 
-  // Check authentication
+  // Check authentication - use embedded wallet with Google OAuth2
   if (!isAuthenticated) {
     return fallback || (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center p-8 max-w-md">
           <div className="text-6xl mb-4">🔒</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Authentication Required</h2>
-          <p className="text-gray-600 mb-6">Please sign in to access this area.</p>
-          <a 
-            href="/"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium inline-block"
-          >
-            Go to Sign In
-          </a>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Sign In Required</h2>
+          <p className="text-gray-600 mb-6">Connect with Google or your preferred wallet to access this area.</p>
+          <w3m-button size="md" label="Connect Wallet" />
         </div>
       </div>
     )
