@@ -1,5 +1,5 @@
 const realTimeSync = require('../services/realTimeSync');
-const { UnifiedRBAC } = require('../../shared/auth/unified-rbac');
+const { UnifiedRBAC } = require('../../../shared/auth/unified-rbac');
 
 const verifySession = async (req, res, next) => {
   try {

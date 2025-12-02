@@ -1,0 +1,17 @@
+{
+  "results": [
+    {
+      "endpoint": "GET /webhook (verify)",
+      "ok": false,
+      "status": 403,
+      "body": "Verify token mismatch"
+    },
+    {
+      "endpoint": "POST /webhook",
+      "ok": true,
+      "status": 200,
+      "body": "EVENT_RECEIVED"
+    }
+  ],
+  "timestamp": 1764661990467
+}

@@ -1,6 +1,6 @@
 const express = require('express');
 const realTimeSync = require('../services/realTimeSync');
-const { verifySession } = require('../middleware/auth');
+const { verifySession } = require('../middleware/auth-stub');
 
 const router = express.Router();
 

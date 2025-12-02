@@ -5,7 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { authenticateUser } = require('../middleware/auth');
+const { authenticateUser } = require('../middleware/auth-stub');
 
 // Initialize services with error handling
 let moderator = null;

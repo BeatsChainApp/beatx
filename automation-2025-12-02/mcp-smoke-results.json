@@ -1,0 +1,88 @@
+{
+  "results": [
+    {
+      "endpoint": "/health",
+      "ok": true,
+      "status": 200
+    },
+    {
+      "endpoint": "/api/upload/status",
+      "ok": false,
+      "status": 503,
+      "body": {
+        "ok": false,
+        "reason": "campaigns_missing_deps",
+        "message": "Cannot find module '../../shared/auth/unified-rbac'\nRequire stack:\n- /workspaces/beatx/packages/mcp-server/src/middleware/auth.js\n- /workspaces/beatx/packages/mcp-server/src/routes/campaigns.js\n- /workspaces/beatx/packages/mcp-server/src/index.js"
+      }
+    },
+    {
+      "endpoint": "/api/pin (POST)",
+      "ok": true,
+      "status": 200,
+      "body": {
+        "success": true,
+        "ipfs": {
+          "cid": "QmaNJCRLiH15AoW5DpBLJr51E7YtnjXbpRYy5Mn63nxvUS",
+          "url": "https://gateway.pinata.cloud/ipfs/QmaNJCRLiH15AoW5DpBLJr51E7YtnjXbpRYy5Mn63nxvUS"
+        }
+      }
+    },
+    {
+      "endpoint": "/api/livepeer/assets",
+      "ok": true,
+      "status": 200,
+      "body": {
+        "success": true,
+        "assets": [
+          {
+            "assetId": "mock-1762892752392",
+            "name": "test-beat",
+            "ipfsCid": "QmMockCid123",
+            "createdAt": 1762892752392,
+            "asset": {
+              "id": "mock-1762892752392",
+              "name": "test-beat",
+              "status": "created",
+              "uploadUrl": "ipfs://mock-1762892752392",
+              "mocked": true,
+              "createdAt": 1762892752392
+            }
+          },
+          {
+            "lastWebhook": {
+              "id": "mock-123",
+              "playback": [
+                {
+                  "url": "ipfs://QmPlaybackMock"
+                }
+              ]
+            },
+            "updatedAt": 1762892765525,
+            "pinnedPlayback": {
+              "ipfsHash": "QmDevMock6d7d193bb8"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "endpoint": "/api/beats (POST)",
+      "ok": true,
+      "status": 200,
+      "body": {
+        "success": true,
+        "beat": {
+          "id": "fallback-1764661968152",
+          "beat_id": "smoke-1764661967180",
+          "title": "Smoke Test Beat",
+          "created_at": "2025-12-02T07:52:48.152Z",
+          "is_active": true
+        },
+        "warning": "Database unavailable - created mock beat",
+        "error": "Could not find the 'beat_id' column of 'beats' in the schema cache"
+      }
+    }
+  ],
+  "failed": 1,
+  "timestamp": 1764661968154
+}

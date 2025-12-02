@@ -156,45 +156,101 @@ router.post('/livepeer/upload-file', upload.single('file'), async (req, res) => 
       return res.json({ success: true, asset: record, warning: 'TUS client not available' });
     }
 
-    // Perform TUS upload
-    const fileStream = fs.createReadStream(req.file.path);
+    // Perform TUS upload in background and return started response.
+    // We attempt to read the file size from disk to pass to tus client.
     let uploadCompleted = false;
+    try {
+      const stats = fs.statSync(req.file.path);
+      const fileStream = fs.createReadStream(req.file.path);
 
-    const tusUpload = new tus.Upload(fileStream, {
-      endpoint: uploadUrl,
-      metadata: {
-        filename: req.file.originalname,
-        filetype: req.file.mimetype
-      },
-      uploadSize: req.file.size,
-      onError: function(error) {
-        console.error('TUS upload failed:', error);
-        uploadCompleted = true;
-      },
-      onProgress: function(bytesUploaded, bytesTotal) {
-        const percent = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
-        console.log('Upload progress:', percent + '%');
-      },
-      onSuccess: async function() {
-        console.log('TUS upload completed successfully');
-        uploadCompleted = true;
-        try {
-          const record = { 
-            assetId: asset.id || asset.asset?.id, 
-            name, 
-            uploadedAt: Date.now(), 
-            asset,
-            status: 'uploaded'
-          };
-          await Store.saveAsset(record);
-        } catch (err) {
-          console.warn('Saving asset record failed:', err.message);
+      const tusUpload = new tus.Upload(fileStream, {
+        endpoint: uploadUrl,
+        metadata: {
+          filename: req.file.originalname,
+          filetype: req.file.mimetype
+        },
+        uploadSize: stats.size,
+        retryDelays: [0, 1000, 3000, 5000],
+        onError: function(error) {
+          console.error('TUS upload failed:', error);
+          uploadCompleted = true;
+          // mark store
+          (async () => {
+            try {
+              await Store.updateAsset(asset.id || asset.asset?.id || asset.id, { status: 'upload_failed', error: String(error) });
+            } catch (uErr) { console.warn('Failed to mark asset upload_failed:', uErr?.message); }
+            try { fs.unlinkSync(req.file.path); } catch (e) { /* ignore */ }
+          })();
+        },
+        onProgress: function(bytesUploaded, bytesTotal) {
+          const percent = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
+          console.log('Upload progress:', percent + '%');
+        },
+        onSuccess: async function() {
+          console.log('TUS upload completed successfully');
+          uploadCompleted = true;
+          try {
+            const record = { 
+              assetId: asset.id || asset.asset?.id, 
+              name, 
+              uploadedAt: Date.now(), 
+              asset,
+              status: 'uploaded'
+            };
+            await Store.saveAsset(record);
+
+            // Attempt to remove temp file
+            try { fs.unlinkSync(req.file.path); } catch (e) { /* ignore */ }
+
+            // Poll Livepeer for asset readiness for a short period
+            (async function pollAssetReady(attempts = 0) {
+              try {
+                const lp = require('../services/livepeerAdapter');
+                const assetId = asset.id || asset.asset?.id || (record.asset && (record.asset.id || record.asset._id));
+                const info = await lp.getAsset(assetId);
+                if (info && (info.status === 'ready' || info.status === 'ready' || info?.asset?.status === 'ready')) {
+                  // Update store with playback info
+                  const playback = info.playbackId || info.playback_id || info.asset?.playbackId || info.asset?.playback_id || info.playbackUrl || info.asset?.playbackUrl;
+                  await Store.updateAsset(assetId, { status: 'ready', playbackId: playback, lastWebhook: info });
+
+                  // Log success to Supabase success table if available
+                  try {
+                    const { getClient } = require('../services/supabaseClient');
+                    const sb = getClient();
+                    if (sb) {
+                      await sb.from('success').insert([{ event: 'livepeer_asset_ready', status: 'processed', metadata: { assetId, playback }, details: { info } }]);
+                    }
+                  } catch (logErr) {
+                    console.warn('Success logging failed:', logErr.message);
+                  }
+                  return;
+                }
+              } catch (err) {
+                // ignore and retry
+              }
+              if (attempts < 6) setTimeout(() => pollAssetReady(attempts + 1), 5000);
+            })();
+
+          } catch (err) {
+            console.warn('Saving asset record failed after upload:', err.message);
+          }
         }
-      }
-    });
+      });
 
-    // Start upload
-    tusUpload.start();
+      // Start upload asynchronously (don't block response)
+      try {
+        tusUpload.start();
+      } catch (startErr) {
+        console.error('Failed to start TUS upload:', startErr);
+      }
+
+    } catch (statErr) {
+      console.warn('Failed to stat uploaded file for TUS:', statErr.message);
+      // Save record as warning and return
+      try {
+        await Store.saveAsset({ assetId: asset.id || asset.asset?.id, name, path: req.file.path, size: req.file.size, createdAt: Date.now(), asset, warning: 'stat_failed' });
+      } catch (e) { /* ignore */ }
+    }
 
     res.json({ 
       success: true, 
