@@ -20,19 +20,51 @@ export default function AuthCallback() {
 
   const exchangeCodeForUser = async (code: string) => {
     try {
-      // Simple mock user for admin access
-      const userData = {
-        sub: 'admin-user',
-        email: 'info@unamifoundation.org',
-        name: 'Admin User',
-        picture: '',
-        verified_email: true
+      // Exchange code for user data via Google OAuth API
+      const response = await fetch(`https://oauth2.googleapis.com/token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          code,
+          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+          client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+          redirect_uri: `${window.location.origin}/auth/callback`,
+          grant_type: 'authorization_code',
+        }),
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to exchange code for token')
       }
       
-      localStorage.setItem('google_auth_result', JSON.stringify(userData))
+      const tokenData = await response.json()
+      
+      // Get user info
+      const userResponse = await fetch(`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${tokenData.access_token}`)
+      
+      if (!userResponse.ok) {
+        throw new Error('Failed to get user info')
+      }
+      
+      const userData = await userResponse.json()
+      
+      // Store user data
+      localStorage.setItem('google_auth_result', JSON.stringify({
+        sub: userData.id,
+        email: userData.email,
+        name: userData.name,
+        picture: userData.picture || '',
+        verified_email: userData.verified_email || false
+      }))
+      
+      // Trigger success event
+      window.opener?.postMessage({ type: 'GOOGLE_AUTH_SUCCESS', userData }, window.location.origin)
       window.close()
     } catch (error) {
       console.error('Auth callback error:', error)
+      window.opener?.postMessage({ type: 'GOOGLE_AUTH_ERROR', error: error.message }, window.location.origin)
       window.close()
     }
   }

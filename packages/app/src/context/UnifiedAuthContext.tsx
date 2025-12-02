@@ -12,7 +12,9 @@ const SUPER_ADMIN_WALLETS = [
 ].filter(Boolean) as string[]
 
 const ADMIN_EMAILS = [
-  'info@unamifoundation.org'
+  'info@unamifoundation.org',
+  'admin@beatschain.app',
+  'support@beatschain.app'
 ]
 
 interface UnifiedUser {
@@ -94,11 +96,39 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     setLoading(true)
     
     try {
-      // No wallet connected
-      if (!address || !isConnected) {
+      // Check for Google auth even without wallet
+      const hasGoogleAuth = localStorage.getItem('google_auth_result')
+      
+      // No wallet connected and no Google auth
+      if ((!address || !isConnected) && !hasGoogleAuth) {
         setUser(null)
         setLoading(false)
         return
+      }
+      
+      // Handle Google-only auth (no wallet)
+      if (!address && hasGoogleAuth) {
+        try {
+          const googleData = JSON.parse(hasGoogleAuth)
+          const role = ADMIN_EMAILS.includes(googleData.email?.toLowerCase()) ? 'super_admin' : 'user'
+          
+          const googleUser: UnifiedUser = {
+            address: `google:${googleData.sub}`,
+            displayName: googleData.name,
+            email: googleData.email,
+            role,
+            permissions: ROLE_PERMISSIONS[role],
+            isVerified: googleData.verified_email,
+            profileImage: googleData.picture,
+            createdAt: new Date()
+          }
+          
+          setUser(googleUser)
+          setLoading(false)
+          return
+        } catch (error) {
+          console.error('Error processing Google auth:', error)
+        }
       }
 
       // Determine role with super admin priority
@@ -108,9 +138,33 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
       if (SUPER_ADMIN_WALLETS.includes(address.toLowerCase())) {
         role = 'super_admin'
       }
-      // Check if email is admin (from Reown AppKit social login)
-      else if (web3Profile?.email && ADMIN_EMAILS.includes(web3Profile.email)) {
+      // Check if email is admin (from Google OAuth or Reown AppKit social login)
+      else if (web3Profile?.email && ADMIN_EMAILS.includes(web3Profile.email.toLowerCase())) {
         role = 'super_admin'
+      }
+      // Check Google Auth user email
+      else if (typeof window !== 'undefined') {
+        try {
+          const googleUser = localStorage.getItem('google_auth_result')
+          if (googleUser) {
+            const parsed = JSON.parse(googleUser)
+            if (parsed.email && ADMIN_EMAILS.includes(parsed.email.toLowerCase())) {
+              role = 'super_admin'
+            }
+          }
+          
+          // Also check Google profile data
+          const googleProfileKey = `web3_profile_google_${address?.toLowerCase() || ''}`
+          const googleProfile = localStorage.getItem(googleProfileKey)
+          if (googleProfile) {
+            const parsedProfile = JSON.parse(googleProfile)
+            if (parsedProfile.email && ADMIN_EMAILS.includes(parsedProfile.email.toLowerCase())) {
+              role = 'super_admin'
+            }
+          }
+        } catch (error) {
+          console.warn('Error checking Google auth:', error)
+        }
       }
       // Then check Web3 profile
       else if (web3Profile?.role === 'admin' || web3Profile?.role === 'producer') {
@@ -120,15 +174,26 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
         role = web3Profile.role as UnifiedUser['role']
       }
       
+      // Get Google user data if available
+      let googleUser = null
+      try {
+        const googleData = localStorage.getItem('google_auth_result')
+        if (googleData) {
+          googleUser = JSON.parse(googleData)
+        }
+      } catch (error) {
+        console.warn('Error parsing Google user data:', error)
+      }
+      
       // Build unified user from available data
       const unifiedUser: UnifiedUser = {
         address,
-        displayName: web3Profile?.displayName || `User ${address.slice(0, 6)}...${address.slice(-4)}`,
-        email: web3Profile?.email,
+        displayName: web3Profile?.displayName || googleUser?.name || `User ${address.slice(0, 6)}...${address.slice(-4)}`,
+        email: web3Profile?.email || googleUser?.email,
         role,
         permissions: ROLE_PERMISSIONS[role],
-        isVerified: web3Profile?.isVerified || role === 'super_admin' || role === 'admin',
-        profileImage: web3Profile?.profileImage,
+        isVerified: web3Profile?.isVerified || googleUser?.verified_email || role === 'super_admin' || role === 'admin',
+        profileImage: web3Profile?.profileImage || googleUser?.picture,
         createdAt: web3Profile?.createdAt || new Date()
       }
 
@@ -244,6 +309,18 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
       if (siweSignOut) {
         await siweSignOut()
       }
+      
+      // Clear Google auth data
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('google_auth_result')
+        // Clear Google profiles
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('web3_profile_google_')) {
+            localStorage.removeItem(key)
+          }
+        })
+      }
+      
       setUser(null)
     } catch (error) {
       console.error('Sign out failed:', error)
@@ -251,8 +328,12 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  // Check if user is authenticated via Google or Web3
+  const hasGoogleAuth = typeof window !== 'undefined' && localStorage.getItem('google_auth_result')
+  
   const isAuthenticated = Boolean(
-    (isConnected && address && (siweAuth || SUPER_ADMIN_WALLETS.includes(address.toLowerCase()))) // Web3 auth (super admins bypass SIWE)
+    (isConnected && address && (siweAuth || SUPER_ADMIN_WALLETS.includes(address.toLowerCase()))) || // Web3 auth
+    hasGoogleAuth // Google auth
   ) && typeof window !== 'undefined'
 
   const value: UnifiedAuthContextType = {
