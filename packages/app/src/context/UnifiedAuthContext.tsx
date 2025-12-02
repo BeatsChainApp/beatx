@@ -4,8 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 import { useAccount } from 'wagmi'
 import { useSIWE } from './SIWEContext'
 import { useWeb3Profile } from '@/hooks/useWeb3Profile'
-import { isClientSide, safeLocalStorage, isAdminEmail } from '@/lib/auth-utils'
-import { rbacInvestigator } from '@/lib/rbac-investigation'
+
 
 // Super admin wallets and emails
 const SUPER_ADMIN_WALLETS = [
@@ -73,7 +72,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
   }
 
   const buildUnifiedUser = useCallback(() => {
-    if (!isClientSide()) {
+    if (typeof window === 'undefined') {
       setUser(null)
       setLoading(false)
       return
@@ -99,7 +98,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     
     try {
       // Check for Google auth even without wallet
-      const hasGoogleAuth = safeLocalStorage().getItem('google_auth_result')
+      const hasGoogleAuth = localStorage.getItem('google_auth_result')
       
       // No wallet connected and no Google auth
       if ((!address || !isConnected) && !hasGoogleAuth) {
@@ -229,16 +228,10 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     }
   }, [profileLoading, buildUnifiedUser])
   
-  // Listen for admin setup completion and run RBAC investigation
+  // Listen for admin setup completion
   useEffect(() => {
     const handleAdminSetup = () => {
-      setTimeout(() => {
-        buildUnifiedUser()
-        // Run comprehensive RBAC investigation
-        if (process.env.NODE_ENV === 'development') {
-          rbacInvestigator.investigateDataPipelines()
-        }
-      }, 100)
+      setTimeout(() => buildUnifiedUser(), 100)
     }
     
     window.addEventListener('admin-setup-complete', handleAdminSetup)
