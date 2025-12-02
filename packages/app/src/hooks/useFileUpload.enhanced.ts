@@ -2,29 +2,38 @@
 
 import { useState } from 'react'
 
-const MCP_SERVER_URL = process.env.NEXT_PUBLIC_MCP_SERVER_URL || 'https://beatx-mcp-server-production.up.railway.app'
-
 export function useFileUpload() {
   const [uploading, setUploading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [progress, setProgress] = useState(0)
 
   const uploadBeatAudio = async (file: File, beatId: string): Promise<string> => {
-    try {
-      setUploading(true)
-      setError(null)
+    if (!file) {
+      throw new Error('No file provided')
+    }
 
+    setUploading(true)
+    setProgress(0)
+
+    try {
       const formData = new FormData()
       formData.append('file', file)
+      formData.append('beatId', beatId)
       formData.append('platform', 'app')
-      formData.append('metadata', JSON.stringify({
-        type: 'audio',
-        beat_id: beatId,
-        original_name: file.name
-      }))
 
-      const response = await fetch(`${MCP_SERVER_URL}/api/upload`, {
+      const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL
+      if (!mcpUrl) {
+        throw new Error('MCP server not configured')
+      }
+
+      const response = await fetch(`${mcpUrl}/api/upload`, {
         method: 'POST',
-        body: formData
+        body: formData,
+        onUploadProgress: (progressEvent: any) => {
+          if (progressEvent.lengthComputable) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            setProgress(percentCompleted)
+          }
+        }
       })
 
       if (!response.ok) {
@@ -34,21 +43,24 @@ export function useFileUpload() {
       const result = await response.json()
       
       if (result.success && result.file) {
-        return result.file.url || `https://gateway.pinata.cloud/ipfs/${result.file.cid}`
+        const audioUrl = result.file.url || `https://gateway.pinata.cloud/ipfs/${result.file.cid}`
+        setProgress(100)
+        return audioUrl
       }
-      
-      throw new Error('Invalid upload response')
-    } catch (err: any) {
-      setError(err.message)
-      throw err
+
+      throw new Error('Invalid response from server')
+    } catch (error) {
+      console.error('Upload error:', error)
+      throw error
     } finally {
       setUploading(false)
+      setTimeout(() => setProgress(0), 1000)
     }
   }
 
   return {
     uploadBeatAudio,
     uploading,
-    error
+    progress
   }
 }

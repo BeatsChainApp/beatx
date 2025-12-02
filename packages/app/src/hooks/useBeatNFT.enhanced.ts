@@ -1,35 +1,47 @@
 'use client'
 
 import { useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
 export function useBeatNFT() {
   const [minting, setMinting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const { address } = useAccount()
+  const { user, isAuthenticated } = useUnifiedAuth()
 
-  const canUpload = (): boolean => {
-    return !!address
-  }
+  const canUpload = isAuthenticated && (
+    user?.role === 'producer' || 
+    user?.role === 'admin' || 
+    user?.role === 'super_admin'
+  )
 
-  const mintBeatNFT = async (metadata: any): Promise<any> => {
+  const mintBeatNFT = async (metadata: any) => {
+    if (!canUpload) {
+      throw new Error('Not authorized to mint NFTs')
+    }
+
+    setMinting(true)
     try {
-      setMinting(true)
-      setError(null)
+      const response = await fetch('/api/mint-beat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          producer: user?.address,
+          metadata,
+          creditsToUse: 1
+        })
+      })
 
-      // Mock minting for now - replace with actual contract interaction
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      const mockResult = {
-        success: true,
-        tokenId: Math.floor(Math.random() * 10000),
-        transactionHash: `0x${Math.random().toString(16).substr(2, 64)}`
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Minting failed')
       }
 
-      return mockResult
-    } catch (err: any) {
-      setError(err.message)
-      throw err
+      const result = await response.json()
+      return result
+    } catch (error) {
+      console.error('Minting error:', error)
+      throw error
     } finally {
       setMinting(false)
     }
@@ -37,8 +49,7 @@ export function useBeatNFT() {
 
   return {
     canUpload,
-    mintBeatNFT,
     minting,
-    error
+    mintBeatNFT
   }
 }

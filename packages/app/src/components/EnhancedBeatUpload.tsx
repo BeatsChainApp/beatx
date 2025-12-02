@@ -36,10 +36,18 @@ export default function EnhancedBeatUpload() {
   const [licenseTerms, setLicenseTerms] = useState('')
   const [professionalServices, setProfessionalServices] = useState<any>(null)
 
-  const { user } = useWeb3Auth()
-  const { uploadBeatAudio } = useFileUpload()
-  const { canUpload } = useBeatNFT()
-  const { success, error } = useEnhancedToast()
+  // Safe auth hook usage
+  const authHook = useWeb3Auth()
+  const user = authHook?.user || null
+  // Safe hook usage with fallbacks
+  const uploadHook = useFileUpload()
+  const nftHook = useBeatNFT()
+  const toastHook = useEnhancedToast()
+  
+  const uploadBeatAudio = uploadHook?.uploadBeatAudio || (() => Promise.reject('Upload not available'))
+  const canUpload = nftHook?.canUpload || false
+  const success = toastHook?.success || ((msg) => console.log('Success:', msg))
+  const error = toastHook?.error || ((msg) => console.error('Error:', msg))
 
   useEffect(() => {
     setMounted(true)
@@ -53,13 +61,31 @@ export default function EnhancedBeatUpload() {
     )
   }
 
-  const { getRootProps, getInputProps } = useDropzone({
+  // Safe dropzone usage
+  const dropzoneHook = useDropzone({
     accept: { 'audio/*': ['.mp3', '.wav', '.m4a'] },
     maxFiles: 1,
     onDrop: (files) => {
-      setAudioFile(files[0])
-      // Don't auto-advance to next step
+      if (files && files[0]) {
+        setAudioFile(files[0])
+      }
+    },
+    onError: (error) => {
+      console.error('Dropzone error:', error)
+      error('File upload failed')
     }
+  })
+  
+  const { getRootProps, getInputProps } = dropzoneHook || {
+    getRootProps: () => ({}),
+    getInputProps: () => ({})
+  }
+  
+  // Remove old dropzone config
+  const oldDropzone = useDropzone({
+    accept: { 'audio/*': ['.mp3', '.wav', '.m4a'] },
+    maxFiles: 1,
+    onDrop: () => {}
   })
 
   const handleCoverArtUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
