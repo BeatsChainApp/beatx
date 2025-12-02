@@ -5,6 +5,7 @@ import { useAccount } from 'wagmi'
 import { useSIWE } from './SIWEContext'
 import { useWeb3Profile } from '@/hooks/useWeb3Profile'
 import { isClientSide, safeLocalStorage, isAdminEmail } from '@/lib/auth-utils'
+import { rbacInvestigator } from '@/lib/rbac-investigation'
 
 // Super admin wallets and emails
 const SUPER_ADMIN_WALLETS = [
@@ -228,10 +229,16 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     }
   }, [profileLoading, buildUnifiedUser])
   
-  // Listen for admin setup completion
+  // Listen for admin setup completion and run RBAC investigation
   useEffect(() => {
     const handleAdminSetup = () => {
-      setTimeout(() => buildUnifiedUser(), 100)
+      setTimeout(() => {
+        buildUnifiedUser()
+        // Run comprehensive RBAC investigation
+        if (process.env.NODE_ENV === 'development') {
+          rbacInvestigator.investigateDataPipelines()
+        }
+      }, 100)
     }
     
     window.addEventListener('admin-setup-complete', handleAdminSetup)
