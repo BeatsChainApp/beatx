@@ -62,6 +62,7 @@ const UnifiedAuthContext = createContext<UnifiedAuthContextType | undefined>(und
 export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UnifiedUser | null>(null)
   const [loading, setLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
   
   const { address, isConnected } = useAccount()
   const siweContext = useSIWE()
@@ -216,9 +217,11 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
   }, [address, isConnected, web3Profile?.role])
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      setUser(null)
-      setLoading(false)
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted || typeof window === 'undefined') {
       return
     }
     
@@ -226,7 +229,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     if (profileLoading === false || profileLoading === undefined) {
       buildUnifiedUser()
     }
-  }, [profileLoading, buildUnifiedUser])
+  }, [mounted, profileLoading, buildUnifiedUser])
   
   // Listen for admin setup completion
   useEffect(() => {
@@ -329,13 +332,13 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // Check if user is authenticated via Google or Web3
-  const hasGoogleAuth = typeof window !== 'undefined' && localStorage.getItem('google_auth_result')
+  // Check if user is authenticated via Google or Web3 - only after mount
+  const hasGoogleAuth = mounted && typeof window !== 'undefined' && localStorage.getItem('google_auth_result')
   
-  const isAuthenticated = Boolean(
+  const isAuthenticated = mounted && Boolean(
     (isConnected && address && (siweAuth || SUPER_ADMIN_WALLETS.includes(address.toLowerCase()))) || // Web3 auth
     hasGoogleAuth // Google auth
-  ) && typeof window !== 'undefined'
+  )
 
   const value: UnifiedAuthContextType = {
     user,
