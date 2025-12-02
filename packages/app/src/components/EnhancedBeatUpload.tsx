@@ -36,41 +36,17 @@ export default function EnhancedBeatUpload() {
   const [licenseTerms, setLicenseTerms] = useState('')
   const [professionalServices, setProfessionalServices] = useState<any>(null)
 
-  // Safe hook usage with try-catch
-  let user = null
-  let uploadBeatAudio = () => Promise.reject('Upload not available')
-  let canUpload = false
-  let success = (msg) => console.log('Success:', msg)
-  let error = (msg) => console.error('Error:', msg)
+  // Fixed: Hooks must be at top level - no conditional calls
+  const authHook = useWeb3Auth() || {}
+  const uploadHook = useFileUpload() || {}
+  const nftHook = useBeatNFT() || {}
+  const toastHook = useEnhancedToast() || {}
   
-  try {
-    const authHook = useWeb3Auth()
-    user = authHook?.user || null
-  } catch (e) {
-    console.warn('Auth hook failed:', e)
-  }
-  
-  try {
-    const uploadHook = useFileUpload()
-    uploadBeatAudio = uploadHook?.uploadBeatAudio || uploadBeatAudio
-  } catch (e) {
-    console.warn('Upload hook failed:', e)
-  }
-  
-  try {
-    const nftHook = useBeatNFT()
-    canUpload = nftHook?.canUpload || false
-  } catch (e) {
-    console.warn('NFT hook failed:', e)
-  }
-  
-  try {
-    const toastHook = useEnhancedToast()
-    success = toastHook?.success || success
-    error = toastHook?.error || error
-  } catch (e) {
-    console.warn('Toast hook failed:', e)
-  }
+  const user = authHook.user || null
+  const uploadBeatAudio = uploadHook.uploadBeatAudio || (() => Promise.reject('Upload not available'))
+  const canUpload = nftHook.canUpload || false
+  const success = toastHook.success || ((msg: string) => console.log('Success:', msg))
+  const error = toastHook.error || ((msg: string) => console.error('Error:', msg))
 
   useEffect(() => {
     setMounted(true)
@@ -84,30 +60,23 @@ export default function EnhancedBeatUpload() {
     )
   }
 
-  // Safe dropzone usage
-  let getRootProps = () => ({})
-  let getInputProps = () => ({})
-  
-  try {
-    const dropzoneHook = useDropzone({
-      accept: { 'audio/*': ['.mp3', '.wav', '.m4a'] },
-      maxFiles: 1,
-      onDrop: (files) => {
-        if (files && files[0]) {
-          setAudioFile(files[0])
-        }
-      },
-      onError: (error) => {
-        console.error('Dropzone error:', error)
-        error('File upload failed')
+  // Fixed: Dropzone hook at top level
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: { 'audio/*': ['.mp3', '.wav', '.m4a', '.aac', '.flac'] },
+    maxFiles: 1,
+    onDrop: (acceptedFiles) => {
+      if (acceptedFiles && acceptedFiles[0]) {
+        setAudioFile(acceptedFiles[0])
+        success(`Audio file selected: ${acceptedFiles[0].name}`)
       }
-    })
-    
-    getRootProps = dropzoneHook.getRootProps
-    getInputProps = dropzoneHook.getInputProps
-  } catch (e) {
-    console.warn('Dropzone hook failed:', e)
-  }
+    },
+    onDropRejected: (rejectedFiles) => {
+      error(`Invalid file type. Please upload MP3, WAV, M4A, AAC, or FLAC files.`)
+    },
+    onError: (err) => {
+      error('File upload failed. Please try again.')
+    }
+  })
 
   const handleCoverArtUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -115,7 +84,9 @@ export default function EnhancedBeatUpload() {
       setCoverArt(file)
       const reader = new FileReader()
       reader.onload = (e) => {
-        setCoverArtPreview(e.target?.result as string)
+        if (e.target?.result) {
+          setCoverArtPreview(e.target.result as string)
+        }
       }
       reader.readAsDataURL(file)
     }
@@ -519,7 +490,10 @@ Generated: ${new Date().toLocaleString()}`
                   type="number"
                   placeholder="Release Year"
                   value={formData.releaseYear}
-                  onChange={(e) => setFormData({...formData, releaseYear: parseInt(e.target.value)})}
+                  onChange={(e) => {
+                    const year = parseInt(e.target.value)
+                    setFormData({...formData, releaseYear: isNaN(year) ? new Date().getFullYear() : year})
+                  }}
                   style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                 />
                 <input
@@ -557,7 +531,10 @@ Generated: ${new Date().toLocaleString()}`
                   type="number"
                   placeholder="BPM"
                   value={formData.bpm}
-                  onChange={(e) => setFormData({...formData, bpm: parseInt(e.target.value)})}
+                  onChange={(e) => {
+                    const bpm = parseInt(e.target.value)
+                    setFormData({...formData, bpm: isNaN(bpm) ? 120 : Math.max(60, Math.min(200, bpm))})
+                  }}
                   style={{ padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', background: 'white' }}
                 />
                 <select
