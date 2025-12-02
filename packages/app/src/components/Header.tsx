@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { LinkComponent } from './LinkComponent'
 import { Connect } from './Connect'
-import { useSimpleAuth } from '@/context/SimpleAuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import NotificationCenter from './NotificationCenter'
 import SmartNavigation from './SmartNavigation'
 import SanityNavigation from './SanityNavigation'
@@ -39,7 +39,7 @@ export function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [userMenuOpen])
   
-  const { user, isAuthenticated, signOut } = useSimpleAuth()
+  const { user, isAuthenticated, signOut } = useUnifiedAuth()
 
   return (
     <>

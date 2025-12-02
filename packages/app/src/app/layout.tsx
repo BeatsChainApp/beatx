@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import { PropsWithChildren } from 'react'
 import { SITE_DESCRIPTION, SITE_EMOJI, SITE_INFO, SITE_NAME, SITE_URL, SOCIAL_TWITTER, SOCIAL_INSTAGRAM, SOCIAL_LINKEDIN } from '@/utils/site'
 import { Layout } from '@/components/Layout'
-import { SimpleAuthProvider } from '@/context/SimpleAuthContext'
+// import { SimpleAuthProvider } from '@/context/SimpleAuthContext' // Removed - using UnifiedAuth
 import { Web3Provider } from '@/context/Web3Provider'
 import { Web3DataProvider } from '@/context/Web3DataContext'
 import { SIWEProvider } from '@/context/SIWEContext'
@@ -147,24 +147,22 @@ export default function RootLayout(props: PropsWithChildren) {
         }>
           <Web3Provider cookies={cookies}>
             <Web3DataProvider>
-              <SimpleAuthProvider>
-                <SIWEProvider>
-                  <UnifiedAuthProvider>
-                    <OnboardingProvider>
-                      <NotificationProvider>
-                        <PurchaseProvider>
-                        <BeatMetadataSync />
-                        <SuperAdminSetup />
-                        <Layout>{props.children}</Layout>
-                        <CookieConsentBanner />
-                        <PWAInstallPrompt />
-                        <Toaster position="top-right" />
-                        </PurchaseProvider>
-                      </NotificationProvider>
-                    </OnboardingProvider>
-                  </UnifiedAuthProvider>
-                </SIWEProvider>
-              </SimpleAuthProvider>
+              <SIWEProvider>
+                <UnifiedAuthProvider>
+                  <OnboardingProvider>
+                    <NotificationProvider>
+                      <PurchaseProvider>
+                      <BeatMetadataSync />
+                      <SuperAdminSetup />
+                      <Layout>{props.children}</Layout>
+                      <CookieConsentBanner />
+                      <PWAInstallPrompt />
+                      <Toaster position="top-right" />
+                      </PurchaseProvider>
+                    </NotificationProvider>
+                  </OnboardingProvider>
+                </UnifiedAuthProvider>
+              </SIWEProvider>
             </Web3DataProvider>
           </Web3Provider>
         </ClientOnly>
