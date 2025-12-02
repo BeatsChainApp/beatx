@@ -52,7 +52,6 @@ export default function SimplifiedAuth({ isOpen, onClose }: SimplifiedAuthProps)
   const { signIn } = useUnifiedAuth()
   const { address, isConnected } = useAccount()
   const { user, signIn: walletSignIn, hasRole } = useUnifiedAuth()
-  const { routeAfterAuth } = useUnifiedAuthRouting()
 
   const handleRoleSelect = (role: UserRole) => {
     setSelectedRole(role)

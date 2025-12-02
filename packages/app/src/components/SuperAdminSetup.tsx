@@ -2,46 +2,26 @@
 
 import { useEffect, useState } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
 const SUPER_ADMIN_EMAIL = 'info@unamifoundation.org'
 
 export default function SuperAdminSetup() {
-  const { user: firebaseUser, user } = useUnifiedAuth()
-  const { user: unifiedUser, hasRole } = useUnifiedAuth()
+  const { user, hasRole } = useUnifiedAuth()
   const [showSetup, setShowSetup] = useState(false)
 
   useEffect(() => {
     // Show setup if user is signed in with super admin email but doesn't have super_admin role
-    const isSuperAdminEmail = firebaseUser?.email === SUPER_ADMIN_EMAIL
+    const isSuperAdminEmail = user?.email === SUPER_ADMIN_EMAIL
     const hasAdminRole = hasRole('super_admin') || hasRole('admin')
     
     setShowSetup(isSuperAdminEmail && !hasAdminRole)
-  }, [firebaseUser?.email, hasRole])
+  }, [user?.email, hasRole])
 
   const setupSuperAdmin = async () => {
-    if (!firebaseUser) return
+    if (!user) return
 
     try {
-      // Update Firebase profile to admin role
-      const adminProfile = {
-        role: 'admin',
-        isVerified: true,
-        displayName: 'Super Admin',
-        updatedAt: new Date()
-      }
-
-      // This will trigger UnifiedAuth to rebuild user with admin role
-      await fetch('/api/admin/setup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          ...adminProfile
-        })
-      })
-
+      // Admin role is automatically assigned in UnifiedAuth for this email
       alert('✅ Super admin access granted!')
       window.location.reload()
     } catch (error) {

@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { useAccount } from 'wagmi'
-import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext''
 import SimplifiedAuth from './SimplifiedAuth'
 
 interface SimplifiedWalletConnectProps {
@@ -14,7 +13,6 @@ export default function SimplifiedWalletConnect({ className = '' }: SimplifiedWa
   const [showAuthModal, setShowAuthModal] = useState(false)
   const { isConnected, address } = useAccount()
   const { user, isAuthenticated, hasRole } = useUnifiedAuth()
-  const { user: firebaseUser, signOut } = useUnifiedAuth()
 
   const handleSignIn = () => {
     setShowAuthModal(true)
