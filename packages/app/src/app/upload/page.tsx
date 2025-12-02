@@ -3,7 +3,7 @@
 import { Suspense } from 'react'
 import EnhancedBeatUpload from '@/components/EnhancedBeatUpload'
 import ProtectedRoute from '@/components/ProtectedRoute'
-import ErrorBoundaryWrapper from '@/components/ErrorBoundaryWrapper'
+
 
 export const dynamic = 'force-dynamic'
 
@@ -20,12 +20,10 @@ function LoadingFallback() {
 
 export default function UploadPage() {
   return (
-    <ErrorBoundaryWrapper>
-      <Suspense fallback={<LoadingFallback />}>
-        <ProtectedRoute permission="upload">
-          <EnhancedBeatUpload />
-        </ProtectedRoute>
-      </Suspense>
-    </ErrorBoundaryWrapper>
+    <Suspense fallback={<LoadingFallback />}>
+      <ProtectedRoute permission="upload">
+        <EnhancedBeatUpload />
+      </ProtectedRoute>
+    </Suspense>
   )
 }

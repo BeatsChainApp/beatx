@@ -36,18 +36,41 @@ export default function EnhancedBeatUpload() {
   const [licenseTerms, setLicenseTerms] = useState('')
   const [professionalServices, setProfessionalServices] = useState<any>(null)
 
-  // Safe auth hook usage
-  const authHook = useWeb3Auth()
-  const user = authHook?.user || null
-  // Safe hook usage with fallbacks
-  const uploadHook = useFileUpload()
-  const nftHook = useBeatNFT()
-  const toastHook = useEnhancedToast()
+  // Safe hook usage with try-catch
+  let user = null
+  let uploadBeatAudio = () => Promise.reject('Upload not available')
+  let canUpload = false
+  let success = (msg) => console.log('Success:', msg)
+  let error = (msg) => console.error('Error:', msg)
   
-  const uploadBeatAudio = uploadHook?.uploadBeatAudio || (() => Promise.reject('Upload not available'))
-  const canUpload = nftHook?.canUpload || false
-  const success = toastHook?.success || ((msg) => console.log('Success:', msg))
-  const error = toastHook?.error || ((msg) => console.error('Error:', msg))
+  try {
+    const authHook = useWeb3Auth()
+    user = authHook?.user || null
+  } catch (e) {
+    console.warn('Auth hook failed:', e)
+  }
+  
+  try {
+    const uploadHook = useFileUpload()
+    uploadBeatAudio = uploadHook?.uploadBeatAudio || uploadBeatAudio
+  } catch (e) {
+    console.warn('Upload hook failed:', e)
+  }
+  
+  try {
+    const nftHook = useBeatNFT()
+    canUpload = nftHook?.canUpload || false
+  } catch (e) {
+    console.warn('NFT hook failed:', e)
+  }
+  
+  try {
+    const toastHook = useEnhancedToast()
+    success = toastHook?.success || success
+    error = toastHook?.error || error
+  } catch (e) {
+    console.warn('Toast hook failed:', e)
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -62,31 +85,29 @@ export default function EnhancedBeatUpload() {
   }
 
   // Safe dropzone usage
-  const dropzoneHook = useDropzone({
-    accept: { 'audio/*': ['.mp3', '.wav', '.m4a'] },
-    maxFiles: 1,
-    onDrop: (files) => {
-      if (files && files[0]) {
-        setAudioFile(files[0])
+  let getRootProps = () => ({})
+  let getInputProps = () => ({})
+  
+  try {
+    const dropzoneHook = useDropzone({
+      accept: { 'audio/*': ['.mp3', '.wav', '.m4a'] },
+      maxFiles: 1,
+      onDrop: (files) => {
+        if (files && files[0]) {
+          setAudioFile(files[0])
+        }
+      },
+      onError: (error) => {
+        console.error('Dropzone error:', error)
+        error('File upload failed')
       }
-    },
-    onError: (error) => {
-      console.error('Dropzone error:', error)
-      error('File upload failed')
-    }
-  })
-  
-  const { getRootProps, getInputProps } = dropzoneHook || {
-    getRootProps: () => ({}),
-    getInputProps: () => ({})
+    })
+    
+    getRootProps = dropzoneHook.getRootProps
+    getInputProps = dropzoneHook.getInputProps
+  } catch (e) {
+    console.warn('Dropzone hook failed:', e)
   }
-  
-  // Remove old dropzone config
-  const oldDropzone = useDropzone({
-    accept: { 'audio/*': ['.mp3', '.wav', '.m4a'] },
-    maxFiles: 1,
-    onDrop: () => {}
-  })
 
   const handleCoverArtUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
