@@ -5,7 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const AnalyticsEngine = require('../services/analyticsEngine');
-const { authenticateUser } = require('../middleware/auth-stub');
+const { authenticateUser } = require('../middleware/auth');
 
 const analytics = new AnalyticsEngine();
 

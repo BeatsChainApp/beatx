@@ -116,7 +116,32 @@ class UploadManager {
     }
 
     async uploadToIPFS(file, metadata) {
-        // Use MCP server upload endpoint
+        // Prefer centralized MCP client if available (avoids exposing keys and centralizes processing)
+        try {
+            if (typeof window !== 'undefined' && window.MCPClient) {
+                const mcp = window.MCPClient;
+                const result = await mcp.uploadFile(file, {
+                    title: metadata.title || file.name,
+                    artist: metadata.artist,
+                    genre: metadata.genre,
+                    bpm: metadata.bpm,
+                    uploadedAt: new Date().toISOString(),
+                    platform: 'extension'
+                });
+
+                if (result && result.file) {
+                    return {
+                        cid: result.file.cid || result.file.hash || null,
+                        url: result.file.url || (result.file.cid ? `https://gateway.pinata.cloud/ipfs/${result.file.cid}` : null),
+                        metadata: result.metadata || null
+                    };
+                }
+            }
+        } catch (mcpErr) {
+            console.warn('MCPClient.uploadFile failed, falling back to direct upload:', mcpErr?.message || mcpErr);
+        }
+
+        // Fallback: use direct MCP URL (legacy)
         const formData = new FormData();
         formData.append('file', file);
         formData.append('platform', 'extension');
@@ -127,17 +152,17 @@ class UploadManager {
             bpm: metadata.bpm,
             uploadedAt: new Date().toISOString()
         }));
-        
+
         const mcpUrl = 'https://beatschain-mcp-server-production.up.railway.app';
         const response = await fetch(`${mcpUrl}/api/upload`, {
             method: 'POST',
             body: formData
         });
-        
+
         if (!response.ok) {
             throw new Error(`Upload failed: ${response.statusText}`);
         }
-        
+
         const result = await response.json();
         return {
             cid: result.file.cid || result.file.hash,
@@ -148,6 +173,23 @@ class UploadManager {
 
     async processWithLivepeer(ipfsCid) {
         try {
+            // Prefer MCP client to trigger Livepeer import (central TUS handling)
+            if (typeof window !== 'undefined' && window.MCPClient) {
+                try {
+                    const mcp = window.MCPClient;
+                    const importResult = await mcp.livepeerUpload(ipfsCid, { name: `BeatsChain Asset ${Date.now()}` });
+                    if (importResult && importResult.asset) {
+                        return {
+                            playbackId: importResult.asset.playbackId || importResult.asset.playback_id || null,
+                            assetId: importResult.asset.assetId || importResult.asset.id || null
+                        };
+                    }
+                } catch (mcpLiveErr) {
+                    console.warn('MCPClient.livepeerUpload failed, falling back to direct Livepeer import:', mcpLiveErr?.message || mcpLiveErr);
+                }
+            }
+
+            // Fallback: call Livepeer import endpoint directly
             const response = await fetch('https://livepeer.studio/api/asset/import', {
                 method: 'POST',
                 headers: {
@@ -159,11 +201,11 @@ class UploadManager {
                     name: `BeatsChain Asset ${Date.now()}`
                 })
             });
-            
+
             if (!response.ok) {
                 throw new Error('Livepeer API failed');
             }
-            
+
             const result = await response.json();
             return {
                 playbackId: result.playbackId || 'demo-playback-id',

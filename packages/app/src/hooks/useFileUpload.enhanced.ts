@@ -56,6 +56,24 @@ export function useFileUpload() {
               console.warn('Failed to persist livepeer asset mapping to localStorage:', e?.message)
             }
 
+            // Try to resolve playback URL via MCP asset list
+            try {
+              const assetsResp = await fetch(`${mcpUrl.replace(/\/$/, '')}/api/livepeer/assets`)
+              if (assetsResp.ok) {
+                const assetsJson = await assetsResp.json()
+                const found = (assetsJson.assets || []).find(a => a.assetId === assetId || a.asset?.id === assetId || a.id === assetId)
+                if (found) {
+                  const playback = found.asset?.playbackId || found.playbackId || found.asset?.playback_id || found.playback_id
+                  const playbackUrl = playback ? `https://lvpr.tv/${playback}` : null
+                  setProgress(100)
+                  setUploading(false)
+                  return playbackUrl ? playbackUrl : `livepeer:${assetId}`
+                }
+              }
+            } catch (e) {
+              console.warn('Failed to resolve livepeer playback via MCP:', e?.message)
+            }
+
             setProgress(100)
             setUploading(false)
 

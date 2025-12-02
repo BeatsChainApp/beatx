@@ -1,0 +1,177 @@
+{
+  "name": "WhatsApp Router",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-webhook",
+        "options": {}
+      },
+      "name": "WhatsApp Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Normalize WhatsApp payload into a flat event\nconst body = $json;\nconst entry = body.entry && body.entry[0];\nconst change = entry && entry.changes && entry.changes[0];\nconst value = change && change.value ? change.value : body;\nconst contact = (value.contacts && value.contacts[0]) || {};\nconst message = (value.messages && value.messages[0]) || {};
+return [{ json: { source: 'whatsapp', whatsapp_id: contact.wa_id || message.from, profile: contact.profile || null, message, raw: body } }];"
+      },
+      "name": "Normalize",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [440, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Intent classifier - simple rules, replace with NLP if desired\nconst text = $json.message?.text?.body || '';\nconst lower = (text || '').toLowerCase();\nlet intent = 'help';\nif (lower.includes('preview') || lower.includes('play')) intent = 'preview';\nif (lower.includes('buy') || lower.includes('purchase')) intent = 'buy';\nif (lower.includes('upload') || lower.includes('here is my')) intent = 'upload';\nreturn [{ json: { intent, text } }];"
+      },
+      "name": "Intent Classifier",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [640, 200]
+    },
+    {
+      "parameters": {
+        "value1": "={{$json[\"intent\"]}}",
+        "rules": [
+          { "operation": "equal", "value2": "preview" }
+        ]
+      },
+      "name": "Is Preview",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [840, 160]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Preview Handler - call MCP search endpoint for simple previews\nconst q = $json.text || '';\nconst mcp = process.env.MCP_BASE_URL || 'http://localhost:4000';\nreturn [{ json: { action: 'preview', query: q, mcp } }];"
+      },
+      "name": "Preview Handler",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1040, 160]
+    },
+    {
+      "parameters": {
+        "value1": "={{$json[\"intent\"]}}",
+        "rules": [
+          { "operation": "equal", "value2": "upload" }
+        ]
+      },
+      "name": "Is Upload",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [840, 260]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Upload Handler: extract media URL from message, forward to MCP upload\nconst media = $json.message?.image || $json.message?.document || $json.message?.audio || {};\nconst mediaUrl = media && (media.url || media[0] && media[0].url) || null;\nreturn [{ json: { action: 'upload', mediaUrl, media } }];"
+      },
+      "name": "Upload Handler",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1040, 260]
+    },
+    {
+      "parameters": {
+        "authentication": "none",
+        "requestMethod": "GET",
+        "url": "={{$json.mediaUrl}}",
+        "responseFormat": "file",
+        "options": {}
+      },
+      "name": "Download Media",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1240, 180]
+    },
+    {
+      "parameters": {
+        "authentication": "none",
+        "requestMethod": "POST",
+        "url": "={{(process.env.MCP_BASE_URL || 'http://localhost:4000').replace(/\/$/, '') + '/api/upload'}}",
+        "binaryData": true,
+        "binaryPropertyName": "data",
+        "options": {},
+        "bodyParametersJson": "={ \"metadata\": { \"source\": \"whatsapp\", \"whatsapp_id\": $json.whatsapp_id, \"original_message\": $json.message }, \"platform\": \"whatsapp\" }"
+      },
+      "name": "MCP Upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1440, 220]
+    },
+    {
+      "parameters": {
+        "authentication": "none",
+        "requestMethod": "POST",
+        "url": "={{(process.env.MCP_BASE_URL || 'http://localhost:4000').replace(/\/$/, '') + '/api/beats'}}",
+        "jsonParameters": true,
+        "bodyParametersJson": "={ \"title\": $json.message?.text?.body || 'WhatsApp Upload', \"source\": 'whatsapp', \"mcpUploadResponse\": $json }"
+      },
+      "name": "MCP Create Beat",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1640, 220]
+    },
+    {
+      "parameters": {
+        "authentication": "none",
+        "requestMethod": "POST",
+        "url": "={{process.env.N8N_BASE_URL || 'http://localhost:5678'}}/webhook/metadata-enhancement",
+        "jsonParameters": true,
+        "bodyParametersJson": "={ \"beatId\": $json[0].json.id || $json[0].json.beatId || null, \"source\": \"whatsapp\" }"
+      },
+      "name": "Trigger Metadata Enhancement",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1840, 160]
+    },
+    {
+      "parameters": {
+        "authentication": "none",
+        "requestMethod": "POST",
+        "url": "={{process.env.N8N_BASE_URL || 'http://localhost:5678'}}/webhook/distribution-pipeline",
+        "jsonParameters": true,
+        "bodyParametersJson": "={ \"beatId\": $json[0].json.id || $json[0].json.beatId || null, \"source\": \"whatsapp\" }"
+      },
+      "name": "Trigger Distribution Pipeline",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1840, 280]
+    },
+    {
+      "parameters": {
+        "authentication": "none",
+        "requestMethod": "POST",
+        "url": "={{$json.mcp && $json.mcp.replace(/\/$/, '') || 'http://localhost:4000'}}/api/upload",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={ \"metadata\": { \"source\": \"whatsapp\", \"whatsapp_id\": $json.whatsapp_id }, \"platform\": \"whatsapp\" }"
+      },
+      "name": "MCP Upload (placeholder)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1240, 260]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Format reply for WhatsApp - placeholder text + optional quick action\nconst out = { to: $json.whatsapp_id || 'unknown', text: { body: $json.text || 'Thanks — we received your message.' } };\nreturn [{ json: out }];"
+      },
+      "name": "Format WhatsApp Reply",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1440, 220]
+    }
+  ],
+  "connections": {
+    "WhatsApp Webhook": { "main": [ [ { "node": "Normalize", "type": "main", "index": 0 } ] ] },
+    "Normalize": { "main": [ [ { "node": "Intent Classifier", "type": "main", "index": 0 } ] ] },
+    "Intent Classifier": { "main": [ [ { "node": "Is Preview", "type": "main", "index": 0 }, { "node": "Is Upload", "type": "main", "index": 0 } ] ] },
+    "Is Preview": { "main": [ [ { "node": "Preview Handler", "type": "main", "index": 0 } ] ] },
+    "Is Upload": { "main": [ [ { "node": "Upload Handler", "type": "main", "index": 0 } ] ] },
+    "Upload Handler": { "main": [ [ { "node": "MCP Upload (placeholder)", "type": "main", "index": 0 } ] ] },
+    "Preview Handler": { "main": [ [ { "node": "Format WhatsApp Reply", "type": "main", "index": 0 } ] ] },
+    "MCP Upload (placeholder)": { "main": [ [ { "node": "Format WhatsApp Reply", "type": "main", "index": 0 } ] ] }
+  }
+}

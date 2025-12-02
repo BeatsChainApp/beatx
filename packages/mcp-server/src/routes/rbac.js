@@ -1,5 +1,5 @@
 const express = require('express');
-const { verifySession, requirePermission } = require('../middleware/auth-stub');
+const { verifySession, requirePermission } = require('../middleware/auth');
 const router = express.Router();
 
 // User management routes

@@ -7,7 +7,7 @@ const express = require('express');
 const router = express.Router();
 const RecommendationEngine = require('../services/recommendationEngine');
 const PerformanceOptimizer = require('../services/performanceOptimizer');
-const { authenticateUser } = require('../middleware/auth-stub');
+const { authenticateUser } = require('../middleware/auth');
 
 const recommendations = new RecommendationEngine();
 const optimizer = new PerformanceOptimizer();

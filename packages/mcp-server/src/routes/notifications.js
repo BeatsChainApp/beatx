@@ -5,7 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const NotificationSystem = require('../services/notificationSystem');
-const { authenticateUser } = require('../middleware/auth-stub');
+const { authenticateUser } = require('../middleware/auth');
 
 const notifications = new NotificationSystem();
 

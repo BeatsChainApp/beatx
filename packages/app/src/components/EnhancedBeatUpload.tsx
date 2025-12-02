@@ -240,17 +240,59 @@ Generated: ${new Date().toLocaleString()}`
         professionalServices
       }
 
-      // Store metadata in localStorage first
-      const metadataKey = `beat_metadata_${beatId}`
-      localStorage.setItem(metadataKey, JSON.stringify(metadata))
-      
-      // Attempt gasless minting with enhanced metadata
+      // Persist metadata via MCP /api/beats (preferred). If MCP not available, fallback to localStorage.
+      let metadataUri = `local:${beatId}`
+      try {
+        const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL
+        if (!mcpUrl) throw new Error('MCP server not configured')
+
+        const beatPayload = {
+          beat_id: beatId,
+          title: formData.title,
+          artist: formData.stageName,
+          producer_address: user?.address || null,
+          metadata,
+          audio_url: audioUrl,
+          cover_url: coverArtUrl || null,
+          isrc: isrcCode,
+          bpm: formData.bpm,
+          genre: formData.genre,
+          professional: !!professionalServices,
+          created_at: new Date().toISOString()
+        }
+
+        const beatResp = await fetch(`${mcpUrl.replace(/\/$/, '')}/api/beats`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(beatPayload)
+        })
+
+        if (beatResp.ok) {
+          const beatJson = await beatResp.json()
+          if (beatJson && beatJson.success && beatJson.beat) {
+            // Use MCP beat id as canonical metadata URI reference
+            metadataUri = `mcp:${beatJson.beat.id || beatJson.beat.beat_id || beatJson.beat.id}`
+          }
+        } else {
+          console.warn('MCP beat creation returned non-ok:', beatResp.status)
+        }
+      } catch (persistErr) {
+        console.warn('Failed to persist beat metadata to MCP, falling back to localStorage:', persistErr?.message || persistErr)
+        try {
+          const metadataKey = `beat_metadata_${beatId}`
+          localStorage.setItem(metadataKey, JSON.stringify(metadata))
+        } catch (e) {
+          console.warn('Failed to persist metadata to localStorage:', e?.message || e)
+        }
+      }
+
+      // Attempt gasless minting with enhanced metadataUri (MCP beat id preferred)
       const mintResponse = await fetch('/api/mint-beat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           producer: user?.address,
-          metadataUri: `local:${beatId}`,
+          metadataUri,
           price: formData.price,
           genre: formData.genre,
           bpm: formData.bpm,
@@ -269,27 +311,29 @@ Generated: ${new Date().toLocaleString()}`
         console.error('Mint failed:', errorResult)
         throw new Error(errorResult.error || 'Minting failed')
       }
-    } catch (err) {
-      console.error('Minting error:', err)
-      // Beat is still saved locally with all metadata
-      error(`Minting failed: ${err.message}. Beat saved locally with all metadata.`)
-      
-      // Store the complete beat data locally as backup
-      const beatBackup = {
-        id: beatId,
-        title: formData.title,
-        artist: formData.stageName,
-        metadata,
-        audioUrl,
-        coverArtUrl,
-        isrc: isrcCode,
-        createdAt: new Date().toISOString(),
-        status: 'local_only'
+      } catch (err) {
+        console.error('Minting error:', err)
+        error(`Minting failed: ${err.message}. Beat retained locally as fallback.`)
+
+        // Store the complete beat data locally as backup (best-effort)
+        try {
+          const beatBackup = {
+            id: beatId,
+            title: formData.title,
+            artist: formData.stageName,
+            metadata,
+            audioUrl,
+            coverArtUrl,
+            isrc: isrcCode,
+            createdAt: new Date().toISOString(),
+            status: 'local_only'
+          }
+          const backupKey = `beat_backup_${beatId}`
+          localStorage.setItem(backupKey, JSON.stringify(beatBackup))
+        } catch (storageErr) {
+          console.warn('Failed to persist beat backup locally:', storageErr?.message || storageErr)
+        }
       }
-      
-      const backupKey = `beat_backup_${beatId}`
-      localStorage.setItem(backupKey, JSON.stringify(beatBackup))
-    }
   }
 
   return (

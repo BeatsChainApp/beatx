@@ -11,6 +11,9 @@ class MetadataManagementAgent {
                 url: process.env.SUPABASE_URL || 'https://demo.supabase.co',
                 key: process.env.SUPABASE_ANON_KEY || 'demo-key'
             },
+            mcp: {
+                url: process.env.NEXT_PUBLIC_MCP_SERVER_URL || process.env.MCP_SERVER_URL || 'https://beatschain-mcp-server-production.up.railway.app'
+            },
             ipfs: {
                 gateway: 'https://gateway.pinata.cloud/ipfs/',
                 apiKey: process.env.PINATA_API_KEY || 'demo-key',
@@ -111,7 +114,7 @@ class MetadataManagementAgent {
 
     async storeInSupabase(uploadId, file, metadata) {
         if (!this.supabaseClient) {
-            console.warn('Supabase not available, using local storage');
+            console.warn('Supabase not available, attempting MCP pin or falling back to local storage');
             const record = {
                 id: uploadId,
                 upload_id: uploadId,
@@ -121,12 +124,30 @@ class MetadataManagementAgent {
                 status: 'uploading',
                 created_at: new Date().toISOString()
             };
-            
+
+            // Try to persist to MCP server (it will pin metadata and log success). This avoids relying solely on localStorage.
+            try {
+                const mcpUrl = this.config.mcp.url;
+                if (mcpUrl) {
+                    await fetch(`${mcpUrl.replace(/\/$/, '')}/api/pin`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ uploadRecord: record, source: 'extension' })
+                    });
+                }
+            } catch (mcpErr) {
+                console.warn('MCP pin for uploadRecord failed:', mcpErr?.message || mcpErr);
+            }
+
             // Store in localStorage as fallback
-            const stored = JSON.parse(localStorage.getItem('beatschain_uploads') || '[]');
-            stored.push(record);
-            localStorage.setItem('beatschain_uploads', JSON.stringify(stored));
-            
+            try {
+                const stored = JSON.parse(localStorage.getItem('beatschain_uploads') || '[]');
+                stored.push(record);
+                localStorage.setItem('beatschain_uploads', JSON.stringify(stored));
+            } catch (e) {
+                console.warn('Failed to persist beatschain_uploads to localStorage:', e?.message || e);
+            }
+
             return record;
         }
 
@@ -151,22 +172,98 @@ class MetadataManagementAgent {
     }
 
     async uploadToIPFS(file, metadata) {
+        // Prefer MCP server upload proxy to avoid exposing pinata keys in the extension
+        const mcpUrl = this.config.mcp.url;
+        if (mcpUrl) {
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('metadata', JSON.stringify(metadata || {}));
+                formData.append('platform', 'extension');
+
+                const resp = await fetch(`${mcpUrl.replace(/\/$/, '')}/api/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (resp.ok) {
+                    const json = await resp.json();
+                    if (json && json.file) {
+                        return {
+                            cid: json.file.cid || json.file.hash || null,
+                            url: json.file.url || (json.file.cid ? `${this.config.ipfs.gateway}${json.file.cid}` : null),
+                            metadata: json.metadata || null
+                        };
+                    }
+                }
+                console.warn('MCP upload returned non-ok response, falling back to direct IPFS');
+            } catch (e) {
+                console.warn('MCP upload failed, falling back to direct IPFS:', e?.message || e);
+            }
+        }
+
         return await this.ipfsClient.uploadFile(file, metadata);
     }
 
     async processWithLivepeer(ipfsCid, metadata) {
+        // Prefer MCP server to initiate Livepeer import/TUS flow
+        const mcpUrl = this.config.mcp.url;
+        if (mcpUrl) {
+            try {
+                const resp = await fetch(`${mcpUrl.replace(/\/$/, '')}/api/livepeer/upload`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ipfsCid, name: metadata.title || `upload-${Date.now()}`, metadata })
+                });
+
+                if (resp.ok) {
+                    const json = await resp.json();
+                    if (json && json.asset) {
+                        return {
+                            assetId: json.asset.assetId || json.asset.asset?.id || json.asset.id,
+                            playbackId: json.asset.playbackId || json.asset.playback_id || null,
+                            streamUrl: json.asset.streamUrl || (json.asset.playbackId ? `https://lvpr.tv/${json.asset.playbackId}` : null),
+                            status: json.asset.status || 'processing'
+                        };
+                    }
+                }
+                console.warn('MCP livepeer upload returned non-ok response, falling back to direct Livepeer');
+            } catch (e) {
+                console.warn('MCP livepeer request failed, falling back to direct Livepeer:', e?.message || e);
+            }
+        }
+
         return await this.livepeerClient.processAsset(ipfsCid, metadata);
     }
 
     async updateSupabaseRecord(recordId, updates) {
         if (!this.supabaseClient) {
-            // Update localStorage fallback
-            const stored = JSON.parse(localStorage.getItem('beatschain_uploads') || '[]');
-            const index = stored.findIndex(r => r.id === recordId);
-            if (index !== -1) {
-                stored[index] = { ...stored[index], ...updates };
-                localStorage.setItem('beatschain_uploads', JSON.stringify(stored));
+            // Attempt to update MCP/pin record to keep server-side logs in sync
+            try {
+                const mcpUrl = this.config.mcp.url;
+                if (mcpUrl) {
+                    await fetch(`${mcpUrl.replace(/\/$/, '')}/api/pin`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ updateFor: recordId, updates, source: 'extension' })
+                    });
+                }
+            } catch (mcpErr) {
+                console.warn('MCP pin update failed:', mcpErr?.message || mcpErr);
             }
+
+            // Update localStorage fallback
+            try {
+                const stored = JSON.parse(localStorage.getItem('beatschain_uploads') || '[]');
+                const index = stored.findIndex(r => r.id === recordId);
+                if (index !== -1) {
+                    stored[index] = { ...stored[index], ...updates };
+                    localStorage.setItem('beatschain_uploads', JSON.stringify(stored));
+                }
+            } catch (e) {
+                console.warn('Failed to update beatschain_uploads in localStorage:', e?.message || e);
+            }
+
             return;
         }
 

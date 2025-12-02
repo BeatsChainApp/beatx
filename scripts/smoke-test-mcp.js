@@ -5,7 +5,7 @@
  * Usage: NODE_ENV=development node scripts/smoke-test-mcp.js
  */
 
-const MCP = process.env.NEXT_PUBLIC_MCP_SERVER_URL || process.env.MCP_SERVER_URL || 'http://localhost:4000';
+const MCP = process.env.MCP_BASE_URL || process.env.NEXT_PUBLIC_MCP_SERVER_URL || process.env.MCP_SERVER_URL || 'http://localhost:4000';
 
 async function fetchWithRetry(url, options = {}, maxRetries = 3) {
   const delays = [5000, 15000, 45000]; // 5s, 15s, 45s

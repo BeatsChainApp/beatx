@@ -1,0 +1,32 @@
+name: Smoke Test — WhatsApp Gateway
+
+on:
+  workflow_dispatch:
+    inputs:
+      gateway_url:
+        description: 'Gateway base URL to test (e.g. https://gateway.example.com)'
+        required: false
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run gateway smoke-test
+        env:
+          MCP_WHATSAPP_GATEWAY_URL: ${{ github.event.inputs.gateway_url || secrets.SMOKE_GATEWAY_URL }}
+          WHATSAPP_WEBHOOK_VERIFY_TOKEN: ${{ secrets.WHATSAPP_WEBHOOK_VERIFY_TOKEN }}
+          WHATSAPP_APP_SECRET: ${{ secrets.WHATSAPP_APP_SECRET }}
+        run: node scripts/smoke-test-whatsapp-gateway.js
