@@ -1,20 +1,21 @@
 import React, { useState } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import RoleSelectionModal from './RoleSelectionModal'
-import GoogleSignInButton from './auth/GoogleSignInButton'
+import CleanAuthModal from './auth/CleanAuthModal'
 
 export function Connect() {
-  const [showRoleModal, setShowRoleModal] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
 
   const { isAuthenticated, user } = useUnifiedAuth()
 
-  const handleGoogleSuccess = (userData: any) => {
-    // Handle successful Google sign-in
-    console.log('Google sign-in successful:', userData)
+  const handleSignIn = () => {
+    setAuthMode('signin')
+    setShowAuthModal(true)
   }
 
-  const handleGoogleError = (error: any) => {
-    console.error('Google sign-in error:', error)
+  const handleSignUp = () => {
+    setAuthMode('signup')
+    setShowAuthModal(true)
   }
 
   return (
@@ -47,25 +48,26 @@ export function Connect() {
         </>
       ) : (
         <div className="flex items-center gap-2">
-          <GoogleSignInButton
-            onSuccess={handleGoogleSuccess}
-            onError={handleGoogleError}
-            showAccountSelector={true}
-            className="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-2"
-          />
+          <button
+            onClick={handleSignIn}
+            className="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            Sign In
+          </button>
           
           <button
-            onClick={() => setShowRoleModal(true)}
+            onClick={handleSignUp}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
           >
-            Connect Wallet
+            Get Started
           </button>
         </div>
       )}
 
-      <RoleSelectionModal 
-        isOpen={showRoleModal}
-        onClose={() => setShowRoleModal(false)}
+      <CleanAuthModal 
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        mode={authMode}
       />
     </div>
   )

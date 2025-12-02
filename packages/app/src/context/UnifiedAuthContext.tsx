@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 import { useAccount } from 'wagmi'
 import { useSIWE } from './SIWEContext'
 import { useWeb3Profile } from '@/hooks/useWeb3Profile'
+import { isClientSide, safeLocalStorage, isAdminEmail } from '@/lib/auth-utils'
 
 // Super admin wallets and emails
 const SUPER_ADMIN_WALLETS = [
@@ -71,7 +72,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
   }
 
   const buildUnifiedUser = useCallback(() => {
-    if (typeof window === 'undefined') {
+    if (!isClientSide()) {
       setUser(null)
       setLoading(false)
       return
@@ -97,7 +98,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     
     try {
       // Check for Google auth even without wallet
-      const hasGoogleAuth = localStorage.getItem('google_auth_result')
+      const hasGoogleAuth = safeLocalStorage().getItem('google_auth_result')
       
       // No wallet connected and no Google auth
       if ((!address || !isConnected) && !hasGoogleAuth) {
@@ -139,7 +140,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
         role = 'super_admin'
       }
       // Check if email is admin (from Google OAuth or Reown AppKit social login)
-      else if (web3Profile?.email && ADMIN_EMAILS.includes(web3Profile.email.toLowerCase())) {
+      else if (web3Profile?.email && ADMIN_EMAILS.some(email => email.toLowerCase() === web3Profile.email.toLowerCase())) {
         role = 'super_admin'
       }
       // Check Google Auth user email

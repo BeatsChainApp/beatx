@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from 'next'
 import { PropsWithChildren } from 'react'
 import { SITE_DESCRIPTION, SITE_EMOJI, SITE_INFO, SITE_NAME, SITE_URL, SOCIAL_TWITTER, SOCIAL_INSTAGRAM, SOCIAL_LINKEDIN } from '@/utils/site'
 import { Layout } from '@/components/Layout'
-// import { SimpleAuthProvider } from '@/context/SimpleAuthContext' // Removed - using UnifiedAuth
 import { Web3Provider } from '@/context/Web3Provider'
 import { Web3DataProvider } from '@/context/Web3DataContext'
 import { SIWEProvider } from '@/context/SIWEContext'
@@ -16,6 +15,7 @@ import { BeatMetadataSync } from '@/components/BeatMetadataSync'
 import CookieConsentBanner from '@/components/CookieConsentBanner'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 import SuperAdminSetup from '@/components/SuperAdminSetup'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { Toaster } from 'react-hot-toast'
 
 import '../assets/globals.css'
@@ -126,7 +126,8 @@ export default function RootLayout(props: PropsWithChildren) {
       </head>
 
       <body>
-        <ClientOnly fallback={
+        <ErrorBoundary>
+          <ClientOnly fallback={
           <div style={{ 
             display: 'flex', 
             justifyContent: 'center', 
@@ -165,7 +166,8 @@ export default function RootLayout(props: PropsWithChildren) {
               </SIWEProvider>
             </Web3DataProvider>
           </Web3Provider>
-        </ClientOnly>
+          </ClientOnly>
+        </ErrorBoundary>
         
         {/* Google Tag Manager */}
         {process.env.NEXT_PUBLIC_GTM_ID && (

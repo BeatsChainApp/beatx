@@ -16,7 +16,7 @@ export default function SignInModal({ isOpen, onClose, onSwitchToSignUp }: SignI
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const { signIn, signIn } = useUnifiedAuth()
+  const { signIn } = useUnifiedAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
