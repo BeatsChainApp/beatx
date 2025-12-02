@@ -105,10 +105,8 @@ CREATE TABLE IF NOT EXISTS analytics_events (
   created_at timestamptz DEFAULT now()
 );
 
--- Step 3: Create indexes
+-- Step 3: Create indexes (only for tables that exist)
 CREATE INDEX IF NOT EXISTS idx_users_wallet ON users(wallet_address);
-CREATE INDEX IF NOT EXISTS idx_beats_producer ON beats(producer_address);
-CREATE INDEX IF NOT EXISTS idx_beats_active ON beats(is_active) WHERE is_active = true;
 CREATE INDEX IF NOT EXISTS idx_transactions_buyer ON transactions(buyer_address);
 CREATE INDEX IF NOT EXISTS idx_purchases_buyer ON purchases(buyer_address);
 
