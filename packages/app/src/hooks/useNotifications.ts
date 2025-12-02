@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAuth } from './useAuth';
+import { useUnifiedAuth } from './useUnifiedAuth';
 
 interface Notification {
   id: string;
@@ -19,7 +19,7 @@ interface NotificationStats {
 }
 
 export function useNotifications() {
-  const { user } = useAuth();
+  const { user } = useUnifiedAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [stats, setStats] = useState<NotificationStats>({ total: 0, unread: 0, categories: {} });
   const [loading, setLoading] = useState(false);

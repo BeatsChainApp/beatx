@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { usePayments } from '@/hooks/usePayments'
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
 interface PurchaseModalProps {
   isOpen: boolean
@@ -19,7 +19,7 @@ export default function PurchaseModal({ isOpen, onClose, beat }: PurchaseModalPr
   const [licenseType, setLicenseType] = useState<'basic' | 'premium' | 'exclusive'>('basic')
   const [paymentMethod, setPaymentMethod] = useState<'crypto' | 'fiat'>('fiat')
   const { purchaseWithCrypto, purchaseWithFiat, processing, error } = usePayments()
-  const { user } = useAuth()
+  const { user } = useUnifiedAuth()
 
   if (!isOpen) return null
 

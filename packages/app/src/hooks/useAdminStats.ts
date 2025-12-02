@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
 interface AdminStats {
   overview: {
@@ -34,11 +34,11 @@ export function useAdminStats() {
   const [stats, setStats] = useState<AdminStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { user, userProfile } = useAuth()
+  const { user, user } = useUnifiedAuth()
 
   useEffect(() => {
     const fetchStats = async () => {
-      if (!user || userProfile?.role !== 'admin') {
+      if (!user || user?.role !== 'admin') {
         setLoading(false)
         return
       }
@@ -72,10 +72,10 @@ export function useAdminStats() {
     }
 
     fetchStats()
-  }, [user, userProfile])
+  }, [user, user])
 
   const refreshStats = async () => {
-    if (!user || userProfile?.role !== 'admin') return
+    if (!user || user?.role !== 'admin') return
 
     try {
       const idToken = await user.getIdToken()

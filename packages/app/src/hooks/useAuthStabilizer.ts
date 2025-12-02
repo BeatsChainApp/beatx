@@ -8,7 +8,7 @@ interface AuthStabilizerOptions {
   cooldownMs?: number
 }
 
-export function useAuthStabilizer(options: AuthStabilizerOptions = {}) {
+export function useUnifiedAuthStabilizer(options: AuthStabilizerOptions = {}) {
   const { maxToastsPerMinute = 3, cooldownMs = 60000 } = options
   const { error } = useEnhancedToast()
   const toastHistory = useRef<number[]>([])

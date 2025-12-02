@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { toast } from 'react-toastify'
 
 interface SignInModalProps {
@@ -16,7 +16,7 @@ export default function SignInModal({ isOpen, onClose, onSwitchToSignUp }: SignI
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const { signIn, signInWithGoogle } = useAuth()
+  const { signIn, signIn } = useUnifiedAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -57,7 +57,7 @@ export default function SignInModal({ isOpen, onClose, onSwitchToSignUp }: SignI
     setError('')
 
     try {
-      await signInWithGoogle()
+      await signIn()
       toast.success('Successfully signed in with Google!')
       onClose()
     } catch (error: any) {

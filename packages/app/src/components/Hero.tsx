@@ -1,10 +1,10 @@
 'use client'
 
 import { LinkComponent } from './LinkComponent'
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
 export default function Hero() {
-  const { user } = useAuth()
+  const { user } = useUnifiedAuth()
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 overflow-hidden flex items-center">

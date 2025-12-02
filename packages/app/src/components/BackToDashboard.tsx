@@ -1,14 +1,14 @@
 'use client'
 
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { LinkComponent } from './LinkComponent'
 
 export function BackToDashboard() {
-  const { userProfile } = useAuth()
+  const { user } = useUnifiedAuth()
   
-  if (!userProfile) return null
+  if (!user) return null
   
-  const dashboardPath = userProfile.role === 'admin' ? '/admin' : '/dashboard'
+  const dashboardPath = user.role === 'admin' ? '/admin' : '/dashboard'
   
   return (
     <div className="mb-4">

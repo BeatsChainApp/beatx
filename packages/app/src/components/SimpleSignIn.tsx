@@ -3,7 +3,7 @@
 import { useSimpleAuth } from '@/context/SimpleAuthContext'
 
 export default function SimpleSignIn() {
-  const { user, loading, signInWithGoogle, signOut, wallet } = useSimpleAuth()
+  const { user, loading, signIn, signOut, wallet } = useSimpleAuth()
 
   if (user) {
     return (
@@ -35,7 +35,7 @@ export default function SimpleSignIn() {
         </div>
       )}
       <button
-        onClick={signInWithGoogle}
+        onClick={signIn}
         disabled={loading}
         className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 disabled:opacity-50"
       >

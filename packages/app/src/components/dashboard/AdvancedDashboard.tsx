@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
 import { MobileMetricCard } from '@/components/MobileMetricCard';
 import { ResponsiveLayout } from '@/components/ResponsiveLayout';
 
@@ -43,7 +43,7 @@ interface AnalyticsData {
 }
 
 export function AdvancedDashboard() {
-  const { user } = useAuth();
+  const { user } = useUnifiedAuth();
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [timeRange, setTimeRange] = useState('24h');

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
 
 interface Beat {
   id: string;
@@ -12,7 +12,7 @@ interface Beat {
 }
 
 export function SmartRecommendations() {
-  const { user } = useAuth();
+  const { user } = useUnifiedAuth();
   const [sections, setSections] = useState([
     { title: 'For You', beats: [], loading: true },
     { title: 'Trending Now', beats: [], loading: true },

@@ -1,10 +1,10 @@
 'use client'
 
-import { useMockAuth as useAuth } from '@/context/MockAuthContext'
+import { useMockAuth as useUnifiedAuth } from '@/context/MockAuthContext'
 import { useAccount } from 'wagmi'
 
 export default function MockWalletSignIn() {
-  const { userProfile, updateProfile } = useAuth()
+  const { user, updateProfile } = useUnifiedAuth()
   const { address, isConnected } = useAccount()
 
   const handleLinkWallet = async () => {
@@ -22,7 +22,7 @@ export default function MockWalletSignIn() {
     )
   }
 
-  if (userProfile?.walletAddress === address) {
+  if (user?.walletAddress === address) {
     return (
       <div className="text-center p-4 bg-green-50 rounded-lg">
         <p className="text-green-700">✅ Wallet linked successfully</p>

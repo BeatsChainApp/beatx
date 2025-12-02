@@ -1,13 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
 const SUPER_ADMIN_EMAIL = 'info@unamifoundation.org'
 
 export default function SuperAdminSetup() {
-  const { user: firebaseUser, userProfile } = useAuth()
+  const { user: firebaseUser, user } = useUnifiedAuth()
   const { user: unifiedUser, hasRole } = useUnifiedAuth()
   const [showSetup, setShowSetup] = useState(false)
 

@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Create user profile in Firestore
-    const userProfile = {
+    const user = {
       uid: userRecord.uid,
       email: userData.email,
       displayName: userData.displayName,
@@ -105,11 +105,11 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date()
     }
 
-    await adminDb.collection('users').doc(userRecord.uid).set(userProfile)
+    await adminDb.collection('users').doc(userRecord.uid).set(user)
 
     return NextResponse.json({
       success: true,
-      user: userProfile
+      user: user
     })
 
   } catch (error: any) {

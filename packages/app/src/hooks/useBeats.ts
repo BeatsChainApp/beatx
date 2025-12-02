@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Beat } from '@/types'
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { EventIndexer } from '@/lib/indexing'
 import { DecentralizedBeat } from '@/lib/metadata'
 import { useContract } from './useContract'
@@ -14,7 +14,7 @@ export function useBeats(filters?: { genre?: string, producerId?: string }) {
   const [beats, setBeats] = useState<Beat[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { user } = useAuth()
+  const { user } = useUnifiedAuth()
 
   useEffect(() => {
     const fetchBeats = async () => {

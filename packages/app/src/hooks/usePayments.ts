@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { parseEther } from 'viem'
-import { useAuth } from './useAuth'
+import { useUnifiedAuth } from './useUnifiedAuth'
 import { useFirestore } from './useFirestore'
 
 interface PurchaseData {
@@ -17,7 +17,7 @@ export function usePayments() {
   const [processing, setProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { address } = useAccount()
-  const { user } = useAuth()
+  const { user } = useUnifiedAuth()
   const { addPurchase } = useFirestore()
   const { writeContract, data: hash } = useWriteContract()
   const { isLoading: isConfirming } = useWaitForTransactionReceipt({ hash })

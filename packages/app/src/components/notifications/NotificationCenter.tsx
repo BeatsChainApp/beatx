@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
 
 interface Notification {
   id: string;
@@ -15,7 +15,7 @@ interface Notification {
 }
 
 export function NotificationCenter() {
-  const { user } = useAuth();
+  const { user } = useUnifiedAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);

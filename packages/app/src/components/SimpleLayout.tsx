@@ -4,12 +4,12 @@ import React, { PropsWithChildren, useState } from 'react'
 import NotificationCenter from './NotificationCenter'
 
 import AuthModal from './AuthModal'
-import { useAuth } from '@/hooks/useAuth'
+import { useUnifiedAuth } from '@/hooks/useUnifiedAuth'
 
 export function SimpleLayout(props: PropsWithChildren) {
   const [authModal, setAuthModal] = useState<{ isOpen: boolean, mode: 'signin' | 'signup' }>({ isOpen: false, mode: 'signin' })
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { user, userProfile, logout } = useAuth()
+  const { user, user, signOut } = useUnifiedAuth()
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -40,7 +40,7 @@ export function SimpleLayout(props: PropsWithChildren) {
               {user ? (
                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                    {userProfile?.displayName || user.email}
+                    {user?.displayName || user.email}
                   </span>
                   <button 
                     style={{
@@ -53,7 +53,7 @@ export function SimpleLayout(props: PropsWithChildren) {
                       fontSize: '0.875rem',
                       fontWeight: '500'
                     }}
-                    onClick={logout}
+                    onClick={signOut}
                   >
                     Sign Out
                   </button>
@@ -138,7 +138,7 @@ export function SimpleLayout(props: PropsWithChildren) {
                 {user ? (
                   <>
                     <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                      {userProfile?.displayName || user.email}
+                      {user?.displayName || user.email}
                     </span>
                     <button 
                       style={{
@@ -151,7 +151,7 @@ export function SimpleLayout(props: PropsWithChildren) {
                         fontSize: '0.875rem',
                         fontWeight: '500'
                       }}
-                      onClick={logout}
+                      onClick={signOut}
                     >
                       Sign Out
                     </button>

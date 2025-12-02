@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { ApiClient } from '@/lib/api'
 import { useDropzone } from 'react-dropzone'
 import { Beat } from '@/types'
@@ -12,7 +12,7 @@ interface BeatUploadFormProps {
 }
 
 export default function BeatUploadForm({ onSuccess, onCancel }: BeatUploadFormProps) {
-  const { user } = useAuth()
+  const { user } = useUnifiedAuth()
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { toast } from 'react-toastify'
 
 interface AppOnboardingModalProps {
@@ -15,7 +15,7 @@ interface UserChoices {
   stageName?: string
   genre?: string
   authenticated?: boolean
-  userProfile?: any
+  user?: any
   sponsorConsent?: boolean
 }
 
@@ -33,7 +33,7 @@ export default function AppOnboardingModal({ isOpen, onClose }: AppOnboardingMod
   const [loading, setLoading] = useState(false)
   const [sponsorConsent, setSponsorConsent] = useState<boolean | null>(null)
   
-  const { signInWithGoogle, user } = useAuth()
+  const { signIn, user } = useUnifiedAuth()
   
   const steps = ['welcome', 'account', 'role', 'profile', 'features', 'complete']
 
@@ -78,11 +78,11 @@ export default function AppOnboardingModal({ isOpen, onClose }: AppOnboardingMod
   const handleGoogleSignIn = async () => {
     setLoading(true)
     try {
-      await signInWithGoogle()
+      await signIn()
       setUserChoices(prev => ({ 
         ...prev, 
         authenticated: true, 
-        userProfile: user 
+        user: user 
       }))
       toast.success('Successfully signed in!')
       nextStep()

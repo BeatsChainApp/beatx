@@ -2,13 +2,13 @@
 
 import { useRouter } from 'next/navigation'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useEffect } from 'react'
 
-export function useAuthRouting() {
+export function useUnifiedAuthRouting() {
   const router = useRouter()
   const { user, hasRole, isAuthenticated } = useUnifiedAuth()
-  const { user: firebaseUser } = useAuth()
+  const { user: firebaseUser } = useUnifiedAuth()
 
   const routeAfterAuth = (selectedRole?: string) => {
     // Priority 1: Super admin email gets admin access

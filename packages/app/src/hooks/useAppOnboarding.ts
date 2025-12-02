@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
 interface OnboardingState {
   isOpen: boolean
@@ -30,7 +30,7 @@ export function useAppOnboarding() {
   })
   
   const [manager, setManager] = useState<OnboardingManager | null>(null)
-  const { user } = useAuth()
+  const { user } = useUnifiedAuth()
 
   // Initialize onboarding manager
   useEffect(() => {

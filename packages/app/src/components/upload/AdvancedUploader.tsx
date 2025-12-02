@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
 
 interface UploadProgress {
   uploadId: string;
@@ -11,7 +11,7 @@ interface UploadProgress {
 }
 
 export function AdvancedUploader() {
-  const { user } = useAuth();
+  const { user } = useUnifiedAuth();
   const [uploads, setUploads] = useState<Map<string, UploadProgress>>(new Map());
   const [isDragging, setIsDragging] = useState(false);
 

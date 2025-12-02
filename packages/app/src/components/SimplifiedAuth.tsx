@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useAccount } from 'wagmi'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import { useAuthRouting } from '@/hooks/useAuthRouting'
+import { useUnifiedAuthRouting } from '@/hooks/useUnifiedAuthRouting'
 
 interface SimplifiedAuthProps {
   isOpen: boolean
@@ -49,10 +49,10 @@ export default function SimplifiedAuth({ isOpen, onClose }: SimplifiedAuthProps)
   const [loading, setLoading] = useState(false)
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null)
   const [step, setStep] = useState<'role' | 'auth'>('role')
-  const { signInWithGoogle } = useAuth()
+  const { signIn } = useUnifiedAuth()
   const { address, isConnected } = useAccount()
   const { user, signIn: walletSignIn, hasRole } = useUnifiedAuth()
-  const { routeAfterAuth } = useAuthRouting()
+  const { routeAfterAuth } = useUnifiedAuthRouting()
 
   const handleRoleSelect = (role: UserRole) => {
     setSelectedRole(role)
@@ -62,7 +62,7 @@ export default function SimplifiedAuth({ isOpen, onClose }: SimplifiedAuthProps)
   const handleGoogleSignIn = async () => {
     setLoading(true)
     try {
-      await signInWithGoogle()
+      await signIn()
       
       // Route based on role or admin status
       setTimeout(() => {

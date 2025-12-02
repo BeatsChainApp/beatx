@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useAccount } from 'wagmi'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import SimplifiedAuth from './SimplifiedAuth'
 
 interface SimplifiedWalletConnectProps {
@@ -14,15 +14,15 @@ export default function SimplifiedWalletConnect({ className = '' }: SimplifiedWa
   const [showAuthModal, setShowAuthModal] = useState(false)
   const { isConnected, address } = useAccount()
   const { user, isAuthenticated, hasRole } = useUnifiedAuth()
-  const { user: firebaseUser, logout } = useAuth()
+  const { user: firebaseUser, signOut } = useUnifiedAuth()
 
   const handleSignIn = () => {
     setShowAuthModal(true)
   }
 
   const handleSignOut = async () => {
-    await logout()
-    // Redirect to home after logout
+    await signOut()
+    // Redirect to home after signOut
     window.location.href = '/'
   }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAuth } from '@/context/AuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { db } from '@/lib/firebase'
 import { collection, query, where, orderBy, limit, onSnapshot } from 'firebase/firestore'
 
@@ -18,7 +18,7 @@ interface Notification {
 export function useRealTimeNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
-  const { user } = useAuth()
+  const { user } = useUnifiedAuth()
 
   useEffect(() => {
     if (!user) {

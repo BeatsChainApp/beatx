@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/hooks/useAuth'
+import { useUnifiedAuth } from '@/hooks/useUnifiedAuth'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -15,7 +15,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode }: AuthMo
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [loading, setLoading] = useState(false)
-  const { signInWithEmail, signUpWithEmail, signInWithGoogle, error } = useAuth()
+  const { signInWithEmail, signUpWithEmail, signIn, error } = useUnifiedAuth()
 
   if (!isOpen) return null
 
@@ -40,7 +40,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode }: AuthMo
   const handleGoogleSignIn = async () => {
     setLoading(true)
     try {
-      await signInWithGoogle()
+      await signIn()
       onClose()
     } catch (err) {
       console.error('Google sign in error:', err)
