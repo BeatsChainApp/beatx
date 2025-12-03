@@ -215,13 +215,3 @@ export default function MusicDashboard() {
     </UniversalLayout>
   )
 }
-
-function MusicDashboardContent() {
-  return (
-    <ProtectedRoute>
-      <DashboardLayout>
-        <MusicDashboardContent />
-      </DashboardLayout>
-    </ProtectedRoute>
-  )
-}

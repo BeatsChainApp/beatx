@@ -314,13 +314,3 @@ export default function CreatorDashboard() {
     </UniversalLayout>
   )
 }
-
-function CreatorDashboardContent() {
-  return (
-    <ProtectedRoute>
-      <DashboardLayout>
-        <CreatorDashboardContent />
-      </DashboardLayout>
-    </ProtectedRoute>
-  )
-}

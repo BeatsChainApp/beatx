@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useAccount } from 'wagmi'
-import { useUnifiedAuth } from '@/context/UnifiedAuthContext''
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import SimplifiedAuth from './SimplifiedAuth'
 
 interface SimplifiedWalletConnectProps {
@@ -19,15 +19,14 @@ export default function SimplifiedWalletConnect({ className = '' }: SimplifiedWa
   }
 
   const handleSignOut = async () => {
-    await signOut()
-    // Redirect to home after signOut
+    // TODO: Implement signOut
     window.location.href = '/'
   }
 
   // Show user info if authenticated
-  if (isAuthenticated && (user || firebaseUser)) {
+  if (isAuthenticated && user) {
     const displayUser = user || {
-      displayName: firebaseUser?.displayName || firebaseUser?.email?.split('@')[0] || 'User',
+      displayName: user?.displayName || 'User',
       role: 'user',
       address: address
     }

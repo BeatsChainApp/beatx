@@ -225,13 +225,3 @@ export default function CollectorDashboard() {
     </UniversalLayout>
   )
 }
-
-function CollectorDashboardContent() {
-  return (
-    <ProtectedRoute>
-      <DashboardLayout>
-        <CollectorDashboardContent />
-      </DashboardLayout>
-    </ProtectedRoute>
-  )
-}

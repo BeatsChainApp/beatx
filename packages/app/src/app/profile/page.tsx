@@ -27,6 +27,13 @@ function ProfilePageContent() {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    bio: ''
+  })
   
   // Use unified profile or user data
   const profile = unifiedProfile || user
@@ -52,19 +59,6 @@ function ProfilePageContent() {
     marketingEmails: false,
     twoFactorAuth: false
   }
-  
-  const handleSettingChange = async (key: string, value: boolean) => {
-    // TODO: Implement unified settings change
-    return true
-  }
-  const [uploading, setUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    bio: ''
-  })
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Initialize form data when profile loads

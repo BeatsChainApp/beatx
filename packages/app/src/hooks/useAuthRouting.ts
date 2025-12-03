@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useUnifiedAuth } from '@/context/UnifiedAuthContext''
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useEffect } from 'react'
 
 export function useUnifiedAuthRouting() {
@@ -10,7 +10,7 @@ export function useUnifiedAuthRouting() {
 
   const routeAfterAuth = (selectedRole?: string) => {
     // Priority 1: Super admin email gets admin access
-    if (firebaseUser?.email === 'info@unamifoundation.org') {
+    if (user?.email === 'info@unamifoundation.org') {
       router.push('/admin')
       return
     }
@@ -49,7 +49,7 @@ export function useUnifiedAuthRouting() {
 
   // Auto-route admin users who sign in with Google
   useEffect(() => {
-    if (isAuthenticated && firebaseUser?.email === 'info@unamifoundation.org') {
+    if (isAuthenticated && user?.email === 'info@unamifoundation.org') {
       // Small delay to ensure auth state is fully updated
       setTimeout(() => {
         if (window.location.pathname === '/') {
@@ -57,7 +57,7 @@ export function useUnifiedAuthRouting() {
         }
       }, 1000)
     }
-  }, [isAuthenticated, firebaseUser?.email, router])
+  }, [isAuthenticated, user?.email, router])
 
   return { routeAfterAuth }
 }
