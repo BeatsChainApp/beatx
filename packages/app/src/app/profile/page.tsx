@@ -1,27 +1,50 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
-import { useWeb3Profile } from '@/hooks/useWeb3Profile'
+import { useUnifiedProfile } from '@/hooks/useUnifiedProfile'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { BackToDashboard } from '@/components/BackToDashboard'
 import { toast } from 'react-toastify'
 import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
 
 export default function ProfilePage() {
-  const { 
-    profile, 
-    settings, 
-    loading, 
-    saving, 
-    error,
-    updateProfile, 
-    updateSettings,
-    uploadProfileImage,
-    removeProfileImage,
-    isConnected
-  } = useWeb3Profile()
-  const { address } = useAccount()
+  const { user, isAuthenticated } = useUnifiedAuth()
+  const { profile: unifiedProfile, updateProfile: updateUnifiedProfile, syncStatus, loading } = useUnifiedProfile()
+  const { address, isConnected } = useAccount()
   const router = useRouter()
+  const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  
+  // Use unified profile or user data
+  const profile = unifiedProfile || user
+  
+  // Placeholder functions for removed features
+  const uploadProfileImage = async (file: File) => {
+    // TODO: Implement unified profile image upload
+    return null
+  }
+  
+  const removeProfileImage = async () => {
+    // TODO: Implement unified profile image removal
+    return false
+  }
+  
+  const updateSettings = async (settings: any) => {
+    // TODO: Implement unified settings update
+    return true
+  }
+  
+  const settings = {
+    emailNotifications: true,
+    marketingEmails: false,
+    twoFactorAuth: false
+  }
+  
+  const handleSettingChange = async (key: string, value: boolean) => {
+    // TODO: Implement unified settings change
+    return true
+  }
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [formData, setFormData] = useState({
@@ -117,10 +140,11 @@ export default function ProfilePage() {
     }
     
     try {
+      setSaving(true)
       const displayName = `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim()
       
-      const success = await updateProfile({
-        displayName,
+      const success = await updateUnifiedProfile({
+        display_name: displayName,
         bio: formData.bio.trim(),
         email: formData.email.trim()
       })
@@ -130,7 +154,7 @@ export default function ProfilePage() {
         
         // Route based on user role
         setTimeout(() => {
-          if (profile?.role === 'producer') {
+          if (profile?.role === 'producer' || profile?.app_role === 'PRODUCER') {
             router.push('/dashboard')
           } else {
             router.push('/profile')
@@ -142,6 +166,8 @@ export default function ProfilePage() {
     } catch (error: any) {
       console.error('Error updating profile:', error)
       toast.error('Failed to update profile. Please try again.')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -291,9 +317,20 @@ export default function ProfilePage() {
             />
           </div>
           <div>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.25rem' }}>
-              {profile?.displayName || 'User'}
-            </h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#1f2937' }}>
+                {profile?.display_name || profile?.displayName || 'User'}
+              </h2>
+              {syncStatus === 'syncing' && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#3b82f6', fontSize: '0.75rem' }}>
+                  <div style={{ width: '12px', height: '12px', border: '2px solid #3b82f6', borderTop: '2px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                  Syncing
+                </div>
+              )}
+              {syncStatus === 'success' && (
+                <div style={{ color: '#10b981', fontSize: '0.75rem' }}>✅ Synced</div>
+              )}
+            </div>
             <p style={{ color: '#6b7280', fontSize: '0.875rem', fontFamily: 'monospace' }}>{address}</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
               <span style={{

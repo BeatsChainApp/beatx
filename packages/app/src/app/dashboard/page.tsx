@@ -11,7 +11,7 @@ import EarningsOverview from '@/components/EarningsOverview'
 import QuickActions from '@/components/QuickActions'
 import BeatManagementTable from '@/components/BeatManagementTable'
 import DashboardLayout from '@/components/DashboardLayout'
-import EnhancedBeatManagement from '@/components/EnhancedBeatManagement'
+import BeatManagementSystem from '@/components/BeatManagementSystem'
 import TransactionHistory from '@/components/TransactionHistory'
 import DashboardHero from '@/components/DashboardHero'
 
@@ -46,7 +46,7 @@ function DashboardContent() {
       
       {/* Beat Management Section */}
       <div className="mb-8">
-        <EnhancedBeatManagement />
+        <BeatManagementSystem />
       </div>
       
       {/* Legacy Stats (keeping for compatibility) */}

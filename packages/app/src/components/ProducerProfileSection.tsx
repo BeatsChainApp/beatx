@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
+import { useUnifiedProfile } from '@/hooks/useUnifiedProfile'
 import ProfileImageUpload from './ProfileImageUpload'
 
 export default function ProducerProfileSection() {
   const { user } = useUnifiedAuth()
+  const { profile: unifiedProfile, updateProfile, syncStatus } = useUnifiedProfile()
   const [profile, setProfile] = useState({
     stageName: '',
     bio: '',
@@ -23,7 +25,20 @@ export default function ProducerProfileSection() {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    if (user?.address) {
+    if (unifiedProfile) {
+      // Load from unified profile first
+      const platforms = unifiedProfile.platforms?.app?.preferences || {}
+      setProfile({
+        stageName: platforms.stageName || unifiedProfile.display_name || '',
+        bio: unifiedProfile.bio || '',
+        genres: platforms.genres || '',
+        experience: platforms.experience || 'beginner',
+        location: platforms.location || '',
+        profileImage: unifiedProfile.profile_image || '',
+        socialLinks: platforms.socialLinks || { twitter: '', instagram: '', soundcloud: '' }
+      })
+    } else if (user?.address) {
+      // Fallback to local storage
       const stored = localStorage.getItem(`producer_profile_${user.address}`)
       if (stored) {
         const data = JSON.parse(stored)
@@ -38,22 +53,47 @@ export default function ProducerProfileSection() {
         })
       }
     }
-  }, [user?.address])
+  }, [unifiedProfile, user?.address])
 
   const handleSave = async () => {
     if (!user?.address) return
     
     setSaving(true)
     try {
-      const updatedProfile = {
-        ...profile,
-        userId: user.address,
-        isProducer: true,
-        updatedAt: new Date().toISOString()
-      }
+      // Update unified profile
+      const success = await updateProfile({
+        display_name: profile.stageName || unifiedProfile?.display_name,
+        bio: profile.bio,
+        profile_image: profile.profileImage,
+        platforms: {
+          ...unifiedProfile?.platforms,
+          app: {
+            ...unifiedProfile?.platforms?.app,
+            preferences: {
+              ...unifiedProfile?.platforms?.app?.preferences,
+              stageName: profile.stageName,
+              genres: profile.genres,
+              experience: profile.experience,
+              location: profile.location,
+              socialLinks: profile.socialLinks
+            }
+          }
+        }
+      })
       
-      localStorage.setItem(`producer_profile_${user.address}`, JSON.stringify(updatedProfile))
-      setEditing(false)
+      if (success) {
+        // Also save to localStorage for backward compatibility
+        const updatedProfile = {
+          ...profile,
+          userId: user.address,
+          isProducer: true,
+          updatedAt: new Date().toISOString()
+        }
+        localStorage.setItem(`producer_profile_${user.address}`, JSON.stringify(updatedProfile))
+        setEditing(false)
+      } else {
+        throw new Error('Failed to update unified profile')
+      }
     } catch (error) {
       console.error('Failed to save profile:', error)
     } finally {
@@ -64,10 +104,21 @@ export default function ProducerProfileSection() {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">🎤 Producer Profile</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-semibold text-gray-900">🎤 Producer Profile</h2>
+          {syncStatus === 'syncing' && (
+            <div className="flex items-center gap-2 text-blue-600 text-sm">
+              <div className="animate-spin w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+              Syncing...
+            </div>
+          )}
+          {syncStatus === 'success' && (
+            <div className="text-green-600 text-sm">✅ Synced</div>
+          )}
+        </div>
         <button
           onClick={() => editing ? handleSave() : setEditing(true)}
-          disabled={saving}
+          disabled={saving || syncStatus === 'syncing'}
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
         >
           {saving ? 'Saving...' : editing ? 'Save Changes' : 'Edit Profile'}
