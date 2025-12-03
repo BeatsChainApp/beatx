@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import '../styles/mobile-fixes.css';
+@import '../styles/no-reown.css';
 
 :root {
   --foreground-rgb: 0, 0, 0;

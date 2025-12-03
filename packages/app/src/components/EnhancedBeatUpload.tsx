@@ -80,6 +80,19 @@ export default function EnhancedBeatUpload() {
     )
   }
 
+  // Prevent dehydration by ensuring client-side only rendering
+  if (!mounted) {
+    return (
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1rem' }}>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🎵</div>
+          <h2>Loading Upload System...</h2>
+          <p>Initializing Web3 components...</p>
+        </div>
+      </div>
+    )
+  }
+
   useEffect(() => {
     setMounted(true)
   }, [])

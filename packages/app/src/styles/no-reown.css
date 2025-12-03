@@ -1,0 +1,17 @@
+/* Remove Reown font preloads */
+link[href*="fonts.reown.com"] {
+  display: none !important;
+}
+
+/* Hide any Reown UI elements */
+[class*="reown"], 
+[id*="reown"],
+[data-testid*="reown"] {
+  display: none !important;
+}
+
+/* Prevent Reown font loading */
+@font-face {
+  font-family: 'KHTeka-Medium';
+  src: none;
+}
