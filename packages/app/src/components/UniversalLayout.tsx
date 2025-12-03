@@ -3,6 +3,7 @@
 import { ReactNode } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import SessionGate from './SessionGate'
+import AuthDebug from './AuthDebug'
 
 interface UniversalLayoutProps {
   children: ReactNode
@@ -74,6 +75,7 @@ export default function UniversalLayout({
     <SessionGate requireWallet={requireWallet}>
       <div className={containerClass}>
         {children}
+        <AuthDebug />
       </div>
     </SessionGate>
   )

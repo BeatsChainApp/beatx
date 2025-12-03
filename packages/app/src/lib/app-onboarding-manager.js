@@ -17,8 +17,8 @@ class AppOnboardingManager {
 
     async initialize() {
         // Check completion status
-        const completed = localStorage.getItem('beatx_onboarding_completed');
-        if (completed === 'true') {
+        const completed = await this.checkOnboardingStatus();
+        if (completed) {
             return false;
         }
 
@@ -26,6 +26,11 @@ class AppOnboardingManager {
         await this.initializeCoreSystems();
         
         return true;
+    }
+
+    async checkOnboardingStatus() {
+        const completed = localStorage.getItem('beatx_onboarding_completed');
+        return completed === 'true';
     }
 
     async initializeCoreSystems() {
