@@ -106,45 +106,104 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Professional Hero Section */}
+      <div className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center mb-8">
+            <div className="text-6xl mb-4">👑</div>
+            <h1 className="text-4xl font-bold mb-4">BeatsChain Admin Control Center</h1>
+            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+              Comprehensive platform management, analytics, and system monitoring for the Web3 music marketplace
+            </p>
+          </div>
+          
+          {/* System Status Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 text-center">
+              <div className={`text-3xl mb-2 ${
+                systemHealth?.status === 'healthy' ? '🟢' : '🔴'
+              }`}></div>
+              <h3 className="font-semibold mb-1">System Health</h3>
+              <p className="text-sm text-blue-100">
+                {systemHealth?.status === 'healthy' ? 'All Systems Operational' : 'Issues Detected'}
+              </p>
+            </div>
+            
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 text-center">
+              <div className="text-3xl mb-2">💰</div>
+              <h3 className="font-semibold mb-1">Total Revenue</h3>
+              <p className="text-2xl font-bold">${overview?.totalRevenue || '0.00'}</p>
+            </div>
+            
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 text-center">
+              <div className="text-3xl mb-2">🎵</div>
+              <h3 className="font-semibold mb-1">Active Beats</h3>
+              <p className="text-2xl font-bold">{overview?.totalBeats || '0'}</p>
+            </div>
+            
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 text-center">
+              <div className="text-3xl mb-2">👥</div>
+              <h3 className="font-semibold mb-1">Platform Users</h3>
+              <p className="text-2xl font-bold">{overview?.totalUsers || '0'}</p>
+            </div>
+          </div>
+          
+          {/* Quick Actions */}
+          <div className="flex flex-wrap justify-center gap-4">
+            <LinkComponent 
+              href="/admin/settings" 
+              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-3 rounded-lg font-medium transition-all"
+            >
+              ⚙️ System Settings
+            </LinkComponent>
+            <button
+              onClick={toggleMaintenanceMode}
+              className={`px-6 py-3 rounded-lg font-medium transition-all backdrop-blur-sm ${
+                settings.maintenanceMode 
+                  ? 'bg-red-500/80 hover:bg-red-500 text-white' 
+                  : 'bg-green-500/80 hover:bg-green-500 text-white'
+              }`}
+            >
+              {settings.maintenanceMode ? '🚨 Exit Maintenance' : '🛡️ Maintenance Mode'}
+            </button>
+            <button 
+              onClick={() => setActiveTab('beatnft')}
+              className="bg-purple-500/80 hover:bg-purple-500 backdrop-blur-sm text-white px-6 py-3 rounded-lg font-medium transition-all"
+            >
+              🎫 BeatNFT Credits
+            </button>
+          </div>
+        </div>
+      </div>
+      
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
+          <div className="flex justify-between items-center py-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">👑 Admin Dashboard</h1>
-              <p className="text-gray-600">Comprehensive system management and analytics</p>
+              <h2 className="text-2xl font-bold text-gray-900">Dashboard Controls</h2>
+              <p className="text-gray-600">Manage platform operations and monitor performance</p>
             </div>
-            <div className="flex items-center gap-4">
-              <LinkComponent href="/admin/settings" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-                ⚙️ Settings
-              </LinkComponent>
-              <button
-                onClick={toggleMaintenanceMode}
-                className={`px-4 py-2 rounded-md font-medium ${
-                  settings.maintenanceMode 
-                    ? 'bg-red-600 text-white hover:bg-red-700' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {settings.maintenanceMode ? '🚨 Maintenance ON' : '✅ System Online'}
-              </button>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-gray-500">Last updated:</span>
+              <span className="font-medium">{new Date().toLocaleTimeString()}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="bg-white shadow-sm">
+      <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex space-x-8">
+          <nav className="flex space-x-8 overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                className={`py-4 px-3 border-b-2 font-medium text-sm whitespace-nowrap transition-all ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-blue-500 text-blue-600 bg-blue-50'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 <span className="mr-2">{tab.icon}</span>

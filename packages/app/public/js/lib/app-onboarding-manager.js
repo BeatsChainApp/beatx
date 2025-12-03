@@ -66,9 +66,20 @@ class AppOnboardingManager {
   }
 
   async initializeSponsorSystem() {
-    // Ensure analytics manager is initialized first
+    // Bulletproof analytics manager initialization
     if (!this.analyticsManager) {
-      await this.initializeAnalytics()
+      try {
+        await this.initializeAnalytics()
+      } catch (error) {
+        console.warn('Failed to initialize analytics in sponsor system:', error)
+        // Create minimal fallback
+        this.analyticsManager = {
+          sessionId: 'fallback_' + Date.now(),
+          events: [],
+          track: () => {},
+          getJourneyAnalytics: () => ({})
+        }
+      }
     }
     
     this.sponsorData = {
@@ -591,8 +602,16 @@ class AppOnboardingManager {
   }
 
   trackUserBehavior() {
-    // Safe null checks to prevent crashes
-    if (!this.analyticsManager || !this.analyticsManager.events || !Array.isArray(this.analyticsManager.events)) {
+    // Bulletproof null checks to prevent crashes
+    if (!this.analyticsManager) {
+      console.warn('Analytics manager not initialized, initializing now...')
+      this.initializeAnalytics().catch(e => console.warn('Failed to initialize analytics:', e))
+      return { pageViews: 0, timeOnSite: 0, interactions: 0 }
+    }
+    
+    if (!this.analyticsManager.events || !Array.isArray(this.analyticsManager.events)) {
+      console.warn('Analytics events not properly initialized, resetting...')
+      this.analyticsManager.events = []
       return { pageViews: 0, timeOnSite: 0, interactions: 0 }
     }
     
@@ -816,8 +835,27 @@ class AppOnboardingManager {
 // Initialize comprehensive system with compatibility and error handling
 if (typeof window !== 'undefined') {
   try {
-    // Expose constructor with proper error handling
-    window.AppOnboardingManager = AppOnboardingManager
+    // Ensure constructor is properly exposed with bulletproof error handling
+    Object.defineProperty(window, 'AppOnboardingManager', {
+      value: AppOnboardingManager,
+      writable: false,
+      enumerable: true,
+      configurable: false
+    })
+
+    // Verify constructor is working
+    try {
+      const testInstance = new window.AppOnboardingManager()
+      console.log('✅ AppOnboardingManager constructor verified')
+    } catch (constructorTest) {
+      console.warn('Constructor test failed, using fallback:', constructorTest)
+      // Provide fallback constructor
+      window.AppOnboardingManager = function() {
+        return new AppOnboardingManager()
+      }
+      // Copy static methods
+      Object.setPrototypeOf(window.AppOnboardingManager, AppOnboardingManager)
+    }
 
     // Create a default instance for runtime usage with safety checks
     let _instance = null

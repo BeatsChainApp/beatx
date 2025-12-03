@@ -109,28 +109,43 @@ export default function RootLayout(props: PropsWithChildren) {
                 navigator.serviceWorker.register('/sw.js')
                   .then(registration => {
                     console.log('SW registered:', registration)
-                    // Notify that service worker is ready
                     window.dispatchEvent(new CustomEvent('sw-ready'))
                   })
                   .catch(error => {
                     console.warn('SW registration failed:', error)
-                    // Continue without service worker
                   })
               })
             }
             
-            // Global error handler for unhandled promise rejections
+            // Enhanced global error handler for unhandled promise rejections
             window.addEventListener('unhandledrejection', function(event) {
               console.warn('Unhandled promise rejection:', event.reason)
-              // Prevent the default behavior (logging to console)
-              event.preventDefault()
+              
+              // Handle specific error types
+              if (event.reason && event.reason.message) {
+                if (event.reason.message.includes('AppOnboardingManager')) {
+                  console.warn('Onboarding manager promise rejection - attempting recovery')
+                  event.preventDefault()
+                } else if (event.reason.message.includes('Minified React error')) {
+                  console.warn('React error detected - may be hydration issue')
+                  event.preventDefault()
+                }
+              }
             })
             
-            // Global error handler for JavaScript errors
+            // Enhanced global error handler for JavaScript errors
             window.addEventListener('error', function(event) {
-              if (event.error && event.error.message && event.error.message.includes('AppOnboardingManager')) {
-                console.warn('Onboarding manager error caught:', event.error)
-                event.preventDefault()
+              if (event.error && event.error.message) {
+                if (event.error.message.includes('AppOnboardingManager')) {
+                  console.warn('Onboarding manager error caught:', event.error)
+                  event.preventDefault()
+                } else if (event.error.message.includes('Minified React error')) {
+                  console.warn('React minified error caught:', event.error.message)
+                  event.preventDefault()
+                } else if (event.error.message.includes('Hydration')) {
+                  console.warn('Hydration error caught - this may resolve automatically')
+                  event.preventDefault()
+                }
               }
             })
           `

@@ -191,6 +191,88 @@ export default function ProtectedRoute({
 
   // Role check with enhanced context
   if (role && !hasRole(role)) {
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : ''
+    const isAdminRoute = currentPath.startsWith('/admin')
+    
+    if (isAdminRoute) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50">
+          <div className="bg-gradient-to-r from-red-600 to-orange-600 text-white py-20">
+            <div className="container mx-auto px-4 text-center">
+              <div className="text-8xl mb-6">👑</div>
+              <h1 className="text-5xl font-bold mb-4">Admin Access Required</h1>
+              <p className="text-xl opacity-90">
+                This is the BeatsChain administrative control center
+              </p>
+            </div>
+          </div>
+
+          <div className="container mx-auto px-4 py-16">
+            <div className="max-w-3xl mx-auto">
+              <div className="bg-white rounded-xl shadow-lg p-8">
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold mb-4">Administrative Access Denied</h2>
+                  <p className="text-gray-600 text-lg">
+                    You need administrator privileges to access the admin dashboard
+                  </p>
+                </div>
+                
+                <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-red-700 text-lg mb-2">
+                        <strong>Required Role:</strong> 
+                        <code className="bg-red-100 px-3 py-1 rounded ml-2">{role}</code>
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-red-700 text-lg">
+                        <strong>Your Role:</strong> 
+                        <code className="bg-red-100 px-3 py-1 rounded ml-2">{user?.role || 'None'}</code>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="text-center p-6 bg-gray-50 rounded-lg">
+                    <div className="text-3xl mb-3">👤</div>
+                    <h3 className="font-semibold mb-2">Contact Administrator</h3>
+                    <p className="text-sm text-gray-600">Request admin access from platform administrators</p>
+                  </div>
+                  <div className="text-center p-6 bg-gray-50 rounded-lg">
+                    <div className="text-3xl mb-3">🔄</div>
+                    <h3 className="font-semibold mb-2">Switch Account</h3>
+                    <p className="text-sm text-gray-600">Sign in with an authorized administrator account</p>
+                  </div>
+                  <div className="text-center p-6 bg-gray-50 rounded-lg">
+                    <div className="text-3xl mb-3">🏠</div>
+                    <h3 className="font-semibold mb-2">Return Home</h3>
+                    <p className="text-sm text-gray-600">Go back to the main BeatsChain platform</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 justify-center">
+                  <button 
+                    onClick={() => window.history.back()}
+                    className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 font-medium"
+                  >
+                    ← Go Back
+                  </button>
+                  <a href="/" className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-medium">
+                    🏠 Home
+                  </a>
+                  <a href="/profile" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium">
+                    👤 Profile
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+    
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
         <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-20">
