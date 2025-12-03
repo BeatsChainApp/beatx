@@ -2,7 +2,7 @@
 
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
-import { useAppKit } from '@reown/appkit/react'
+// Removed Reown AppKit - using Thirdweb
 
 /**
  * Robust authentication hook that consolidates all auth systems

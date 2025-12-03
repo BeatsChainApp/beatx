@@ -3,7 +3,7 @@
 import { ReactNode } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useUserAccessControl } from '@/hooks/useUserAccessControl'
-import { useAppKit } from '@reown/appkit/react'
+// Removed Reown AppKit - using Thirdweb
 
 interface ProtectedRouteProps {
   children: ReactNode

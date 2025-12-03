@@ -1,5 +1,4 @@
-import { mainnet, arbitrum, base, polygon, optimism } from '@reown/appkit/networks'
-import { sepolia } from '@reown/appkit/networks'
+import { mainnet, arbitrum, base, polygon, optimism, sepolia } from 'viem/chains'
 
 export const ETH_CHAINS = [mainnet, arbitrum, base, polygon, optimism, sepolia]
 

@@ -38,18 +38,47 @@ export default function EnhancedBeatUpload() {
   const [licenseTerms, setLicenseTerms] = useState('')
   const [professionalServices, setProfessionalServices] = useState<any>(null)
 
-  // Fixed: Hooks must be at top level - no conditional calls
-  const authHook = useWeb3Auth() || {}
-  const uploadHook = useFileUpload() || {}
-  const nftHook = useBeatNFT() || {}
-  const toastHook = useEnhancedToast() || {}
-  const [walletAdapter] = useState(() => createWalletAdapter())
+  // Graceful hook initialization with fallbacks
+  const [hookError, setHookError] = useState<string | null>(null)
   
-  const user = authHook.user || { address: walletAdapter.getAddress() }
-  const uploadBeatAudio = uploadHook.uploadBeatAudio || (() => Promise.reject('Upload not available'))
-  const canUpload = nftHook.canUpload || false
-  const success = toastHook.success || ((msg: string) => console.log('Success:', msg?.replace(/[\r\n]/g, ' ')))
-  const error = toastHook.error || ((msg: string) => console.error('Error:', msg?.replace(/[\r\n]/g, ' ')))
+  let authHook, uploadHook, nftHook, toastHook, walletAdapter
+  
+  try {
+    authHook = useWeb3Auth()
+    uploadHook = useFileUpload()
+    nftHook = useBeatNFT()
+    toastHook = useEnhancedToast()
+    walletAdapter = createWalletAdapter()
+  } catch (err) {
+    setHookError('System initialization failed')
+    // Provide safe fallbacks
+    authHook = { user: null }
+    uploadHook = { uploadBeatAudio: () => Promise.reject('Upload unavailable') }
+    nftHook = { canUpload: false }
+    toastHook = { 
+      success: (msg: string) => console.log('Success:', msg), 
+      error: (msg: string) => console.error('Error:', msg) 
+    }
+    walletAdapter = { getAddress: () => null }
+  }
+  
+  const user = authHook?.user || { address: walletAdapter?.getAddress?.() }
+  const uploadBeatAudio = uploadHook?.uploadBeatAudio || (() => Promise.reject('Upload not available'))
+  const canUpload = nftHook?.canUpload || false
+  const success = toastHook?.success || ((msg: string) => console.log('Success:', msg?.replace(/[\r\n]/g, ' ')))
+  const error = toastHook?.error || ((msg: string) => console.error('Error:', msg?.replace(/[\r\n]/g, ' ')))
+  
+  if (hookError) {
+    return (
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1rem' }}>
+        <div style={{ textAlign: 'center', padding: '2rem', background: '#fef2f2', borderRadius: '0.5rem' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
+          <h2>System Initialization Error</h2>
+          <p>Please refresh the page or try again later.</p>
+        </div>
+      </div>
+    )
+  }
 
   useEffect(() => {
     setMounted(true)
