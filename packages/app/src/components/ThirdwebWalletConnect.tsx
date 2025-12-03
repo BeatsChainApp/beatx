@@ -1,12 +1,7 @@
 'use client'
 
-import { createThirdwebClient } from "thirdweb"
-import { inAppWallet } from "thirdweb/wallets"
+import { thirdwebClient, walletConfig } from '@/lib/thirdweb-config'
 import { useState } from 'react'
-
-const client = createThirdwebClient({ 
-  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || "" 
-})
 
 export default function ThirdwebWalletConnect() {
   const [account, setAccount] = useState(null)
@@ -15,9 +10,8 @@ export default function ThirdwebWalletConnect() {
   const connectGoogle = async () => {
     setConnecting(true)
     try {
-      const wallet = inAppWallet()
-      const connectedAccount = await wallet.connect({
-        client,
+      const connectedAccount = await walletConfig.inApp.connect({
+        client: thirdwebClient,
         strategy: "google",
       })
       setAccount(connectedAccount)
