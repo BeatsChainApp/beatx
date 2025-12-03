@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import SocialShare from '@/components/SocialShare'
@@ -9,6 +11,16 @@ import { usePurchase } from '@/context/PurchaseContext'
 import { Beat, Producer } from '@/types/data'
 
 export default function ProducerPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <ProducerPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function ProducerPageContent() {
   const params = useParams()
   const producerId = params.id as string
   const { selectBeatForPurchase } = usePurchase()
@@ -103,7 +115,7 @@ export default function ProducerPage() {
   if (loading) {
     return (
       <div className="text-center py-16 px-8 text-gray-500">
-        <div className="text-7xl mb-4">🎵</div>
+        <div className="text-7xl mb-4 mobile-heading">🎵</div>
         <p>Loading producer data...</p>
       </div>
     )
@@ -113,8 +125,8 @@ export default function ProducerPage() {
   if (!producer) {
     return (
       <div className="text-center py-16 px-8 text-gray-500">
-        <div className="text-7xl mb-4">🎵</div>
-        <h3 className="text-2xl font-semibold text-gray-800 mb-2">
+        <div className="text-7xl mb-4 mobile-heading">🎵</div>
+        <h3 className="text-2xl font-semibold text-gray-800 mb-2 mobile-heading">
           Producer not found
         </h3>
         <p>The producer you're looking for doesn't exist or has been removed.</p>
@@ -142,7 +154,7 @@ export default function ProducerPage() {
         <div>
           <div className="flex items-center gap-4 mb-4">
             <div 
-              className="w-20 h-20 rounded-full flex items-center justify-center text-2xl bg-cover bg-center"
+              className="w-20 h-20 rounded-full flex items-center justify-center text-2xl bg-cover bg-center mobile-heading"
               style={{
                 backgroundImage: producer.profileImageUrl 
                   ? `url(${producer.profileImageUrl})` 
@@ -153,7 +165,7 @@ export default function ProducerPage() {
               {!producer.profileImageUrl && '🎵'}
             </div>
             <div>
-              <h1 className="text-4xl font-bold m-0">
+              <h1 className="text-4xl font-bold m-0 mobile-heading">
                 {producer.name} {producer.verified ? ' ✓' : ''}
               </h1>
               <p className="text-lg opacity-90 m-0">
@@ -171,7 +183,7 @@ export default function ProducerPage() {
         {/* Bio & Social Sharing */}
         <div className="bg-white p-8 rounded-lg shadow-sm mb-8 border border-gray-200">
           <div className="flex justify-between items-start mb-4">
-            <h2 className="text-2xl font-semibold text-gray-800">About</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mobile-heading">About</h2>
             <div className="flex gap-2">
               <SocialShare size="sm" title={`Check out ${producer.name} on BeatsChain`} />
             </div>
@@ -200,15 +212,15 @@ export default function ProducerPage() {
         {/* Beats Collection */}
         <div>
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800">
+            <h2 className="text-2xl font-semibold text-gray-800 mobile-heading">
               Beats Collection ({filteredBeats?.length || 0})
             </h2>
           </div>
           
           {!filteredBeats || filteredBeats.length === 0 ? (
             <div className="text-center py-16 px-8 text-gray-500">
-              <div className="text-7xl mb-4">🎵</div>
-              <h3 className="text-2xl font-semibold text-gray-800 mb-2">No beats uploaded yet</h3>
+              <div className="text-7xl mb-4 mobile-heading">🎵</div>
+              <h3 className="text-2xl font-semibold text-gray-800 mb-2 mobile-heading">No beats uploaded yet</h3>
               <p>This beat creator hasn't uploaded any beats to the platform yet.</p>
             </div>
           ) : (

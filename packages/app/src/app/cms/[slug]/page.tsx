@@ -12,7 +12,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return { title: 'BeatsChain' }
 }
 
-export default function DynamicPage({ params }: PageProps) {
+export default function DynamicPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <DynamicPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function DynamicPageContent() {
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem', textAlign: 'center' }}>
       <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '1rem', color: '#1f2937' }}>

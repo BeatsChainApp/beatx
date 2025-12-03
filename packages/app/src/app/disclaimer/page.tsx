@@ -1,5 +1,15 @@
 export default function DisclaimerPage() {
   return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <DisclaimerPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function DisclaimerPageContent() {
+  return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
       <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '2rem', color: '#1f2937' }}>
         Web3 & Cryptocurrency Disclaimer

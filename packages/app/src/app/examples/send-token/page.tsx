@@ -1,4 +1,6 @@
 'use client'
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import dynamic from 'next/dynamic'
 import { useAccount, useBalance, useSimulateContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { erc20Abi, isAddress } from 'viem'

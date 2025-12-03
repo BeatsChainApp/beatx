@@ -1,10 +1,22 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { client } from '@/lib/sanity'
 import CmsHeroSection from '@/components/HeroSection'
 
 export default function GuidePage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <GuidePageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function GuidePageContent() {
   const [activeTab, setActiveTab] = useState('getting-started')
   const [heroData, setHeroData] = useState(null)
   

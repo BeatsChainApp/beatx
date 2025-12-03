@@ -1,9 +1,21 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 
 export default function AuthCallback() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="auth">
+        <AuthCallbackContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function AuthCallbackContent() {
   const searchParams = useSearchParams()
 
   useEffect(() => {

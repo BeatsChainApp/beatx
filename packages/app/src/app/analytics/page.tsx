@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import AnalyticsDashboard from '@/components/AnalyticsDashboard'
@@ -63,6 +65,16 @@ function AnalyticsContent() {
 }
 
 export default function AnalyticsPage() {
+  return (
+    <UniversalLayout requireAuth={true} allowedRoles={["producer","admin","super_admin"]}>
+      <ResponsiveWrapper pageType="dashboard">
+        <AnalyticsPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function AnalyticsPageContent() {
   return (
     <ProtectedRoute requireWallet={true}>
       <AnalyticsContent />

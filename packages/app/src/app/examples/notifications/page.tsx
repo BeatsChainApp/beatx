@@ -1,9 +1,21 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { Alert } from '@/components/Alert'
 import { useNotifications } from '@/context/Notifications'
 
 export default function NotificationsExample() {
+  return (
+    <UniversalLayout requireAuth={true}>
+      <ResponsiveWrapper pageType="dashboard">
+        <NotificationsExampleContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function NotificationsExampleContent() {
   const { notifications, Add, Clear } = useNotifications()
 
   return (

@@ -1,9 +1,21 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import CmsPage from '@/components/SanityPage'
 import { usePlatformStats } from '@/hooks/usePlatformStats'
 
 export default function SanityDemoPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <SanityDemoPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function SanityDemoPageContent() {
   const { totalBeats, totalUsers, totalRevenue, isLoading } = usePlatformStats()
 
   // Fallback content if Sanity page doesn't exist

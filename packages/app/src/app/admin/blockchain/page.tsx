@@ -1,10 +1,22 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import { useBeatNFT } from '@/hooks/useBeatNFT.enhanced'
 
 export default function AdminBlockchainPage() {
+  return (
+    <UniversalLayout requireAuth={true} allowedRoles={["admin","super_admin"]}>
+      <ResponsiveWrapper pageType="admin">
+        <AdminBlockchainPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function AdminBlockchainPageContent() {
   const { address, chain } = useAccount()
   const { balance } = useBeatNFT()
   const [stats, setStats] = useState({
@@ -38,7 +50,7 @@ export default function AdminBlockchainPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">⛓️ Blockchain Administration</h1>
+      <h1 className="text-3xl font-bold mb-6 mobile-heading">⛓️ Blockchain Administration</h1>
       
       {/* Contract Info */}
       <div className="bg-white rounded-lg shadow p-6 mb-8">
@@ -70,9 +82,9 @@ export default function AdminBlockchainPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Users</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
+              <p className="text-2xl font-bold text-gray-900 mobile-heading">{stats.totalUsers}</p>
             </div>
-            <div className="text-blue-500 text-2xl">👥</div>
+            <div className="text-blue-500 text-2xl mobile-heading">👥</div>
           </div>
         </div>
 
@@ -80,9 +92,9 @@ export default function AdminBlockchainPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Credits Issued</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalCreditsIssued.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900 mobile-heading">{stats.totalCreditsIssued.toLocaleString()}</p>
             </div>
-            <div className="text-green-500 text-2xl">🎫</div>
+            <div className="text-green-500 text-2xl mobile-heading">🎫</div>
           </div>
         </div>
 
@@ -90,9 +102,9 @@ export default function AdminBlockchainPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Pro NFTs</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalProNFTs}</p>
+              <p className="text-2xl font-bold text-gray-900 mobile-heading">{stats.totalProNFTs}</p>
             </div>
-            <div className="text-purple-500 text-2xl">⭐</div>
+            <div className="text-purple-500 text-2xl mobile-heading">⭐</div>
           </div>
         </div>
 
@@ -100,9 +112,9 @@ export default function AdminBlockchainPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalRevenue.toFixed(2)} ETH</p>
+              <p className="text-2xl font-bold text-gray-900 mobile-heading">{stats.totalRevenue.toFixed(2)} ETH</p>
             </div>
-            <div className="text-yellow-500 text-2xl">💰</div>
+            <div className="text-yellow-500 text-2xl mobile-heading">💰</div>
           </div>
         </div>
 
@@ -110,9 +122,9 @@ export default function AdminBlockchainPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Contract Balance</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.contractBalance.toFixed(2)} ETH</p>
+              <p className="text-2xl font-bold text-gray-900 mobile-heading">{stats.contractBalance.toFixed(2)} ETH</p>
             </div>
-            <div className="text-indigo-500 text-2xl">🏦</div>
+            <div className="text-indigo-500 text-2xl mobile-heading">🏦</div>
           </div>
         </div>
       </div>

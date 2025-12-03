@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
@@ -7,6 +9,16 @@ import { googleAuth } from '@/lib/googleAuth'
 import { toast } from 'react-hot-toast'
 
 export default function SignUpPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="auth">
+        <SignUpPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function SignUpPageContent() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [selectedRole, setSelectedRole] = useState<'producer' | 'creator' | 'user'>('user')
@@ -86,28 +98,28 @@ export default function SignUpPage() {
       <div className="relative bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 text-white py-20 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 bg-[url('/hero-pattern.svg')] opacity-10"></div>
-        <div className="container mx-auto px-4 text-center relative z-10">
+        <div className="container mx-auto px-4 text-center relative z-10 mobile-container">
           <div className="max-w-4xl mx-auto">
-            <div className="text-8xl mb-6">🚀</div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-green-100 bg-clip-text text-transparent">
+            <div className="text-8xl mb-6 mobile-heading">🚀</div>
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-green-100 bg-clip-text text-transparent mobile-heading">
               Join BeatsChain
             </h1>
-            <p className="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed">
+            <p className="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed mobile-heading">
               Start your Web3 music journey today
             </p>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-white/20">
               <p className="text-lg mb-4">Get started in seconds</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div className="bg-white/10 rounded-lg p-3">
-                  <div className="text-2xl mb-1">🎵</div>
+                  <div className="text-2xl mb-1 mobile-heading">🎵</div>
                   <div>Upload & sell beats</div>
                 </div>
                 <div className="bg-white/10 rounded-lg p-3">
-                  <div className="text-2xl mb-1">🎨</div>
+                  <div className="text-2xl mb-1 mobile-heading">🎨</div>
                   <div>License for content</div>
                 </div>
                 <div className="bg-white/10 rounded-lg p-3">
-                  <div className="text-2xl mb-1">🎧</div>
+                  <div className="text-2xl mb-1 mobile-heading">🎧</div>
                   <div>Discover new music</div>
                 </div>
               </div>
@@ -117,11 +129,11 @@ export default function SignUpPage() {
       </div>
 
       {/* Sign Up Form */}
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12 mobile-container">
         <div className="max-w-md mx-auto">
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2 mobile-heading">Create Account</h2>
               <p className="text-gray-600">Choose your role and sign up</p>
             </div>
 
@@ -148,7 +160,7 @@ export default function SignUpPage() {
                     className="mr-3"
                   />
                   <div className="flex items-center">
-                    <span className="text-2xl mr-3">🎵</span>
+                    <span className="text-2xl mr-3 mobile-heading">🎵</span>
                     <div>
                       <div className="font-medium">Producer</div>
                       <div className="text-sm text-gray-500">Upload and sell beats</div>
@@ -166,7 +178,7 @@ export default function SignUpPage() {
                     className="mr-3"
                   />
                   <div className="flex items-center">
-                    <span className="text-2xl mr-3">🎨</span>
+                    <span className="text-2xl mr-3 mobile-heading">🎨</span>
                     <div>
                       <div className="font-medium">Content Creator</div>
                       <div className="text-sm text-gray-500">License beats for content</div>
@@ -184,7 +196,7 @@ export default function SignUpPage() {
                     className="mr-3"
                   />
                   <div className="flex items-center">
-                    <span className="text-2xl mr-3">🎧</span>
+                    <span className="text-2xl mr-3 mobile-heading">🎧</span>
                     <div>
                       <div className="font-medium">Music Lover</div>
                       <div className="text-sm text-gray-500">Browse and collect beats</div>
@@ -261,9 +273,9 @@ export default function SignUpPage() {
 
       {/* Stats Section */}
       <div className="bg-gray-900 text-white py-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 mobile-container">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Join the Community</h2>
+            <h2 className="text-3xl font-bold mb-4 mobile-heading">Join the Community</h2>
             <p className="text-lg text-gray-300">
               Thousands of creators are already building the future of music
             </p>
@@ -271,19 +283,19 @@ export default function SignUpPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-4xl mx-auto text-center">
             <div>
-              <div className="text-4xl font-bold text-green-400 mb-2">1000+</div>
+              <div className="text-4xl font-bold text-green-400 mb-2 mobile-heading">1000+</div>
               <div className="text-gray-300">Beats Available</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-blue-400 mb-2">500+</div>
+              <div className="text-4xl font-bold text-blue-400 mb-2 mobile-heading">500+</div>
               <div className="text-gray-300">Active Producers</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-purple-400 mb-2">50+</div>
+              <div className="text-4xl font-bold text-purple-400 mb-2 mobile-heading">50+</div>
               <div className="text-gray-300">ETH in Sales</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-pink-400 mb-2">24/7</div>
+              <div className="text-4xl font-bold text-pink-400 mb-2 mobile-heading">24/7</div>
               <div className="text-gray-300">Global Access</div>
             </div>
           </div>

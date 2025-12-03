@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -10,6 +12,16 @@ declare global {
 }
 
 export default function OnboardingPage() {
+  return (
+    <UniversalLayout requireAuth={true}>
+      <ResponsiveWrapper pageType="auth">
+        <OnboardingPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function OnboardingPageContent() {
   const [currentStep, setCurrentStep] = useState(1)
   const [stepData, setStepData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -72,7 +84,7 @@ export default function OnboardingPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-4xl mb-4 animate-bounce">🎵</div>
+          <div className="text-4xl mb-4 animate-bounce mobile-heading">🎵</div>
           <p className="text-gray-600">Loading your BeatsChain experience...</p>
         </div>
       </div>
@@ -103,33 +115,33 @@ export default function OnboardingPage() {
         {/* Step Content */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{stepData.title}</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-4 mobile-heading">{stepData.title}</h1>
             <p className="text-xl text-gray-600">{stepData.content}</p>
           </div>
 
           {/* Step-specific content */}
           {stepData.type === 'welcome' && (
             <div className="text-center">
-              <div className="text-6xl mb-6">🎵</div>
+              <div className="text-6xl mb-6 mobile-heading">🎵</div>
               <div className="max-w-2xl mx-auto mb-8">
-                <h2 className="text-2xl font-semibold mb-4">Welcome to the Future of Music</h2>
+                <h2 className="text-2xl font-semibold mb-4 mobile-heading">Welcome to the Future of Music</h2>
                 <p className="text-gray-600 mb-6">
                   BeatsChain is the first decentralized marketplace where producers can sell beats as NFTs, 
                   and music lovers can truly own their favorite sounds forever.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div className="text-center">
-                    <div className="text-3xl mb-2">🔒</div>
+                    <div className="text-3xl mb-2 mobile-heading">🔒</div>
                     <h3 className="font-semibold mb-1">True Ownership</h3>
                     <p className="text-sm text-gray-600">Own your beats as NFTs</p>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl mb-2">💰</div>
+                    <div className="text-3xl mb-2 mobile-heading">💰</div>
                     <h3 className="font-semibold mb-1">Earn Royalties</h3>
                     <p className="text-sm text-gray-600">Get paid on every resale</p>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl mb-2">⚡</div>
+                    <div className="text-3xl mb-2 mobile-heading">⚡</div>
                     <h3 className="font-semibold mb-1">Instant Payments</h3>
                     <p className="text-sm text-gray-600">Crypto payments, no delays</p>
                   </div>
@@ -198,7 +210,7 @@ export default function OnboardingPage() {
                       onClick={() => handleRoleSelect(role)}
                       className="p-6 border-2 border-gray-200 hover:border-purple-300 rounded-xl text-center transition-all hover:shadow-lg"
                     >
-                      <div className="text-4xl mb-4">{roleData?.icon}</div>
+                      <div className="text-4xl mb-4 mobile-heading">{roleData?.icon}</div>
                       <h3 className="font-semibold text-lg mb-2">{roleData?.title}</h3>
                       <p className="text-gray-600 text-sm">{roleData?.desc}</p>
                     </button>
@@ -267,7 +279,7 @@ export default function OnboardingPage() {
 
                   return (
                     <div key={feature} className="text-center p-6 bg-gray-50 rounded-xl">
-                      <div className="text-4xl mb-4">{featureData?.icon}</div>
+                      <div className="text-4xl mb-4 mobile-heading">{featureData?.icon}</div>
                       <h3 className="font-semibold text-lg mb-2">{featureData?.title}</h3>
                       <p className="text-gray-600 text-sm">{featureData?.desc}</p>
                     </div>
@@ -288,8 +300,8 @@ export default function OnboardingPage() {
 
           {stepData.type === 'completion' && (
             <div className="text-center">
-              <div className="text-6xl mb-6">🚀</div>
-              <h2 className="text-2xl font-semibold mb-4">Welcome to BeatsChain!</h2>
+              <div className="text-6xl mb-6 mobile-heading">🚀</div>
+              <h2 className="text-2xl font-semibold mb-4 mobile-heading">Welcome to BeatsChain!</h2>
               <p className="text-gray-600 mb-8 max-w-md mx-auto">
                 You're all set up and ready to start your journey in the decentralized music world.
               </p>

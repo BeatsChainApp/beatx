@@ -1,8 +1,20 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState } from 'react'
 
 export default function FAQPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <FAQPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function FAQPageContent() {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null)
 
   const faqs = [

@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { Beat } from '@/types/data'
 import SanityBeatCard from '@/components/SanityBeatCard'
@@ -16,6 +18,16 @@ import { supabaseBeats } from '@/lib/supabase.enhanced'
 import { useWeb3Data } from '@/context/Web3DataContext'
 
 export default function MarketplacePage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <MarketplacePageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function MarketplacePageContent() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedGenre, setSelectedGenre] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
@@ -80,9 +92,9 @@ export default function MarketplacePage() {
   // Show loading state
   if (loading || web3Loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mobile-container">
         <div className="text-center py-12">
-          <div className="text-6xl mb-4">🎫</div>
+          <div className="text-6xl mb-4 mobile-heading">🎫</div>
           <p className="text-gray-600">Loading BeatNFTs...</p>
         </div>
       </div>
@@ -155,7 +167,7 @@ export default function MarketplacePage() {
         </div>
       )}
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mobile-container">
 
       {/* Real-time Marketplace Analytics */}
       <LivepeerAnalyticsDashboard beats={beats} />
@@ -290,8 +302,8 @@ export default function MarketplacePage() {
 
       {currentBeats.length === 0 && (
         <div className="text-center py-16">
-          <div className="text-8xl mb-6">🎫</div>
-          <h3 className="text-2xl font-semibold text-gray-900 mb-3">No BeatNFTs found</h3>
+          <div className="text-8xl mb-6 mobile-heading">🎫</div>
+          <h3 className="text-2xl font-semibold text-gray-900 mb-3 mobile-heading">No BeatNFTs found</h3>
           <p className="text-gray-600 mb-6">Try adjusting your search terms or filters to discover more BeatNFTs</p>
           <div className="flex flex-wrap justify-center gap-2">
             {['amapiano', 'afrobeats', 'trap', 'hip hop'].map(genre => (

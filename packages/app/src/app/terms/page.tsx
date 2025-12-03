@@ -1,5 +1,15 @@
 export default function TermsPage() {
   return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <TermsPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function TermsPageContent() {
+  return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
       <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '2rem', color: '#1f2937' }}>
         Terms of Use

@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import React, { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
@@ -65,13 +67,13 @@ function LibraryContent() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mobile-container">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Beats</p>
-              <p className="text-2xl font-bold text-gray-900">{purchasedBeats.length}</p>
+              <p className="text-2xl font-bold text-gray-900 mobile-heading">{purchasedBeats.length}</p>
             </div>
             <div className="bg-blue-100 p-3 rounded-full">
               <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +87,7 @@ function LibraryContent() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Spent</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-gray-900 mobile-heading">
                 R{purchasedBeats.reduce((sum, beat) => sum + (beat.price || 0), 0).toFixed(2)}
               </p>
             </div>
@@ -101,7 +103,7 @@ function LibraryContent() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Downloads</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-gray-900 mobile-heading">
                 {purchasedBeats.reduce((sum, beat) => sum + (beat.downloadCount || 0), 0)}
               </p>
             </div>
@@ -122,7 +124,7 @@ function LibraryContent() {
         
         {loading ? (
           <div className="p-8 text-center">
-            <div className="text-4xl mb-4">🔄</div>
+            <div className="text-4xl mb-4 mobile-heading">🔄</div>
             <p className="text-gray-600">Loading your library...</p>
           </div>
         ) : purchasedBeats.length === 0 ? (

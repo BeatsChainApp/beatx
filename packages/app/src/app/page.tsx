@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { usePlatformStats } from '@/hooks/usePlatformStats'
 import { useAccount } from 'wagmi'
@@ -9,6 +11,16 @@ import RecommendedBeats from '@/components/RecommendedBeats'
 import MobileNavigation from '@/components/MobileNavigation'
 
 export default function Home() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <HomeContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function HomeContent() {
   const { totalBeats, totalUsers, totalRevenue, isLoading } = usePlatformStats()
   const { isConnected } = useAccount()
   const [beatNFTStats, setBeatNFTStats] = useState({
@@ -78,7 +90,7 @@ export default function Home() {
     <div>
       {/* Admin Setup Helper - Only show when wallet is connected */}
       {isConnected && (
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-4 mobile-container">
     
         </div>
       )}

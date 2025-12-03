@@ -1,10 +1,22 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState } from 'react'
 import { useBeatNFT } from '@/hooks/useBeatNFT'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 export default function BeatNFTStorePage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <BeatNFTStorePageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function BeatNFTStorePageContent() {
   const { balance, buyCredits, upgradeToProNFT } = useBeatNFT()
   const [purchasing, setPurchasing] = useState(false)
   const [creditAmount, setCreditAmount] = useState(10)
@@ -30,7 +42,7 @@ export default function BeatNFTStorePage() {
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">🎫 BeatNFT Store</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 mobile-heading">🎫 BeatNFT Store</h1>
           <p className="text-xl mb-6 opacity-90">
             Power your music with BeatNFT credits - Upload beats and grow your producer business
           </p>
@@ -64,7 +76,7 @@ export default function BeatNFTStorePage() {
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-blue-600 mobile-heading">
                   {balance.hasProNFT ? 'PRO' : balance.credits}
                 </div>
                 <div className="text-sm text-gray-500">
@@ -89,7 +101,7 @@ export default function BeatNFTStorePage() {
                   </ul>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">0.1 ETH</div>
+                  <div className="text-3xl font-bold mb-2 mobile-heading">0.1 ETH</div>
                   <div className="text-sm opacity-80">~R1,800</div>
                   <button
                     onClick={handleProUpgrade}
@@ -107,7 +119,7 @@ export default function BeatNFTStorePage() {
           <div className="max-w-md mx-auto">
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Buy Credits</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2 mobile-heading">Buy Credits</h2>
                 <p className="text-gray-600">Pay as you go - R18 per credit</p>
               </div>
               
@@ -129,7 +141,7 @@ export default function BeatNFTStorePage() {
                       max="1000"
                       value={creditAmount}
                       onChange={(e) => setCreditAmount(Math.max(10, parseInt(e.target.value) || 10))}
-                      className="flex-1 text-center text-2xl font-bold py-3 border border-gray-300 rounded-lg"
+                      className="flex-1 text-center text-2xl font-bold py-3 border border-gray-300 rounded-lg mobile-heading"
                     />
                     <button
                       onClick={() => setCreditAmount(Math.min(1000, creditAmount + 10))}

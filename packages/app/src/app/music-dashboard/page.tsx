@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useBeats } from '@/hooks/useBeats'
@@ -47,11 +49,11 @@ function MusicDashboardContent() {
 
   return (
       <div>
-        <h1 className="text-3xl font-bold mb-6">🎧 Music Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-6 mobile-heading">🎧 Music Dashboard</h1>
         
         {/* Welcome Section */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-6 mb-8">
-          <h2 className="text-2xl font-bold mb-2">Welcome back, Music Lover!</h2>
+          <h2 className="text-2xl font-bold mb-2 mobile-heading">Welcome back, Music Lover!</h2>
           <p className="opacity-90 mb-4">Discover amazing beats from talented SA producers</p>
           <div className="flex gap-4 text-sm">
             <div className="bg-white/20 px-3 py-1 rounded-full">
@@ -72,9 +74,9 @@ function MusicDashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Favorites</p>
-                <p className="text-2xl font-bold text-gray-900">{favorites.length}</p>
+                <p className="text-2xl font-bold text-gray-900 mobile-heading">{favorites.length}</p>
               </div>
-              <div className="text-red-500 text-2xl">❤️</div>
+              <div className="text-red-500 text-2xl mobile-heading">❤️</div>
             </div>
           </div>
 
@@ -82,9 +84,9 @@ function MusicDashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Recently Played</p>
-                <p className="text-2xl font-bold text-gray-900">{recentlyPlayed.length}</p>
+                <p className="text-2xl font-bold text-gray-900 mobile-heading">{recentlyPlayed.length}</p>
               </div>
-              <div className="text-blue-500 text-2xl">🎵</div>
+              <div className="text-blue-500 text-2xl mobile-heading">🎵</div>
             </div>
           </div>
 
@@ -92,9 +94,9 @@ function MusicDashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Following</p>
-                <p className="text-2xl font-bold text-gray-900">{following.length}</p>
+                <p className="text-2xl font-bold text-gray-900 mobile-heading">{following.length}</p>
               </div>
-              <div className="text-green-500 text-2xl">👥</div>
+              <div className="text-green-500 text-2xl mobile-heading">👥</div>
             </div>
           </div>
 
@@ -102,9 +104,9 @@ function MusicDashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Credits</p>
-                <p className="text-2xl font-bold text-gray-900">{balance.hasProNFT ? '∞' : balance.credits}</p>
+                <p className="text-2xl font-bold text-gray-900 mobile-heading">{balance.hasProNFT ? '∞' : balance.credits}</p>
               </div>
-              <div className="text-purple-500 text-2xl">🎫</div>
+              <div className="text-purple-500 text-2xl mobile-heading">🎫</div>
             </div>
           </div>
         </div>
@@ -173,7 +175,7 @@ function MusicDashboardContent() {
           <LinkComponent href="/browse" className="block">
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <div className="text-center">
-                <div className="text-4xl mb-3">🔍</div>
+                <div className="text-4xl mb-3 mobile-heading">🔍</div>
                 <h3 className="font-semibold mb-2">Discover Beats</h3>
                 <p className="text-sm text-gray-600">Explore thousands of beats from SA producers</p>
               </div>
@@ -183,7 +185,7 @@ function MusicDashboardContent() {
           <LinkComponent href="/producers" className="block">
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <div className="text-center">
-                <div className="text-4xl mb-3">🎤</div>
+                <div className="text-4xl mb-3 mobile-heading">🎤</div>
                 <h3 className="font-semibold mb-2">Find Producers</h3>
                 <p className="text-sm text-gray-600">Connect with talented beat makers</p>
               </div>
@@ -193,7 +195,7 @@ function MusicDashboardContent() {
           <LinkComponent href="/beatnft-store" className="block">
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <div className="text-center">
-                <div className="text-4xl mb-3">🎫</div>
+                <div className="text-4xl mb-3 mobile-heading">🎫</div>
                 <h3 className="font-semibold mb-2">Get Credits</h3>
                 <p className="text-sm text-gray-600">Purchase BeatNFT credits for uploads</p>
               </div>
@@ -205,6 +207,16 @@ function MusicDashboardContent() {
 }
 
 export default function MusicDashboard() {
+  return (
+    <UniversalLayout requireAuth={true} allowedRoles={["producer","admin","super_admin"]}>
+      <ResponsiveWrapper pageType="dashboard">
+        <MusicDashboardContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function MusicDashboardContent() {
   return (
     <ProtectedRoute>
       <DashboardLayout>

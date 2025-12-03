@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { LinkComponent } from '@/components/LinkComponent'
@@ -29,6 +31,16 @@ const ErrorFallback = () => (
 )
 
 export default function BeatDetailPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <BeatDetailPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function BeatDetailPageContent() {
   const params = useParams()
   const beatId = params.id as string
   const [beat, setBeat] = useState<Beat | null>(null)

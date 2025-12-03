@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import React, { useState, useRef } from 'react'
 import { useUnifiedProfile } from '@/hooks/useUnifiedProfile'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
@@ -9,6 +11,16 @@ import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
 
 export default function ProfilePage() {
+  return (
+    <UniversalLayout requireAuth={true} allowedRoles={["user","producer","admin","super_admin"]}>
+      <ResponsiveWrapper pageType="dashboard">
+        <ProfilePageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function ProfilePageContent() {
   const { user, isAuthenticated } = useUnifiedAuth()
   const { profile: unifiedProfile, updateProfile: updateUnifiedProfile, syncStatus, loading } = useUnifiedProfile()
   const { address, isConnected } = useAccount()
@@ -71,8 +83,8 @@ export default function ProfilePage() {
   if (!isConnected) {
     return (
       <div className="p-8 text-center">
-        <div className="text-6xl mb-4">🔗</div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Connect Your Wallet</h2>
+        <div className="text-6xl mb-4 mobile-heading">🔗</div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2 mobile-heading">Connect Your Wallet</h2>
         <p className="text-gray-600">Please connect your wallet to access your profile.</p>
         <div className="mt-4">
           <w3m-button />
@@ -84,8 +96,8 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="p-8 text-center">
-        <div className="text-6xl mb-4">⏳</div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Loading Profile...</h2>
+        <div className="text-6xl mb-4 mobile-heading">⏳</div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2 mobile-heading">Loading Profile...</h2>
         <p className="text-gray-600">Fetching your profile data...</p>
       </div>
     )

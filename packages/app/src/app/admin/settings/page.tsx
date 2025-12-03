@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import React, { useState } from 'react'
 import { useSiteSettings } from '@/hooks/useSiteSettings'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
@@ -68,13 +70,13 @@ function AdminSettingsContent() {
   return (
     <div>
       <div className="bg-gradient-to-r from-gray-600 to-gray-800 text-white py-8">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-2">⚙️ System Settings</h1>
+        <div className="container mx-auto px-4 mobile-container">
+          <h1 className="text-3xl font-bold mb-2 mobile-heading">⚙️ System Settings</h1>
           <LinkComponent href="/admin" className="text-white/80 hover:text-white">← Back to Admin</LinkComponent>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mobile-container">
         <div className="max-w-4xl mx-auto">
           {/* Tabs */}
           <div className="bg-white rounded-lg shadow mb-6">
@@ -512,6 +514,16 @@ function AdminSettingsContent() {
 }
 
 export default function AdminSettingsPage() {
+  return (
+    <UniversalLayout requireAuth={true} allowedRoles={["admin","super_admin"]}>
+      <ResponsiveWrapper pageType="admin">
+        <AdminSettingsPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function AdminSettingsPageContent() {
   return (
     <ProtectedRoute anyRole={['admin', 'super_admin']}>
       <AdminSettingsContent />

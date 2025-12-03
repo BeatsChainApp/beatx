@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useWeb3Data } from '@/context/Web3DataContext'
@@ -156,10 +158,10 @@ function AdminContentContent() {
     <div>
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-8">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 mobile-container">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2">🛡️ Content Moderation</h1>
+              <h1 className="text-3xl font-bold mb-2 mobile-heading">🛡️ Content Moderation</h1>
               <p className="opacity-90">Review and moderate beat uploads</p>
             </div>
             <LinkComponent 
@@ -172,7 +174,7 @@ function AdminContentContent() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mobile-container">
         {/* Filters */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <div className="flex gap-4 mb-4">
@@ -210,7 +212,7 @@ function AdminContentContent() {
             </div>
           ) : filteredBeats.length === 0 ? (
             <div className="p-8 text-center">
-              <div className="text-4xl mb-4">📝</div>
+              <div className="text-4xl mb-4 mobile-heading">📝</div>
               <p className="text-gray-600 mb-2">No content found</p>
               <p className="text-sm text-gray-500">Content will appear here as users upload beats</p>
             </div>
@@ -351,6 +353,16 @@ function AdminContentContent() {
 }
 
 export default function AdminContentPage() {
+  return (
+    <UniversalLayout requireAuth={true} allowedRoles={["admin","super_admin"]}>
+      <ResponsiveWrapper pageType="admin">
+        <AdminContentPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function AdminContentPageContent() {
   return (
     <ProtectedRoute anyRole={['admin', 'super_admin']}>
       <AdminContentContent />

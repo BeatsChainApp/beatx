@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState } from 'react'
 import DashboardLayout from '@/components/DashboardLayout'
 import TransactionHistory from '@/components/TransactionHistory'
@@ -8,6 +10,16 @@ import { useAccount } from 'wagmi'
 import { useBeatNFT } from '@/hooks/useBeatNFT.enhanced'
 
 export default function BlockchainDashboardPage() {
+  return (
+    <UniversalLayout requireAuth={true} allowedRoles={["producer","admin","super_admin"]}>
+      <ResponsiveWrapper pageType="dashboard">
+        <BlockchainDashboardPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function BlockchainDashboardPageContent() {
   const { address, chain } = useAccount()
   const { balance, upgradeToProNFT, loading } = useBeatNFT()
   const [activeTab, setActiveTab] = useState('transactions')
@@ -16,7 +28,7 @@ export default function BlockchainDashboardPage() {
   return (
     <DashboardLayout>
       <div>
-        <h1 className="text-3xl font-bold mb-6">⛓️ Blockchain Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-6 mobile-heading">⛓️ Blockchain Dashboard</h1>
         
         {/* Wallet Info */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
@@ -90,7 +102,7 @@ export default function BlockchainDashboardPage() {
             <div className="p-6">
               {balance.hasProNFT ? (
                 <div className="text-center py-8">
-                  <div className="text-4xl mb-4">⭐</div>
+                  <div className="text-4xl mb-4 mobile-heading">⭐</div>
                   <h3 className="text-xl font-medium mb-2">Pro BeatNFT Holder</h3>
                   <p className="text-gray-600 mb-4">You have unlimited uploads!</p>
                   <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-4 rounded-lg">
@@ -100,7 +112,7 @@ export default function BlockchainDashboardPage() {
               ) : (
                 <div>
                   <div className="text-center mb-8">
-                    <div className="text-4xl mb-4">🎫</div>
+                    <div className="text-4xl mb-4 mobile-heading">🎫</div>
                     <h3 className="text-xl font-medium mb-2">{balance.credits} BeatNFT Credits</h3>
                     <p className="text-gray-600 mb-6">
                       Credits are used for uploading beats based on file size
@@ -159,7 +171,7 @@ export default function BlockchainDashboardPage() {
           {activeTab === 'nfts' && (
             <div className="p-6">
               <div className="text-center py-8">
-                <div className="text-4xl mb-4">🖼️</div>
+                <div className="text-4xl mb-4 mobile-heading">🖼️</div>
                 <h3 className="text-xl font-medium mb-2">NFT Ownership</h3>
                 <p className="text-gray-600 mb-6">
                   View your owned BeatNFTs and license tokens
@@ -182,7 +194,7 @@ export default function BlockchainDashboardPage() {
               rel="noopener noreferrer"
               className="flex items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="mr-4 text-2xl">🔍</div>
+              <div className="mr-4 text-2xl mobile-heading">🔍</div>
               <div>
                 <h3 className="font-medium">View on Etherscan</h3>
                 <p className="text-sm text-gray-500">Check your on-chain activity</p>
@@ -195,7 +207,7 @@ export default function BlockchainDashboardPage() {
               rel="noopener noreferrer"
               className="flex items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="mr-4 text-2xl">📄</div>
+              <div className="mr-4 text-2xl mobile-heading">📄</div>
               <div>
                 <h3 className="font-medium">BeatNFT Contract</h3>
                 <p className="text-sm text-gray-500">View the smart contract</p>
@@ -208,7 +220,7 @@ export default function BlockchainDashboardPage() {
               rel="noopener noreferrer"
               className="flex items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="mr-4 text-2xl">📚</div>
+              <div className="mr-4 text-2xl mobile-heading">📚</div>
               <div>
                 <h3 className="font-medium">Documentation</h3>
                 <p className="text-sm text-gray-500">Learn about Web3 features</p>

@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { useSupabase } from '@/hooks/useSupabase'
 
@@ -18,6 +20,16 @@ interface Beat {
 }
 
 export default function AdminBeatsPage() {
+  return (
+    <UniversalLayout requireAuth={true} allowedRoles={["admin","super_admin"]}>
+      <ResponsiveWrapper pageType="admin">
+        <AdminBeatsPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function AdminBeatsPageContent() {
   const [beats, setBeats] = useState<Beat[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
@@ -66,7 +78,7 @@ export default function AdminBeatsPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Beats Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2 mobile-heading">Beats Management</h1>
           <p className="text-gray-600">Manage all beats in the platform</p>
         </div>
 
@@ -94,23 +106,23 @@ export default function AdminBeatsPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-white p-6 rounded-lg shadow">
-            <div className="text-2xl font-bold text-gray-900">{beats.length}</div>
+            <div className="text-2xl font-bold text-gray-900 mobile-heading">{beats.length}</div>
             <div className="text-sm text-gray-600">Total Beats</div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow">
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-green-600 mobile-heading">
               {beats.filter(b => b.professional_complete).length}
             </div>
             <div className="text-sm text-gray-600">Professional</div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow">
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-bold text-blue-600 mobile-heading">
               {beats.filter(b => b.distribution_ready).length}
             </div>
             <div className="text-sm text-gray-600">Distribution Ready</div>
           </div>
           <div className="bg-white p-6 rounded-lg shadow">
-            <div className="text-2xl font-bold text-purple-600">
+            <div className="text-2xl font-bold text-purple-600 mobile-heading">
               {beats.reduce((sum, b) => sum + (b.plays || 0), 0)}
             </div>
             <div className="text-sm text-gray-600">Total Plays</div>

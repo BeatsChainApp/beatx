@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import React from 'react'
 import CmsHeroSection from '@/components/HeroSection'
@@ -11,6 +13,16 @@ import { client } from '@/lib/sanity-client'
 import RadioSubmissionCard from '@/components/producer/RadioSubmissionCard'
 
 export default function ProducersPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <ProducersPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function ProducersPageContent() {
   const [currentPage, setCurrentPage] = useState(1)
   const [producers, setProducers] = useState<Producer[]>([])
   const [loading, setLoading] = useState(true)
@@ -86,9 +98,9 @@ export default function ProducersPage() {
   
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mobile-container">
         <div className="text-center py-12">
-          <div className="text-6xl mb-4">🎵</div>
+          <div className="text-6xl mb-4 mobile-heading">🎵</div>
           <p className="text-gray-600">Loading producers...</p>
         </div>
       </div>

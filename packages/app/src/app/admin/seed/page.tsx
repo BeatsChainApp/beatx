@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState } from 'react'
 import { useWeb3Profile } from '@/hooks/useWeb3Profile'
 import { TestDataManager } from '@/utils/testData'
@@ -7,6 +9,16 @@ import { LinkComponent } from '@/components/LinkComponent'
 import { toast } from 'react-toastify'
 
 export default function AdminSeedPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <AdminSeedPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function AdminSeedPageContent() {
   const { profile, isConnected } = useWeb3Profile()
   const [seeding, setSeeding] = useState(false)
   const [stats, setStats] = useState<any>(null)
@@ -14,8 +26,8 @@ export default function AdminSeedPage() {
   if (!isConnected) {
     return (
       <div className="p-8 text-center">
-        <div className="text-6xl mb-4">🔗</div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Connect Your Wallet</h2>
+        <div className="text-6xl mb-4 mobile-heading">🔗</div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2 mobile-heading">Connect Your Wallet</h2>
         <p className="text-gray-600">Please connect your wallet to access admin tools.</p>
         <div className="mt-4">
           <w3m-button />
@@ -53,13 +65,13 @@ export default function AdminSeedPage() {
   return (
     <div>
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-8">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-2">🌱 Seed Test Data</h1>
+        <div className="container mx-auto px-4 mobile-container">
+          <h1 className="text-3xl font-bold mb-2 mobile-heading">🌱 Seed Test Data</h1>
           <LinkComponent href="/admin" className="text-white/80 hover:text-white">← Back to Admin</LinkComponent>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mobile-container">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg shadow p-6 mb-6">
             <h2 className="text-xl font-bold mb-4">Test Data Management</h2>

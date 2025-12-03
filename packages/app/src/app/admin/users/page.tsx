@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useWeb3Events } from '@/hooks/useWeb3Events'
@@ -256,10 +258,10 @@ function AdminUsersContent() {
     <div>
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-8">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 mobile-container">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2">👥 User Management</h1>
+              <h1 className="text-3xl font-bold mb-2 mobile-heading">👥 User Management</h1>
               <p className="opacity-90">Manage platform users and permissions</p>
             </div>
             <LinkComponent 
@@ -272,7 +274,7 @@ function AdminUsersContent() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mobile-container">
         {/* Filters */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <div className="flex gap-4 mb-4">
@@ -310,7 +312,7 @@ function AdminUsersContent() {
             </div>
           ) : users.length === 0 ? (
             <div className="p-8 text-center">
-              <div className="text-4xl mb-4">👥</div>
+              <div className="text-4xl mb-4 mobile-heading">👥</div>
               <p className="text-gray-600 mb-2">No users found</p>
               <p className="text-sm text-gray-500">Users will appear here as they join the platform</p>
             </div>
@@ -547,6 +549,16 @@ function AdminUsersContent() {
 }
 
 export default function AdminUsersPage() {
+  return (
+    <UniversalLayout requireAuth={true} allowedRoles={["admin","super_admin"]}>
+      <ResponsiveWrapper pageType="admin">
+        <AdminUsersPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function AdminUsersPageContent() {
   return (
     <ProtectedRoute anyRole={['admin', 'super_admin']}>
       <AdminUsersContent />

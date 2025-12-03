@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useEffect, useState } from 'react'
 import { client, urlFor } from '@/lib/sanity'
 import { PortableText } from '@portabletext/react'
@@ -31,7 +33,17 @@ function getFallbackPost(slug: string) {
   }
 }
 
-export default function BlogPostPage({ params }: PageProps) {
+export default function BlogPostPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <BlogPostPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function BlogPostPageContent() {
   const [post, setPost] = useState(getFallbackPost(params.slug))
   const [loading, setLoading] = useState(true)
   const [heroImageUrl, setHeroImageUrl] = useState('')

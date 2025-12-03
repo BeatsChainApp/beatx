@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState } from 'react'
 import { useAccount } from 'wagmi'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
@@ -9,6 +11,16 @@ import CmsHeroSection from '@/components/HeroSection'
 import Web3ContactForm from '@/components/Web3ContactForm'
 
 export default function ContactPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <ContactPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function ContactPageContent() {
   const { address, isConnected } = useAccount()
   const { user } = useUnifiedAuth()
   const [heroData, setHeroData] = useState(null)

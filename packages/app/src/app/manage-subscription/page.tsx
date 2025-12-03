@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useBeatNFT } from '@/hooks/useBeatNFT'
@@ -46,9 +48,9 @@ function ManageSubscriptionContent() {
         padding: '4rem 2rem',
         marginBottom: '2rem'
       }}>
-        <div className="container mx-auto">
+        <div className="container mx-auto mobile-container">
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">🎫 BeatNFT Credits</h1>
+            <h1 className="text-4xl font-bold mb-4 mobile-heading">🎫 BeatNFT Credits</h1>
             <p className="text-xl opacity-90 mb-6">Web3-native upload system using BeatNFT tokens</p>
             <div className="flex justify-center gap-4 text-sm">
               <div className="bg-white/10 px-4 py-2 rounded-full">
@@ -65,7 +67,7 @@ function ManageSubscriptionContent() {
         </div>
       </div>
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mobile-container">
         <BackToDashboard />
 
       <div className={`border rounded-lg p-6 mb-8 ${
@@ -119,11 +121,11 @@ function ManageSubscriptionContent() {
             )}
             
             <div className="text-center mb-6">
-              <div className="text-4xl mb-3">
+              <div className="text-4xl mb-3 mobile-heading">
                 {plan.id === 'free' ? '🎁' : '♾️'}
               </div>
-              <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-              <div className="text-3xl font-bold text-gray-900 mb-2">
+              <h3 className="text-2xl font-bold mb-2 mobile-heading">{plan.name}</h3>
+              <div className="text-3xl font-bold text-gray-900 mb-2 mobile-heading">
                 {plan.id === 'free' ? (
                   <span>Free</span>
                 ) : (
@@ -242,6 +244,16 @@ function ManageSubscriptionContent() {
 }
 
 export default function ManageSubscriptionPage() {
+  return (
+    <UniversalLayout requireAuth={true} allowedRoles={["user","producer","admin","super_admin"]}>
+      <ResponsiveWrapper pageType="dashboard">
+        <ManageSubscriptionPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function ManageSubscriptionPageContent() {
   return (
     <ProtectedRoute requireWallet={true}>
       <ManageSubscriptionContent />

@@ -9,6 +9,8 @@ import { useSiteSettings } from '@/hooks/useSiteSettings'
 import BeatNFTAdminDashboard from '@/components/BeatNFTAdminDashboard'
 import CampaignManager from '@/components/CampaignManager'
 import { LinkComponent } from '@/components/LinkComponent'
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { toast } from 'react-toastify'
 
 export default function AdminDashboard() {
@@ -107,7 +109,8 @@ export default function AdminDashboard() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <UniversalLayout requireAuth={true} allowedRoles={['admin', 'super_admin']}>
+      <ResponsiveWrapper pageType="admin" className="bg-gray-50">
       {/* Professional Hero Section */}
       <div className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -434,6 +437,7 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
-    </div>
+      </ResponsiveWrapper>
+    </UniversalLayout>
   )
 }

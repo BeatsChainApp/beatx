@@ -31,9 +31,9 @@ export default function Navigation() {
   if (loading) return <div className="h-20 bg-white border-b border-gray-200"></div>
 
   return (
-    <nav className="bg-white border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20">
+    <nav className="sticky-header bg-white border-b border-gray-200">
+      <div className="mobile-container">
+        <div className="nav-responsive h-16 sm:h-20">
           <div className="flex items-center">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
@@ -44,7 +44,7 @@ export default function Navigation() {
             </div>
             
             {/* Desktop Navigation */}
-            <div className="hidden sm:ml-8 sm:flex sm:space-x-4">
+            <div className="nav-links hidden sm:flex">
               {/* Simplified Auth Button */}
               <div className="flex items-center mr-4">
                 <SimplifiedWalletConnect />
@@ -114,13 +114,21 @@ export default function Navigation() {
           </div>
           
           {/* Mobile menu button */}
-          <div className="sm:hidden flex items-center">
+          <div className="sm:hidden flex items-center gap-2">
+            {/* Mobile user indicator */}
+            {user && (
+              <div className="text-xs bg-gray-100 px-2 py-1 rounded">
+                {user.role === 'super_admin' ? '👑' : 
+                 user.role === 'admin' ? '🛡️' : 
+                 user.role === 'producer' ? '🎵' : '👤'}
+              </div>
+            )}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+              className="touch-target inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
             >
-              <span className="sr-only">Open main menu</span>
-              {mobileMenuOpen ? '✕' : '☰'}
+              <span className="screen-reader-only">Open main menu</span>
+              <span className="text-xl">{mobileMenuOpen ? '✕' : '☰'}</span>
             </button>
           </div>
         </div>
@@ -128,12 +136,25 @@ export default function Navigation() {
       
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="sm:hidden">
-          <div className="pt-2 pb-3 space-y-1">
+        <div className="sm:hidden bg-white border-t border-gray-200">
+          <div className="py-3 space-y-1">
             {/* Mobile Simplified Auth */}
-            <div className="px-4 py-2">
+            <div className="px-4 py-2 border-b border-gray-100">
               <SimplifiedWalletConnect />
             </div>
+            
+            {/* User info for mobile */}
+            {user && (
+              <div className="px-4 py-2 bg-gray-50 text-sm">
+                <div className="flex items-center gap-2">
+                  <span>{user.role === 'super_admin' ? '👑' : 
+                         user.role === 'admin' ? '🛡️' : 
+                         user.role === 'producer' ? '🎵' : '👤'}</span>
+                  <span className="font-medium">{user.displayName}</span>
+                  <span className="text-gray-500">({user.role})</span>
+                </div>
+              </div>
+            )}
             
             {navigationItems.map((item) => (
               <div key={item.label}>
@@ -154,11 +175,12 @@ export default function Navigation() {
                 ) : (
                   <LinkComponent
                     href={item.link}
-                    className={`mobile-nav-link ${
+                    className={`touch-link block px-4 py-3 text-base font-medium ${
                       pathname === item.link
-                        ? 'mobile-nav-link-active'
-                        : 'mobile-nav-link-inactive'
+                        ? 'text-purple-600 bg-purple-50 border-r-4 border-purple-600'
+                        : 'text-gray-700 hover:text-purple-600 hover:bg-gray-50'
                     }`}
+                    onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.icon && <span className="mr-2">{item.icon}</span>}
                     {item.label}
@@ -193,14 +215,40 @@ export default function Navigation() {
                 )}
               </div>
             ))}
+            
+            {/* Admin/Dashboard links for mobile */}
+            {user && (
+              <div className="border-t border-gray-200 pt-2">
+                {(user.role === 'admin' || user.role === 'super_admin') && (
+                  <LinkComponent
+                    href="/admin"
+                    className="touch-link block px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    👑 Admin Dashboard
+                  </LinkComponent>
+                )}
+                {(user.role === 'producer' || user.role === 'admin' || user.role === 'super_admin') && (
+                  <LinkComponent
+                    href="/dashboard"
+                    className="touch-link block px-4 py-3 text-base font-medium text-blue-600 hover:bg-blue-50"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    📊 Producer Dashboard
+                  </LinkComponent>
+                )}
+                <LinkComponent
+                  href="/profile"
+                  className="touch-link block px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  👤 Profile
+                </LinkComponent>
+              </div>
+            )}
           </div>
         </div>
       )}
-            {user?.role === 'admin' && (
-          <Link href="/admin" className="nav-link">
-            👑 Admin
-          </Link>
-        )}
-      </nav>
+    </nav>
   )
 }

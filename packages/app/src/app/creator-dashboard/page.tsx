@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useContentCreator } from '@/hooks/useContentCreator'
 import { useWeb3Auth } from '@/hooks/useWeb3Auth'
 import { useEffect, useState } from 'react'
@@ -50,28 +52,28 @@ function CreatorDashboardContent() {
         <div className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-red-500 text-white py-20 overflow-hidden">
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="absolute inset-0 bg-[url('/hero-pattern.svg')] opacity-10"></div>
-          <div className="container mx-auto px-4 text-center relative z-10">
+          <div className="container mx-auto px-4 text-center relative z-10 mobile-container">
             <div className="max-w-4xl mx-auto">
-              <div className="text-8xl mb-6">🎨</div>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-pink-100 bg-clip-text text-transparent">
+              <div className="text-8xl mb-6 mobile-heading">🎨</div>
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-pink-100 bg-clip-text text-transparent mobile-heading">
                 Creator Dashboard
               </h1>
-              <p className="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed">
+              <p className="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed mobile-heading">
                 Join the Web3 creator economy - License beats, collaborate with producers, earn royalties
               </p>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-white/20">
                 <p className="text-lg mb-4">Why become a verified creator on BeatsChain?</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                   <div className="bg-white/10 rounded-lg p-3">
-                    <div className="text-2xl mb-1">🎆</div>
+                    <div className="text-2xl mb-1 mobile-heading">🎆</div>
                     <div>Full beat previews</div>
                   </div>
                   <div className="bg-white/10 rounded-lg p-3">
-                    <div className="text-2xl mb-1">🤝</div>
+                    <div className="text-2xl mb-1 mobile-heading">🤝</div>
                     <div>License negotiations</div>
                   </div>
                   <div className="bg-white/10 rounded-lg p-3">
-                    <div className="text-2xl mb-1">💰</div>
+                    <div className="text-2xl mb-1 mobile-heading">💰</div>
                     <div>Viral content bonuses</div>
                   </div>
                 </div>
@@ -81,10 +83,10 @@ function CreatorDashboardContent() {
         </div>
         
         {/* Content Section */}
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-12 mobile-container">
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center mobile-heading">
                 🌟 Creator Profile Required
               </h2>
               <p className="text-lg text-gray-600 mb-8 text-center leading-relaxed">
@@ -154,7 +156,7 @@ function CreatorDashboardContent() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 mobile-heading">
                 🎨 Creator Dashboard
                 {(user?.role === 'admin' || user?.role === 'super_admin') && (
                   <span className="ml-2 text-sm bg-red-100 text-red-800 px-2 py-1 rounded">ADMIN VIEW</span>
@@ -176,9 +178,9 @@ function CreatorDashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Active Licenses</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.activeLicenses || 0}</p>
+                <p className="text-2xl font-bold text-gray-900 mobile-heading">{stats?.activeLicenses || 0}</p>
               </div>
-              <div className="text-green-500 text-2xl">📄</div>
+              <div className="text-green-500 text-2xl mobile-heading">📄</div>
             </div>
           </div>
 
@@ -186,9 +188,9 @@ function CreatorDashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Spent</p>
-                <p className="text-2xl font-bold text-gray-900">${stats?.totalSpent || 0}</p>
+                <p className="text-2xl font-bold text-gray-900 mobile-heading">${stats?.totalSpent || 0}</p>
               </div>
-              <div className="text-blue-500 text-2xl">💰</div>
+              <div className="text-blue-500 text-2xl mobile-heading">💰</div>
             </div>
           </div>
 
@@ -196,9 +198,9 @@ function CreatorDashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Pending Negotiations</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.pendingNegotiations || 0}</p>
+                <p className="text-2xl font-bold text-gray-900 mobile-heading">{stats?.pendingNegotiations || 0}</p>
               </div>
-              <div className="text-orange-500 text-2xl">🤝</div>
+              <div className="text-orange-500 text-2xl mobile-heading">🤝</div>
             </div>
           </div>
 
@@ -206,9 +208,9 @@ function CreatorDashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Audience Size</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.audienceSize?.toLocaleString() || 0}</p>
+                <p className="text-2xl font-bold text-gray-900 mobile-heading">{stats?.audienceSize?.toLocaleString() || 0}</p>
               </div>
-              <div className="text-purple-500 text-2xl">👥</div>
+              <div className="text-purple-500 text-2xl mobile-heading">👥</div>
             </div>
           </div>
         </div>
@@ -237,7 +239,7 @@ function CreatorDashboardContent() {
             </div>
           ) : (
             <div className="text-center py-8">
-              <div className="text-4xl mb-4">🎵</div>
+              <div className="text-4xl mb-4 mobile-heading">🎵</div>
               <p className="text-gray-600 mb-4">No licenses yet</p>
               <LinkComponent 
                 href="/beatnfts"
@@ -304,6 +306,16 @@ function CreatorDashboardContent() {
 }
 
 export default function CreatorDashboard() {
+  return (
+    <UniversalLayout requireAuth={true} allowedRoles={["producer","admin","super_admin"]}>
+      <ResponsiveWrapper pageType="dashboard">
+        <CreatorDashboardContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function CreatorDashboardContent() {
   return (
     <ProtectedRoute>
       <DashboardLayout>

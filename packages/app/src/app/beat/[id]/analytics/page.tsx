@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useParams } from 'next/navigation'
 import { LinkComponent } from '@/components/LinkComponent'
 import BeatAnalyticsCard from '@/components/BeatAnalyticsCard'
@@ -44,6 +46,16 @@ function BeatAnalyticsContent() {
 }
 
 export default function BeatAnalyticsPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <BeatAnalyticsPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function BeatAnalyticsPageContent() {
   return (
     <ProtectedRoute requireWallet={true}>
       <BeatAnalyticsContent />

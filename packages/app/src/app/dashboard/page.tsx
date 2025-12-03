@@ -1,7 +1,8 @@
 'use client'
 
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import SessionGate from '@/components/SessionGate'
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import ProducerDashboardStats from '@/components/ProducerDashboardStats'
 import BeatAnalytics from '@/components/BeatAnalytics'
 import ProducerCollaboration from '@/components/ProducerCollaboration'
@@ -24,69 +25,89 @@ interface ProducerStats {
 
 function DashboardContent() {
   return (
-    <div>
+    <ResponsiveWrapper pageType="dashboard">
       <DashboardHero pageSlug="dashboard" />
       
-      <div className="container mx-auto px-4 py-8">
-      
-      {/* Quick Actions */}
-      <div className="mb-8">
-        <QuickActions />
-      </div>
-      
-      {/* Earnings Overview */}
-      <div className="mb-8">
-        <EarningsOverview />
-      </div>
-      
-      {/* Producer Profile Section */}
-      <div id="profile-section" className="mb-8">
-        <ProducerProfileSection />
-      </div>
-      
-      {/* Beat Management Section */}
-      <div className="mb-8">
-        <BeatManagementSystem />
-      </div>
-      
-      {/* Legacy Stats (keeping for compatibility) */}
-      <div className="mb-8">
-        <ProducerDashboardStats />
-      </div>
-      
-      {/* Transaction History Section */}
-      <div className="mb-8">
-        <h2 className="text-xl font-bold mb-4">Transaction History</h2>
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <TransactionHistory />
+      <div className="dashboard-main">
+        {/* Quick Actions */}
+        <div className="mb-6">
+          <QuickActions />
+        </div>
+        
+        {/* Earnings Overview */}
+        <div className="mb-6">
+          <EarningsOverview />
+        </div>
+        
+        {/* Producer Profile Section */}
+        <div id="profile-section" className="mb-6">
+          <ProducerProfileSection />
+        </div>
+        
+        {/* Beat Management Section */}
+        <div className="mb-6">
+          <BeatManagementSystem />
+        </div>
+        
+        {/* Legacy Stats (keeping for compatibility) */}
+        <div className="mb-6">
+          <ProducerDashboardStats />
+        </div>
+        
+        {/* Transaction History Section */}
+        <div className="mb-6">
+          <h2 className="mobile-heading font-bold mb-4">Transaction History</h2>
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <TransactionHistory />
+          </div>
+        </div>
+        
+        {/* Beat Analytics Section */}
+        <div className="mb-6">
+          <BeatAnalytics />
+        </div>
+        
+        {/* Producer Collaboration Section */}
+        <div className="mb-6">
+          <ProducerCollaboration />
+        </div>
+        
+        {/* Marketing Tools Section */}
+        <div className="mb-6">
+          <MarketingTools />
         </div>
       </div>
       
-      {/* Beat Analytics Section */}
-      <div className="mt-8">
-        <BeatAnalytics />
+      {/* Dashboard Sidebar */}
+      <div className="dashboard-sidebar">
+        <div className="bg-white rounded-lg shadow p-4 mb-4">
+          <h3 className="font-semibold mb-3">Quick Stats</h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span>Total Beats</span>
+              <span className="font-medium">-</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Total Earnings</span>
+              <span className="font-medium">-</span>
+            </div>
+            <div className="flex justify-between">
+              <span>This Month</span>
+              <span className="font-medium">-</span>
+            </div>
+          </div>
+        </div>
       </div>
-      
-      {/* Producer Collaboration Section */}
-      <div className="mt-8">
-        <ProducerCollaboration />
-      </div>
-      
-      {/* Marketing Tools Section */}
-      <div className="mt-8">
-        <MarketingTools />
-      </div>
-      </div>
-    </div>
+    </ResponsiveWrapper>
   )
 }
 
 export default function DashboardPage() {
   return (
-    <SessionGate requireWallet={false}>
+    <UniversalLayout requireAuth={true} allowedRoles={['producer', 'admin', 'super_admin']}>
       <DashboardLayout>
         <DashboardContent />
       </DashboardLayout>
-    </SessionGate>
+    </UniversalLayout>
   )
 }

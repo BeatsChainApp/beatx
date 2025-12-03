@@ -1,11 +1,23 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useEffect, useState } from 'react'
 import { client } from '@/lib/sanity-client'
 import CmsHeroSection from '@/components/HeroSection'
 import EnhancedBlogGrid from '@/components/EnhancedBlogGrid'
 
 export default function BlogPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <BlogPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function BlogPageContent() {
   const [posts, setPosts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [heroData, setHeroData] = useState(null)

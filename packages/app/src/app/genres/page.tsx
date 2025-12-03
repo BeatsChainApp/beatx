@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useBeats } from '@/hooks/useBeats'
 import { LinkComponent } from '@/components/LinkComponent'
 
@@ -32,11 +34,21 @@ const GENRE_INFO = {
 }
 
 export default function GenresPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <GenresPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function GenresPageContent() {
   const { beats, loading } = useBeats()
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mobile-container">
         <div className="flex justify-center items-center min-h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -70,10 +82,10 @@ export default function GenresPage() {
   const genres = Object.keys(genreStats).sort()
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 mobile-container">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Browse by Genre</h1>
+        <h1 className="text-3xl font-bold mb-2 mobile-heading">Browse by Genre</h1>
         <p className="text-gray-600">Explore beats organized by musical style and genre</p>
       </div>
 
@@ -99,13 +111,13 @@ export default function GenresPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-2xl">{info.icon}</span>
+                        <span className="text-2xl mobile-heading">{info.icon}</span>
                         <h3 className="text-xl font-bold capitalize">{genre}</h3>
                       </div>
                       <p className="text-white/90 text-sm">{info.description}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold">{stats.count}</p>
+                      <p className="text-2xl font-bold mobile-heading">{stats.count}</p>
                       <p className="text-white/90 text-sm">beats</p>
                     </div>
                   </div>

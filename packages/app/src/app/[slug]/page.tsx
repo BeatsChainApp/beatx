@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { getPageBySlug } from '@/lib/sanity-client'
@@ -10,6 +12,16 @@ import SEO from '@/components/SEO'
 import ContentBlockRenderer from '@/components/blocks/ContentBlockRenderer'
 
 export default function DynamicPage() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <DynamicPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function DynamicPageContent() {
   const params = useParams()
   const slug = params.slug as string
   const [pageData, setPageData] = useState<any>(null)
@@ -70,7 +82,7 @@ export default function DynamicPage() {
         {pageData.heroSection && <HeroSection data={pageData.heroSection} />}
 
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold mb-6">{pageData.title}</h1>
+          <h1 className="text-3xl font-bold mb-6 mobile-heading">{pageData.title}</h1>
           
           {useFallback ? (
             // Render fallback content

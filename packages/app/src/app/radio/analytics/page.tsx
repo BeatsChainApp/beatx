@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 
 interface RadioAnalytics {
@@ -13,6 +15,16 @@ interface RadioAnalytics {
 }
 
 export default function RadioAnalyticsPage() {
+  return (
+    <UniversalLayout requireAuth={true} allowedRoles={["producer","admin","super_admin"]}>
+      <ResponsiveWrapper pageType="dashboard">
+        <RadioAnalyticsPageContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function RadioAnalyticsPageContent() {
   const [analytics, setAnalytics] = useState<RadioAnalytics | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -36,7 +48,7 @@ export default function RadioAnalyticsPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-4xl mb-4">📊</div>
+          <div className="text-4xl mb-4 mobile-heading">📊</div>
           <p>Loading analytics...</p>
         </div>
       </div>
@@ -48,9 +60,9 @@ export default function RadioAnalyticsPage() {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center">
-            <span className="text-2xl mr-3">📊</span>
+            <span className="text-2xl mr-3 mobile-heading">📊</span>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Radio Analytics</h1>
+              <h1 className="text-2xl font-bold text-gray-900 mobile-heading">Radio Analytics</h1>
               <p className="text-gray-600">Track your radio submission performance</p>
             </div>
           </div>
@@ -61,9 +73,9 @@ export default function RadioAnalyticsPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center">
-              <span className="text-2xl mr-3">📻</span>
+              <span className="text-2xl mr-3 mobile-heading">📻</span>
               <div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-gray-900 mobile-heading">
                   {analytics?.totalSubmissions || 0}
                 </div>
                 <div className="text-sm text-gray-600">Total Submissions</div>
@@ -73,9 +85,9 @@ export default function RadioAnalyticsPage() {
 
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center">
-              <span className="text-2xl mr-3">✅</span>
+              <span className="text-2xl mr-3 mobile-heading">✅</span>
               <div>
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-green-600 mobile-heading">
                   {analytics?.successRate || 0}%
                 </div>
                 <div className="text-sm text-gray-600">Success Rate</div>
@@ -85,9 +97,9 @@ export default function RadioAnalyticsPage() {
 
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center">
-              <span className="text-2xl mr-3">💰</span>
+              <span className="text-2xl mr-3 mobile-heading">💰</span>
               <div>
-                <div className="text-2xl font-bold text-blue-600">
+                <div className="text-2xl font-bold text-blue-600 mobile-heading">
                   R{analytics?.totalRevenue || 0}
                 </div>
                 <div className="text-sm text-gray-600">Revenue Generated</div>
@@ -97,9 +109,9 @@ export default function RadioAnalyticsPage() {
 
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center">
-              <span className="text-2xl mr-3">📈</span>
+              <span className="text-2xl mr-3 mobile-heading">📈</span>
               <div>
-                <div className="text-2xl font-bold text-purple-600">
+                <div className="text-2xl font-bold text-purple-600 mobile-heading">
                   R{analytics?.avgRevenue || 0}
                 </div>
                 <div className="text-sm text-gray-600">Avg. Per Submission</div>

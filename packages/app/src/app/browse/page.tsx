@@ -1,9 +1,21 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function BrowseRedirect() {
+  return (
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
+        <BrowseRedirectContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function BrowseRedirectContent() {
   const router = useRouter()
   
   useEffect(() => {

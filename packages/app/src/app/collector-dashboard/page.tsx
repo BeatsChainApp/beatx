@@ -1,5 +1,7 @@
 'use client'
 
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useBeatNFT } from '@/hooks/useBeatNFT.enhanced'
@@ -48,11 +50,11 @@ function CollectorDashboardContent() {
 
   return (
       <div>
-        <h1 className="text-3xl font-bold mb-6">🖼️ NFT Collector Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-6 mobile-heading">🖼️ NFT Collector Dashboard</h1>
         
         {/* Welcome Section */}
         <div className="bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-lg p-6 mb-8">
-          <h2 className="text-2xl font-bold mb-2">Welcome, Collector!</h2>
+          <h2 className="text-2xl font-bold mb-2 mobile-heading">Welcome, Collector!</h2>
           <p className="opacity-90 mb-4">Manage your BeatNFT collection and track portfolio performance</p>
           <div className="flex gap-4 text-sm">
             <div className="bg-white/20 px-3 py-1 rounded-full">
@@ -73,10 +75,10 @@ function CollectorDashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Portfolio Value</p>
-                <p className="text-2xl font-bold text-gray-900">{portfolioValue.toFixed(3)} ETH</p>
+                <p className="text-2xl font-bold text-gray-900 mobile-heading">{portfolioValue.toFixed(3)} ETH</p>
                 <p className="text-xs text-green-600">+20% unrealized</p>
               </div>
-              <div className="text-green-500 text-2xl">📈</div>
+              <div className="text-green-500 text-2xl mobile-heading">📈</div>
             </div>
           </div>
 
@@ -84,9 +86,9 @@ function CollectorDashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total NFTs</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalNFTs}</p>
+                <p className="text-2xl font-bold text-gray-900 mobile-heading">{stats.totalNFTs}</p>
               </div>
-              <div className="text-purple-500 text-2xl">🖼️</div>
+              <div className="text-purple-500 text-2xl mobile-heading">🖼️</div>
             </div>
           </div>
 
@@ -94,9 +96,9 @@ function CollectorDashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Spent</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalSpent.toFixed(3)} ETH</p>
+                <p className="text-2xl font-bold text-gray-900 mobile-heading">{stats.totalSpent.toFixed(3)} ETH</p>
               </div>
-              <div className="text-blue-500 text-2xl">💰</div>
+              <div className="text-blue-500 text-2xl mobile-heading">💰</div>
             </div>
           </div>
 
@@ -104,9 +106,9 @@ function CollectorDashboardContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Avg. Price</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.avgPrice.toFixed(3)} ETH</p>
+                <p className="text-2xl font-bold text-gray-900 mobile-heading">{stats.avgPrice.toFixed(3)} ETH</p>
               </div>
-              <div className="text-orange-500 text-2xl">📊</div>
+              <div className="text-orange-500 text-2xl mobile-heading">📊</div>
             </div>
           </div>
         </div>
@@ -130,7 +132,7 @@ function CollectorDashboardContent() {
               {collection.slice(0, 6).map((nft, index) => (
                 <div key={index} className="border border-gray-200 rounded-lg p-4">
                   <div className="bg-gradient-to-br from-purple-100 to-pink-100 h-32 rounded-lg mb-3 flex items-center justify-center">
-                    <span className="text-2xl">🎵</span>
+                    <span className="text-2xl mobile-heading">🎵</span>
                   </div>
                   <h3 className="font-medium mb-1">BeatNFT #{nft.beatId}</h3>
                   <p className="text-sm text-gray-600 mb-2">{nft.licenseType} License</p>
@@ -143,7 +145,7 @@ function CollectorDashboardContent() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">🖼️</div>
+              <div className="text-6xl mb-4 mobile-heading">🖼️</div>
               <h3 className="text-xl font-semibold mb-2">No NFTs in Collection</h3>
               <p className="text-gray-600 mb-6">Start collecting exclusive BeatNFTs to build your portfolio</p>
               <LinkComponent 
@@ -215,6 +217,16 @@ function CollectorDashboardContent() {
 }
 
 export default function CollectorDashboard() {
+  return (
+    <UniversalLayout requireAuth={true} allowedRoles={["user","producer","admin","super_admin"]}>
+      <ResponsiveWrapper pageType="dashboard">
+        <CollectorDashboardContent />
+      </ResponsiveWrapper>
+    </UniversalLayout>
+  )
+}
+
+function CollectorDashboardContent() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
