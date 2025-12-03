@@ -1,4 +1,6 @@
 import { redirect } from 'next/navigation'
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 
 export default function BeatsRedirect() {
   return (
@@ -12,5 +14,5 @@ export default function BeatsRedirect() {
 
 function BeatsRedirectContent() {
   // Redirect /beats/[id] to /beat/[id] (singular)
-  redirect(`/beat/${params.id}`)
+  redirect('/browse')
 }

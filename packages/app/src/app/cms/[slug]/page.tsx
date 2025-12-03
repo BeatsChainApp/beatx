@@ -1,4 +1,6 @@
 import { Metadata } from 'next'
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
 
 interface PageProps {
   params: { slug: string }

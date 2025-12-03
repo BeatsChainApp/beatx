@@ -1,3 +1,6 @@
+import ResponsiveWrapper from '@/components/ResponsiveWrapper'
+import UniversalLayout from '@/components/UniversalLayout'
+
 export default function TermsPage() {
   return (
     <UniversalLayout>
