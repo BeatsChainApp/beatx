@@ -15,7 +15,7 @@ import { BeatMetadataSync } from '@/components/BeatMetadataSync'
 import CookieConsentBanner from '@/components/CookieConsentBanner'
 import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 import SuperAdminSetup from '@/components/SuperAdminSetup'
-
+import { ClientErrorBoundary } from '@/components/ClientErrorBoundary'
 import { Toaster } from 'react-hot-toast'
 
 import '../assets/globals.css'
@@ -128,7 +128,8 @@ export default function RootLayout(props: PropsWithChildren) {
       </head>
 
       <body>
-        <ClientOnly fallback={
+        <ClientErrorBoundary>
+          <ClientOnly fallback={
           <div style={{ 
             display: 'flex', 
             justifyContent: 'center', 
@@ -167,7 +168,8 @@ export default function RootLayout(props: PropsWithChildren) {
               </SIWEProvider>
             </Web3DataProvider>
           </Web3Provider>
-        </ClientOnly>
+          </ClientOnly>
+        </ClientErrorBoundary>
         
         {/* Google Tag Manager */}
         {process.env.NEXT_PUBLIC_GTM_ID && (

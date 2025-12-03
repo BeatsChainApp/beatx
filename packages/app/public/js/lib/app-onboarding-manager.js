@@ -171,7 +171,7 @@ class AppOnboardingManager {
       targeting: {
         demographics: this.detectUserDemographics(),
         interests: this.detectUserInterests(),
-        behavior: this.trackUserBehavior()
+        behavior: { pageViews: 0, timeOnSite: 0, interactions: 0 }
       }
     }
   }
@@ -571,6 +571,9 @@ class AppOnboardingManager {
   }
 
   trackUserBehavior() {
+    if (!this.analyticsManager || !this.analyticsManager.events) {
+      return { pageViews: 0, timeOnSite: 0, interactions: 0 }
+    }
     return {
       pageViews: this.analyticsManager.events.filter(e => e.event === 'page_view').length,
       timeOnSite: this.calculateTimeOnSite(),
