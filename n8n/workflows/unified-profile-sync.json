@@ -1,0 +1,720 @@
+{
+  "name": "Unified Profile Sync Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/webhook/profile-sync",
+        "responseMode": "responseNode"
+      },
+      "id": "profile-sync-webhook",
+      "name": "Profile Sync Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.event}}",
+              "operation": "equal",
+              "value2": "profile_sync"
+            }
+          ]
+        }
+      },
+      "id": "event-filter",
+      "name": "Filter Profile Events",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/profiles/authenticate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "={{$json.profile.email}}"
+            },
+            {
+              "name": "wallet_address",
+              "value": "={{$json.profile.wallet_address}}"
+            },
+            {
+              "name": "google_id",
+              "value": "={{$json.profile.google_id}}"
+            },
+            {
+              "name": "whatsapp_id",
+              "value": "={{$json.profile.whatsapp_id}}"
+            },
+            {
+              "name": "display_name",
+              "value": "={{$json.profile.display_name}}"
+            },
+            {
+              "name": "platform",
+              "value": "n8n"
+            }
+          ]
+        }
+      },
+      "id": "sync-to-mcp",
+      "name": "Sync to MCP Server",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.profile.whatsapp_id}}",
+              "operation": "exists"
+            }
+          ]
+        }
+      },
+      "id": "whatsapp-check",
+      "name": "Check WhatsApp Profile",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.WHATSAPP_GATEWAY_URL}}/api/profile/sync",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.WHATSAPP_API_TOKEN}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "whatsapp_id",
+              "value": "={{$json.profile.whatsapp_id}}"
+            },
+            {
+              "name": "user_id",
+              "value": "={{$json.profile.user_id}}"
+            },
+            {
+              "name": "profile_data",
+              "value": "={{$json.profile}}"
+            }
+          ]
+        }
+      },
+      "id": "sync-whatsapp",
+      "name": "Sync WhatsApp Profile",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.profile.app_role}}",
+              "operation": "equal",
+              "value2": "SUPER_ADMIN"
+            }
+          ]
+        }
+      },
+      "id": "admin-check",
+      "name": "Check Admin Role",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1120, 400]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/notifications/send",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "user_id",
+              "value": "={{$json.profile.user_id}}"
+            },
+            {
+              "name": "type",
+              "value": "admin_access_granted"
+            },
+            {
+              "name": "title",
+              "value": "Admin Access Granted"
+            },
+            {
+              "name": "message",
+              "value": "Your admin privileges have been activated across all platforms."
+            },
+            {
+              "name": "platforms",
+              "value": ["app", "extension", "mcp"]
+            }
+          ]
+        }
+      },
+      "id": "notify-admin",
+      "name": "Notify Admin Access",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1340, 400]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/analytics/track",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "event",
+              "value": "profile_sync"
+            },
+            {
+              "name": "user_id",
+              "value": "={{$json.profile.user_id}}"
+            },
+            {
+              "name": "platform",
+              "value": "n8n"
+            },
+            {
+              "name": "metadata",
+              "value": {
+                "sync_timestamp": "={{new Date().toISOString()}}",
+                "platforms_active": "={{Object.keys($json.profile.platforms).filter(p => $json.profile.platforms[p].active)}}",
+                "role": "={{$json.profile.app_role}}"
+              }
+            }
+          ]
+        }
+      },
+      "id": "track-analytics",
+      "name": "Track Profile Analytics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": {
+          "success": true,
+          "message": "Profile sync completed",
+          "user_id": "={{$json.profile.user_id}}",
+          "platforms_synced": "={{Object.keys($json.profile.platforms).filter(p => $json.profile.platforms[p].active)}}",
+          "timestamp": "={{new Date().toISOString()}}"
+        }
+      },
+      "id": "sync-response",
+      "name": "Sync Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/webhook/user-signup",
+        "responseMode": "responseNode"
+      },
+      "id": "user-signup-webhook",
+      "name": "User Signup Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 600]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.context}}",
+              "operation": "exists"
+            }
+          ]
+        }
+      },
+      "id": "signup-context-check",
+      "name": "Check Signup Context",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 600]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/profiles/authenticate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "={{$json.email}}"
+            },
+            {
+              "name": "wallet_address",
+              "value": "={{$json.walletAddress}}"
+            },
+            {
+              "name": "google_id",
+              "value": "={{$json.googleId}}"
+            },
+            {
+              "name": "display_name",
+              "value": "={{$json.name || $json.displayName}}"
+            },
+            {
+              "name": "verified_email",
+              "value": "={{$json.verifiedEmail}}"
+            },
+            {
+              "name": "platform",
+              "value": "={{$json.context}}"
+            },
+            {
+              "name": "auth_method",
+              "value": "signup"
+            }
+          ]
+        }
+      },
+      "id": "create-new-profile",
+      "name": "Create New Profile",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 600]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/profiles/{{$json.user_id}}/wallets",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "platform",
+              "value": "={{$json.context}}"
+            },
+            {
+              "name": "wallet_address",
+              "value": "={{$json.walletAddress}}"
+            },
+            {
+              "name": "wallet_type",
+              "value": "generated"
+            },
+            {
+              "name": "is_primary",
+              "value": true
+            }
+          ]
+        }
+      },
+      "id": "add-signup-wallet",
+      "name": "Add Signup Wallet",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [900, 600]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/notifications/send",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "user_id",
+              "value": "={{$json.user_id}}"
+            },
+            {
+              "name": "type",
+              "value": "welcome"
+            },
+            {
+              "name": "title",
+              "value": "Welcome to BeatsChain!"
+            },
+            {
+              "name": "message",
+              "value": "Your unified profile has been created. You can now access all BeatsChain platforms with a single identity."
+            },
+            {
+              "name": "platforms",
+              "value": ["app", "extension"]
+            }
+          ]
+        }
+      },
+      "id": "send-welcome",
+      "name": "Send Welcome Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1120, 600]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": {
+          "success": true,
+          "message": "User profile created successfully",
+          "user_id": "={{$json.user_id}}",
+          "profile": "={{$json.profile}}",
+          "timestamp": "={{new Date().toISOString()}}"
+        }
+      },
+      "id": "signup-response",
+      "name": "Signup Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1340, 600]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/webhook/whatsapp-profile",
+        "responseMode": "responseNode"
+      },
+      "id": "whatsapp-profile-webhook",
+      "name": "WhatsApp Profile Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 900]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.whatsapp_id}}",
+              "operation": "exists"
+            }
+          ]
+        }
+      },
+      "id": "whatsapp-id-check",
+      "name": "Check WhatsApp ID",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 900]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/profiles/whatsapp/sync",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "whatsapp_id",
+              "value": "={{$json.whatsapp_id}}"
+            },
+            {
+              "name": "profile_data",
+              "value": "={{$json.profile}}"
+            },
+            {
+              "name": "user_id",
+              "value": "={{$json.user_id}}"
+            }
+          ]
+        }
+      },
+      "id": "sync-whatsapp-profile",
+      "name": "Sync WhatsApp Profile",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 900]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": {
+          "success": true,
+          "message": "WhatsApp profile synced",
+          "user_id": "={{$json.user_id}}",
+          "whatsapp_id": "={{$json.whatsapp_id}}",
+          "timestamp": "={{new Date().toISOString()}}"
+        }
+      },
+      "id": "whatsapp-response",
+      "name": "WhatsApp Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 900]
+    }
+  ],
+  "connections": {
+    "Profile Sync Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filter Profile Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Profile Events": {
+      "main": [
+        [
+          {
+            "node": "Sync to MCP Server",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sync to MCP Server": {
+      "main": [
+        [
+          {
+            "node": "Check WhatsApp Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check WhatsApp Profile": {
+      "main": [
+        [
+          {
+            "node": "Sync WhatsApp Profile",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check Admin Role",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sync WhatsApp Profile": {
+      "main": [
+        [
+          {
+            "node": "Track Profile Analytics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Admin Role": {
+      "main": [
+        [
+          {
+            "node": "Notify Admin Access",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Track Profile Analytics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Admin Access": {
+      "main": [
+        [
+          {
+            "node": "Sync Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Track Profile Analytics": {
+      "main": [
+        [
+          {
+            "node": "Sync Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User Signup Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check Signup Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Signup Context": {
+      "main": [
+        [
+          {
+            "node": "Create New Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create New Profile": {
+      "main": [
+        [
+          {
+            "node": "Add Signup Wallet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Signup Wallet": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Notification": {
+      "main": [
+        [
+          {
+            "node": "Signup Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Profile Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check WhatsApp ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check WhatsApp ID": {
+      "main": [
+        [
+          {
+            "node": "Sync WhatsApp Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sync WhatsApp Profile": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "timezone": "UTC"
+  },
+  "versionId": "2"
+}

@@ -763,6 +763,15 @@ try {
   console.log('ℹ️ RBAC routes not found');
 }
 
+// Load Unified Profiles routes
+try {
+  const unifiedProfilesRoutes = require('./routes/unified-profiles');
+  app.use('/api', unifiedProfilesRoutes);
+  console.log('✅ Unified Profiles routes loaded');
+} catch (e) {
+  console.log('ℹ️ Unified Profiles routes not found:', e.message);
+}
+
 // Load additional routes if they exist
 try {
   const indexRoute = require('./routes/index');

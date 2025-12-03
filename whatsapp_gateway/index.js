@@ -6,6 +6,16 @@ const crypto = require('crypto');
 const app = express();
 const PORT = process.env.PORT || 3333;
 
+// Initialize WhatsApp Profile Integration
+let whatsappIntegration = null;
+try {
+  const { WhatsAppProfileIntegration } = require('./unified-profile-integration');
+  whatsappIntegration = new WhatsAppProfileIntegration();
+  console.log('✅ WhatsApp Profile Integration initialized');
+} catch (e) {
+  console.warn('⚠️ WhatsApp Profile Integration not available:', e.message);
+}
+
 // Use JSON parser for body; we'll re-stringify for signature verification if needed
 app.use(express.json({ limit: '10mb' }));
 
@@ -74,6 +84,19 @@ app.post('/webhook', async (req, res) => {
   }
 
   const normalized = normalizeWhatsAppPayload(req.body);
+
+  // Process with unified profile integration
+  if (whatsappIntegration) {
+    try {
+      const result = await whatsappIntegration.handleWhatsAppMessage(normalized);
+      if (result && result.response) {
+        // Send response back to WhatsApp if needed
+        console.log('WhatsApp response:', result.response);
+      }
+    } catch (err) {
+      console.error('WhatsApp integration error:', err);
+    }
+  }
 
   // Forward to N8N or configured router
   const forwardUrl = process.env.N8N_WEBHOOK_URL;

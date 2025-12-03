@@ -7,6 +7,7 @@ import { useAnalytics } from '@/hooks/useAnalytics'
 import { useBeatNFT } from '@/hooks/useBeatNFT'
 import { useSiteSettings } from '@/hooks/useSiteSettings'
 import BeatNFTAdminDashboard from '@/components/BeatNFTAdminDashboard'
+import CampaignManager from '@/components/CampaignManager'
 import { LinkComponent } from '@/components/LinkComponent'
 import { toast } from 'react-toastify'
 
@@ -97,6 +98,7 @@ export default function AdminDashboard() {
 
   const tabs = [
     { id: 'overview', name: 'Overview', icon: '📊' },
+    { id: 'campaigns', name: 'Campaigns', icon: '🚀' },
     { id: 'beatnft', name: 'BeatNFT Credits', icon: '🎫' },
     { id: 'users', name: 'Users', icon: '👥' },
     { id: 'beats', name: 'Beats', icon: '🎵' },
@@ -314,6 +316,10 @@ export default function AdminDashboard() {
 
         {activeTab === 'beatnft' && (
           <BeatNFTAdminDashboard />
+        )}
+
+        {activeTab === 'campaigns' && (
+          <CampaignManager />
         )}
 
         {activeTab === 'users' && (
