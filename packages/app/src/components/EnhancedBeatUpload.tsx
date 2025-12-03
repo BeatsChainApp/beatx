@@ -105,8 +105,8 @@ export default function EnhancedBeatUpload() {
     )
   }
 
-  // Fixed: Dropzone hook at top level
-  const { getRootProps, getInputProps } = useDropzone({
+  // Conditional dropzone to prevent SSR issues
+  const dropzoneConfig = mounted ? {
     accept: { 'audio/*': ['.mp3', '.wav', '.m4a', '.aac', '.flac'] },
     maxFiles: 1,
     onDrop: (acceptedFiles) => {
@@ -115,13 +115,11 @@ export default function EnhancedBeatUpload() {
         success(`Audio file selected: ${acceptedFiles[0].name}`)
       }
     },
-    onDropRejected: (rejectedFiles) => {
-      error(`Invalid file type. Please upload MP3, WAV, M4A, AAC, or FLAC files.`)
-    },
-    onError: (err) => {
-      error('File upload failed. Please try again.')
-    }
-  })
+    onDropRejected: () => error('Invalid file type. Please upload MP3, WAV, M4A, AAC, or FLAC files.'),
+    onError: () => error('File upload failed. Please try again.')
+  } : {}
+  
+  const { getRootProps, getInputProps } = useDropzone(dropzoneConfig)
 
   const handleCoverArtUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]

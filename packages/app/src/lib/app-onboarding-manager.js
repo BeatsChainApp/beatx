@@ -567,10 +567,7 @@ class AppOnboardingManager {
         };
     }
 
-    // Additional required methods
-    checkOnboardingStatus() {
-        return localStorage.getItem('beatx_onboarding_completed') === 'true';
-    }
+
 
     resetOnboarding() {
         localStorage.removeItem('beatx_onboarding_completed');
