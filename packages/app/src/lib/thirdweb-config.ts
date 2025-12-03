@@ -9,7 +9,7 @@ export const thirdwebClient = createThirdwebClient({
 })
 
 // Project wallet for server operations
-export const PROJECT_WALLET_ADDRESS = process.env.NEXT_PUBLIC_THIRDWEB_PROJECT_WALLET || "0x918629...59B58e"
+export const PROJECT_WALLET_ADDRESS = process.env.NEXT_PUBLIC_THIRDWEB_PROJECT_WALLET || "0x9186293803fADeCAf69a151133CE1E52b559B58e"
 
 // Supported chains
 export const SUPPORTED_CHAINS = [ethereum, sepolia]
