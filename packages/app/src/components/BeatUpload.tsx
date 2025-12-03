@@ -247,7 +247,7 @@ export default function BeatUpload() {
       console.log('Metadata uploaded to IPFS:', metadataUri)
 
       // Try gasless minting first, fallback to direct minting
-      let tokenId = null
+      const tokenId = null
       let transactionHash = null
       let isNFT = false
       let mintPending = false

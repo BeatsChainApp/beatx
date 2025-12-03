@@ -76,7 +76,7 @@ export class UnifiedDataProvider implements DataAdapter {
     }
     
     try {
-      let producer = await this.getProducer(producerId);
+      const producer = await this.getProducer(producerId);
       if (!producer) return [];
       
       // Try Web3 first if producer has wallet address

@@ -1,0 +1,180 @@
+/* Mobile Responsiveness Fixes */
+
+/* Ensure proper viewport handling */
+@viewport {
+  width: device-width;
+  initial-scale: 1.0;
+  maximum-scale: 5.0;
+  user-scalable: yes;
+}
+
+/* Base mobile-first responsive utilities */
+.mobile-container {
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
+.mobile-text {
+  @apply text-sm sm:text-base lg:text-lg;
+}
+
+.mobile-heading {
+  @apply text-xl sm:text-2xl lg:text-3xl;
+}
+
+/* Audio player mobile fixes */
+.audio-player-mobile {
+  @apply w-full max-w-full overflow-hidden;
+}
+
+.audio-controls-mobile {
+  @apply flex flex-wrap gap-2 justify-center sm:justify-start;
+}
+
+/* Navigation mobile fixes */
+.nav-mobile {
+  @apply block sm:hidden;
+}
+
+.nav-desktop {
+  @apply hidden sm:block;
+}
+
+/* Form mobile fixes */
+.form-mobile {
+  @apply space-y-4;
+}
+
+.form-input-mobile {
+  @apply w-full px-3 py-2 text-base border rounded-lg focus:ring-2 focus:ring-purple-500;
+}
+
+/* Button mobile fixes */
+.btn-mobile {
+  @apply w-full sm:w-auto px-4 py-3 text-base font-medium rounded-lg;
+}
+
+.btn-group-mobile {
+  @apply flex flex-col sm:flex-row gap-3 sm:gap-2;
+}
+
+/* Card mobile fixes */
+.card-mobile {
+  @apply w-full max-w-full overflow-hidden rounded-lg shadow-sm;
+}
+
+.card-grid-mobile {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+}
+
+/* Dashboard mobile fixes */
+.dashboard-mobile {
+  @apply space-y-6;
+}
+
+.dashboard-stats-mobile {
+  @apply grid grid-cols-2 sm:grid-cols-4 gap-4;
+}
+
+/* Upload form mobile fixes */
+.upload-mobile {
+  @apply space-y-6;
+}
+
+.upload-dropzone-mobile {
+  @apply min-h-32 sm:min-h-48 border-2 border-dashed border-gray-300 rounded-lg p-4;
+}
+
+/* Table mobile fixes */
+.table-mobile {
+  @apply w-full overflow-x-auto;
+}
+
+.table-mobile table {
+  @apply min-w-full;
+}
+
+/* Modal mobile fixes */
+.modal-mobile {
+  @apply fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4;
+}
+
+.modal-content-mobile {
+  @apply w-full max-w-lg max-h-full overflow-y-auto bg-white rounded-t-lg sm:rounded-lg shadow-xl;
+}
+
+/* Typography mobile fixes */
+.text-responsive {
+  @apply text-sm sm:text-base;
+}
+
+.heading-responsive {
+  @apply text-lg sm:text-xl lg:text-2xl;
+}
+
+.title-responsive {
+  @apply text-2xl sm:text-3xl lg:text-4xl;
+}
+
+/* Spacing mobile fixes */
+.spacing-mobile {
+  @apply space-y-4 sm:space-y-6;
+}
+
+.padding-mobile {
+  @apply p-4 sm:p-6 lg:p-8;
+}
+
+.margin-mobile {
+  @apply m-4 sm:m-6 lg:m-8;
+}
+
+/* Image mobile fixes */
+.image-responsive {
+  @apply w-full h-auto max-w-full;
+}
+
+/* Flex mobile fixes */
+.flex-mobile {
+  @apply flex flex-col sm:flex-row gap-4;
+}
+
+/* Grid mobile fixes */
+.grid-mobile {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+}
+
+/* Touch targets for mobile */
+.touch-target {
+  @apply min-h-12 min-w-12;
+}
+
+/* Prevent horizontal scroll on mobile */
+.no-scroll-x {
+  @apply overflow-x-hidden;
+}
+
+/* Safe area handling for mobile devices */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Responsive text sizes */
+@media (max-width: 640px) {
+  .text-4xl { font-size: 2rem; }
+  .text-5xl { font-size: 2.5rem; }
+  .text-6xl { font-size: 3rem; }
+  .text-7xl { font-size: 3.5rem; }
+  .text-8xl { font-size: 4rem; }
+}

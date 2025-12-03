@@ -1,7 +1,7 @@
 'use client'
 
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import ProtectedRoute from '@/components/ProtectedRoute'
+import SessionGate from '@/components/SessionGate'
 import ProducerDashboardStats from '@/components/ProducerDashboardStats'
 import BeatAnalytics from '@/components/BeatAnalytics'
 import ProducerCollaboration from '@/components/ProducerCollaboration'
@@ -83,10 +83,10 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <ProtectedRoute>
+    <SessionGate requireWallet={false}>
       <DashboardLayout>
         <DashboardContent />
       </DashboardLayout>
-    </ProtectedRoute>
+    </SessionGate>
   )
 }

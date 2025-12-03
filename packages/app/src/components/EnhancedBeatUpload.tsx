@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useFileUpload } from '@/hooks/useFileUpload.enhanced'
 import { useWeb3Auth } from '@/hooks/useWeb3Auth'
+import { createWalletAdapter } from '@/lib/walletAdapter'
 import { useBeatNFT } from '@/hooks/useBeatNFT.enhanced'
 import { useEnhancedToast } from '@/hooks/useToast.enhanced'
 import { sanitizeHtml, sanitizeFileName, validateUrl, validateFormData } from '@/lib/security-utils'
@@ -42,8 +43,9 @@ export default function EnhancedBeatUpload() {
   const uploadHook = useFileUpload() || {}
   const nftHook = useBeatNFT() || {}
   const toastHook = useEnhancedToast() || {}
+  const [walletAdapter] = useState(() => createWalletAdapter())
   
-  const user = authHook.user || null
+  const user = authHook.user || { address: walletAdapter.getAddress() }
   const uploadBeatAudio = uploadHook.uploadBeatAudio || (() => Promise.reject('Upload not available'))
   const canUpload = nftHook.canUpload || false
   const success = toastHook.success || ((msg: string) => console.log('Success:', msg?.replace(/[\r\n]/g, ' ')))

@@ -235,7 +235,7 @@ export default function EnhancedBeatUploadForm({ onSuccess, onCancel }: Enhanced
       const metadataResult = await uploadMetadata(metadata, `${beatId}-metadata`)
       const metadataUri = metadataResult?.url || ''
 
-      let tokenId = null
+      const tokenId = null
       let transactionHash = null
       let isNFT = false
       let mintPending = false
