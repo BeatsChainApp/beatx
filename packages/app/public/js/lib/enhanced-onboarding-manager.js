@@ -284,15 +284,31 @@ class EnhancedOnboardingManager {
   }
 }
 
-// Initialize when DOM is ready
+// Initialize when DOM is ready with error handling and conflict prevention
 if (typeof window !== 'undefined') {
-  window.EnhancedOnboardingManager = new EnhancedOnboardingManager()
-  
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      window.EnhancedOnboardingManager.initialize()
-    })
-  } else {
-    window.EnhancedOnboardingManager.initialize()
+  try {
+    // Only initialize if AppOnboardingManager is not already present
+    if (!window.AppOnboardingManager) {
+      const enhancedInstance = new EnhancedOnboardingManager()
+      window.EnhancedOnboardingManager = enhancedInstance
+      
+      const safeInitialize = () => {
+        try {
+          enhancedInstance.initialize()
+        } catch (e) {
+          console.warn('Enhanced onboarding manager initialization failed:', e)
+        }
+      }
+      
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', safeInitialize)
+      } else {
+        setTimeout(safeInitialize, 0)
+      }
+    } else {
+      console.log('AppOnboardingManager already exists, skipping EnhancedOnboardingManager initialization')
+    }
+  } catch (error) {
+    console.warn('Failed to initialize EnhancedOnboardingManager:', error)
   }
 }

@@ -72,30 +72,70 @@ self.addEventListener('fetch', event => {
 })
 
 async function cacheFirst(request, cacheName) {
+  // Early validation for unsupported schemes
+  const url = typeof request === 'string' ? request : (request && request.url)
+  if (typeof url === 'string' && !/^https?:\/\//i.test(url)) {
+    // For unsupported schemes, try to fetch directly without caching
+    try {
+      return await fetch(request)
+    } catch (error) {
+      return new Response('Unsupported scheme', { status: 400 })
+    }
+  }
+
   const cached = await caches.match(request)
   if (cached) return cached
   
   try {
     const response = await fetch(request)
-    if (response.ok) {
+    if (response.ok && response.status < 400) {
       const cache = await caches.open(cacheName)
-      cache.put(request, response.clone())
+      try {
+        // Double-check URL scheme before caching
+        if (typeof url === 'string' && /^https?:\/\//i.test(url)) {
+          await cache.put(request, response.clone())
+        }
+      } catch (err) {
+        // Silently skip cache errors to prevent breaking the response
+        console.warn('sw: cache.put failed (skipping):', err && err.message)
+      }
     }
     return response
   } catch (error) {
+    console.warn('sw: fetch failed:', error)
     return new Response('Offline', { status: 503 })
   }
 }
 
 async function networkFirst(request, cacheName) {
+  // Early validation for unsupported schemes
+  const url = typeof request === 'string' ? request : (request && request.url)
+  if (typeof url === 'string' && !/^https?:\/\//i.test(url)) {
+    // For unsupported schemes, try to fetch directly without caching
+    try {
+      return await fetch(request)
+    } catch (error) {
+      return new Response('Unsupported scheme', { status: 400 })
+    }
+  }
+
   try {
     const response = await fetch(request)
-    if (response.ok) {
+    if (response.ok && response.status < 400) {
       const cache = await caches.open(cacheName)
-      cache.put(request, response.clone())
+      try {
+        // Double-check URL scheme before caching
+        if (typeof url === 'string' && /^https?:\/\//i.test(url)) {
+          await cache.put(request, response.clone())
+        }
+      } catch (err) {
+        // Silently skip cache errors to prevent breaking the response
+        console.warn('sw: cache.put failed (skipping):', err && err.message)
+      }
     }
     return response
   } catch (error) {
+    console.warn('sw: network request failed, trying cache:', error)
     const cached = await caches.match(request)
     return cached || new Response('Offline', { status: 503 })
   }
@@ -121,8 +161,18 @@ async function syncWeb3Transactions() {
 }
 
 async function getStoredTransactions() {
-  // Get from IndexedDB or localStorage
-  return JSON.parse(localStorage.getItem('pending_web3_transactions') || '[]')
+  // Service workers cannot access localStorage in most browsers/environments.
+  // Return an empty array if storage isn't available. If a proper implementation
+  // is required, replace with IndexedDB access (IDB) or postMessage to client.
+  try {
+    if (typeof localStorage !== 'undefined' && localStorage.getItem) {
+      return JSON.parse(localStorage.getItem('pending_web3_transactions') || '[]')
+    }
+  } catch (err) {
+    // localStorage not available in SW — fall through to empty array
+    console.warn('sw: localStorage not available in getStoredTransactions:', err && err.message)
+  }
+  return []
 }
 
 async function retryTransaction(tx) {

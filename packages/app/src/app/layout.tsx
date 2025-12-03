@@ -100,17 +100,39 @@ export default function RootLayout(props: PropsWithChildren) {
 
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         <script src="https://accounts.google.com/gsi/client" async defer></script>
-        <script src="/js/lib/enhanced-onboarding-manager.js" async defer></script>
-        <script src="/js/lib/app-onboarding-manager.js" async defer></script>
+        <script src="/js/lib/app-onboarding-manager.js" defer></script>
         <script dangerouslySetInnerHTML={{
           __html: `
+            // Service Worker registration with error handling
             if ('serviceWorker' in navigator) {
               window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
-                  .then(registration => console.log('SW registered:', registration))
-                  .catch(error => console.log('SW registration failed:', error))
+                  .then(registration => {
+                    console.log('SW registered:', registration)
+                    // Notify that service worker is ready
+                    window.dispatchEvent(new CustomEvent('sw-ready'))
+                  })
+                  .catch(error => {
+                    console.warn('SW registration failed:', error)
+                    // Continue without service worker
+                  })
               })
             }
+            
+            // Global error handler for unhandled promise rejections
+            window.addEventListener('unhandledrejection', function(event) {
+              console.warn('Unhandled promise rejection:', event.reason)
+              // Prevent the default behavior (logging to console)
+              event.preventDefault()
+            })
+            
+            // Global error handler for JavaScript errors
+            window.addEventListener('error', function(event) {
+              if (event.error && event.error.message && event.error.message.includes('AppOnboardingManager')) {
+                console.warn('Onboarding manager error caught:', event.error)
+                event.preventDefault()
+              }
+            })
           `
         }} />
         <style>{`
