@@ -241,6 +241,39 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('admin-setup-complete', handleAdminSetup)
   }, [buildUnifiedUser])
 
+  // Cross-platform auth synchronization
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_UNIFIED_AUTH_SYNC) return
+    
+    const syncCrossPlatform = async () => {
+      if (user && address) {
+        try {
+          // Sync with extension
+          if (process.env.NEXT_PUBLIC_EXTENSION_AUTH_ENDPOINT) {
+            await fetch(process.env.NEXT_PUBLIC_EXTENSION_AUTH_ENDPOINT, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ address, user, platform: 'web' })
+            }).catch(() => {})
+          }
+          
+          // Sync with WhatsApp
+          if (process.env.NEXT_PUBLIC_WHATSAPP_AUTH_ENDPOINT) {
+            await fetch(process.env.NEXT_PUBLIC_WHATSAPP_AUTH_ENDPOINT, {
+              method: 'POST', 
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ address, user, platform: 'web' })
+            }).catch(() => {})
+          }
+        } catch (error) {
+          console.warn('Cross-platform sync failed:', error)
+        }
+      }
+    }
+    
+    syncCrossPlatform()
+  }, [user, address])
+
 
 
   const upgradeProfileRole = async (walletAddress: string, role: string) => {
