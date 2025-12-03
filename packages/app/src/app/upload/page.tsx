@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react'
 import EnhancedBeatUpload from '@/components/EnhancedBeatUpload'
-import ProtectedRoute from '@/components/ProtectedRoute'
+import ProtectedRoute from '@/components/ProtectedRoute.enhanced'
 
 
 export const dynamic = 'force-dynamic'

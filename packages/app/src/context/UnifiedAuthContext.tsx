@@ -137,7 +137,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
       let role: UnifiedUser['role'] = 'user'
       
       // HIGHEST PRIORITY: Check if wallet is in super admin list
-      if (SUPER_ADMIN_WALLETS.includes(address.toLowerCase())) {
+      if (address && SUPER_ADMIN_WALLETS.includes(address.toLowerCase())) {
         role = 'super_admin'
       }
       // Check if email is admin (from Google OAuth or Reown AppKit social login)
@@ -336,7 +336,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
   const hasGoogleAuth = mounted && typeof window !== 'undefined' && localStorage.getItem('google_auth_result')
   
   const isAuthenticated = mounted && Boolean(
-    (isConnected && address && (siweAuth || SUPER_ADMIN_WALLETS.includes(address.toLowerCase()))) || // Web3 auth
+    (isConnected && address && (siweAuth || (address && SUPER_ADMIN_WALLETS.includes(address.toLowerCase())))) || // Web3 auth
     hasGoogleAuth // Google auth
   )
 
