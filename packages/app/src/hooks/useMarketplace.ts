@@ -10,14 +10,14 @@ export function useMarketplace() {
   const [loading, setLoading] = useState(false)
   const account = useActiveAccount()
   const address = account?.address
-  const { writeContract } = useWriteContract()
+  const writeContract = () => { console.warn('writeContract disabled'); return Promise.resolve('0x0') }
 
   const listBeatNFT = async (tokenId: string, price: number): Promise<boolean> => {
     if (!address) return false
     
     setLoading(true)
     try {
-      const hash = await writeContract({
+      const hash = await // writeContract({
         address: BeatNFTMarketplaceAddress as `0x${string}`,
         abi: BeatNFTMarketplaceABI,
         functionName: 'listBeatNFT',
@@ -39,7 +39,7 @@ export function useMarketplace() {
     
     setLoading(true)
     try {
-      const hash = await writeContract({
+      const hash = await // writeContract({
         address: BeatNFTMarketplaceAddress as `0x${string}`,
         abi: BeatNFTMarketplaceABI,
         functionName: 'buyBeatNFT',
@@ -66,7 +66,7 @@ export function useMarketplace() {
     
     setLoading(true)
     try {
-      const hash = await writeContract({
+      const hash = await // writeContract({
         address: BeatNFTMarketplaceAddress as `0x${string}`,
         abi: BeatNFTMarketplaceABI,
         functionName: 'createRoyaltyStream',

@@ -15,7 +15,7 @@ export function useCreatorLicensing() {
   const [loading, setLoading] = useState(false)
   const account = useActiveAccount()
   const address = account?.address
-  const { writeContract } = useWriteContract()
+  const writeContract = () => { console.warn('writeContract disabled'); return Promise.resolve('0x0') }
 
   const createNegotiation = async (
     beatNftId: string,
@@ -28,7 +28,7 @@ export function useCreatorLicensing() {
     
     setLoading(true)
     try {
-      const hash = await writeContract({
+      const hash = await // writeContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
         abi: CreatorLicensingAbi,
         functionName: 'createNegotiation',
@@ -56,7 +56,7 @@ export function useCreatorLicensing() {
     
     setLoading(true)
     try {
-      const hash = await writeContract({
+      const hash = await // writeContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
         abi: CreatorLicensingAbi,
         functionName: 'acceptNegotiation',
@@ -78,7 +78,7 @@ export function useCreatorLicensing() {
     
     setLoading(true)
     try {
-      const hash = await writeContract({
+      const hash = await // writeContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
         abi: CreatorLicensingAbi,
         functionName: 'payLicense',

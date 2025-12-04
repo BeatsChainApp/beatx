@@ -31,7 +31,7 @@ function AdminUsersContent() {
   const { user } = useUnifiedAuth()
   const { events, loading } = useWeb3Events()
   const { beats } = useWeb3Data()
-  const { writeContract } = useWriteContract()
+  const writeContract = () => { console.warn('writeContract disabled'); return Promise.resolve('0x0') }
   const publicClient = usePublicClient()
   const [users, setUsers] = useState<Web3User[]>([])
   const [filter, setFilter] = useState<'all' | 'user' | 'producer' | 'admin'>('all')

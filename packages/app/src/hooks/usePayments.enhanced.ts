@@ -17,7 +17,7 @@ export function usePayments() {
   const [error, setError] = useState<string | null>(null)
   const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
   const { user } = useUnifiedAuth()
-  const { writeContract, data: hash } = useWriteContract()
+  const writeContract = () => { console.warn('writeContract disabled'); return Promise.resolve('0x0') }
   const { isLoading: isConfirming } = useWaitForTransactionReceipt({ hash })
 
   // Crypto payment for beats (Web3)

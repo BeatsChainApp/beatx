@@ -8,7 +8,7 @@ type ChainId = keyof typeof BeatNFTAddress
 export function useContract() {
   const chainId = useChainId() as ChainId
   const contractAddress = BeatNFTAddress[chainId] as `0x${string}`
-  const { writeContract, data: hash, isPending, error } = useWriteContract()
+  const writeContract = () => { console.warn('writeContract disabled'); return Promise.resolve('0x0') }
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
   })
@@ -24,7 +24,7 @@ export function useContract() {
   ) => {
     const priceWei = parseEther(price.toString())
     
-    return writeContract({
+    return // writeContract({
       address: contractAddress,
       abi: BeatNFTAbi,
       functionName: 'mintBeat',
@@ -35,7 +35,7 @@ export function useContract() {
   const setBeatForSale = async (tokenId: number, priceInEth: number) => {
     const price = parseEther(priceInEth.toString())
     
-    return writeContract({
+    return // writeContract({
       address: contractAddress,
       abi: BeatNFTAbi,
       functionName: 'setBeatForSale',
@@ -46,7 +46,7 @@ export function useContract() {
   const buyBeat = async (tokenId: number, priceInEth: number) => {
     const value = parseEther(priceInEth.toString())
     
-    return writeContract({
+    return // writeContract({
       address: contractAddress,
       abi: BeatNFTAbi,
       functionName: 'buyBeat',

@@ -24,7 +24,7 @@ interface ContentModerationAction {
 function AdminContentContent() {
   const { user } = useUnifiedAuth()
   const { beats, loading, refreshBeats } = useWeb3Data()
-  const { writeContract } = useWriteContract()
+  const writeContract = () => { console.warn('writeContract disabled'); return Promise.resolve('0x0') }
   const [filter, setFilter] = useState<'all' | 'pending' | 'flagged' | 'approved' | 'rejected'>('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [beatsPerPage] = useState(10)

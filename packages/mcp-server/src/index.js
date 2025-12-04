@@ -772,6 +772,15 @@ try {
   console.log('ℹ️ Admin routes not found:', e.message);
 }
 
+// Load Auth routes
+try {
+  const authRoutes = require('./routes/auth');
+  app.use('/api/auth', authRoutes);
+  console.log('✅ Auth routes loaded');
+} catch (e) {
+  console.log('ℹ️ Auth routes not found:', e.message);
+}
+
 // Load Unified Profiles routes
 try {
   const unifiedProfilesRoutes = require('./routes/unified-profiles');

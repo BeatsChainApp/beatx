@@ -54,7 +54,7 @@ function SendToken() {
       })
       return
     }
-    writeContract({
+    // writeContract({
       address: tokenAddress!,
       abi: erc20Abi,
       functionName: 'transfer',

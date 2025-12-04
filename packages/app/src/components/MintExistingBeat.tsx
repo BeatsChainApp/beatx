@@ -15,7 +15,7 @@ export default function MintExistingBeat({ beat, onMintSuccess }: MintExistingBe
   const [minting, setMinting] = useState(false)
   const [mintTxHash, setMintTxHash] = useState<string | null>(null)
   
-  const { writeContract } = useWriteContract()
+  const writeContract = () => { console.warn('writeContract disabled'); return Promise.resolve('0x0') }
   const { uploadMetadata } = useIPFS()
   const { success, error } = useEnhancedToast()
   
@@ -58,7 +58,7 @@ export default function MintExistingBeat({ beat, onMintSuccess }: MintExistingBe
       }
       
       // Mint NFT
-      const mintTx = await writeContract({
+      const mintTx = await // writeContract({
         address: BeatNFTConfig.address[11155111] as `0x${string}`,
         abi: BeatNFTConfig.abi,
         functionName: 'mintBeat',

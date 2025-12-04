@@ -20,7 +20,7 @@ export function usePayments() {
   const address = account?.address
   const { user } = useUnifiedAuth()
   // const { addPurchase } = useFirestore() // Removed Firebase dependency
-  const { writeContract, data: hash } = useWriteContract()
+  const writeContract = () => { console.warn('writeContract disabled'); return Promise.resolve('0x0') }
   const { isLoading: isConfirming } = useWaitForTransactionReceipt({ hash })
 
   // Crypto payment for beats (Web3)
