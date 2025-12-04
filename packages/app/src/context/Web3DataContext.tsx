@@ -167,7 +167,7 @@ export function Web3DataProvider({ children }: { children: ReactNode }) {
 export function useWeb3Data() {
   const context = useContext(Web3DataContext)
   if (context === undefined) {
-    console.warn('useWeb3Data must be used within a Web3DataProvider')
+    // Graceful fallback when provider is not available
     return {
       beats: [],
       loading: false,
@@ -177,4 +177,13 @@ export function useWeb3Data() {
     }
   }
   return context
+}
+
+// Standalone provider for components that need it
+export function StandaloneWeb3DataProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <Web3DataProvider>
+      {children}
+    </Web3DataProvider>
+  )
 }

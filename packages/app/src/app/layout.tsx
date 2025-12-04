@@ -4,7 +4,7 @@ import { PropsWithChildren } from 'react'
 import { SITE_DESCRIPTION, SITE_EMOJI, SITE_INFO, SITE_NAME, SITE_URL, SOCIAL_TWITTER, SOCIAL_INSTAGRAM, SOCIAL_LINKEDIN } from '@/utils/site'
 import { Layout } from '@/components/Layout'
 import { Web3Provider } from '@/context/Web3Provider'
-import { Web3DataProvider } from '@/context/Web3DataContext'
+
 import { SIWEProvider } from '@/context/SIWEContext'
 import { UnifiedAuthProvider } from '@/context/UnifiedAuthContext'
 import { NotificationProvider } from '@/context/NotificationsEnhanced'
@@ -212,7 +212,6 @@ export default function RootLayout(props: PropsWithChildren) {
           </div>
         }>
           <Web3Provider cookies={cookies}>
-            <Web3DataProvider>
               <SIWEProvider>
                 <UnifiedAuthProvider>
                   <OnboardingProvider>
@@ -229,7 +228,6 @@ export default function RootLayout(props: PropsWithChildren) {
                   </OnboardingProvider>
                 </UnifiedAuthProvider>
               </SIWEProvider>
-            </Web3DataProvider>
           </Web3Provider>
           </ClientOnly>
         </ClientErrorBoundary>

@@ -38,7 +38,9 @@ export function AdminDebug() {
                 createdAt: new Date(),
                 updatedAt: new Date()
               }
-              localStorage.setItem(`web3_profile_${address.toLowerCase()}`, JSON.stringify(profile))
+              if (typeof window !== 'undefined') {
+                localStorage.setItem(`web3_profile_${address.toLowerCase()}`, JSON.stringify(profile))
+              }
               window.location.reload()
             }
           }}
