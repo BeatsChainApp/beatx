@@ -254,6 +254,8 @@ routes.forEach(({ path: routePath, mount, name }) => {
 
 // Load signatures route
 safeMount('signatures', '/api');
+safeMount('auth', '/api');
+safeMount('contracts', '/api');
 
 // Load Supabase-dependent routes
 if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -763,6 +765,15 @@ try {
   console.log('ℹ️ RBAC routes not found');
 }
 
+// Load Contracts routes
+try {
+  const contractRoutes = require('./routes/contracts');
+  app.use('/api/contracts', contractRoutes);
+  console.log('✅ Contract routes loaded');
+} catch (e) {
+  console.log('ℹ️ Contract routes not found:', e.message);
+}
+
 // Load Admin routes
 try {
   const adminRoutes = require('./routes/admin');
@@ -772,14 +783,7 @@ try {
   console.log('ℹ️ Admin routes not found:', e.message);
 }
 
-// Load Auth routes
-try {
-  const authRoutes = require('./routes/auth');
-  app.use('/api/auth', authRoutes);
-  console.log('✅ Auth routes loaded');
-} catch (e) {
-  console.log('ℹ️ Auth routes not found:', e.message);
-}
+
 
 // Load Unified Profiles routes
 try {

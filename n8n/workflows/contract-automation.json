@@ -1,0 +1,96 @@
+{
+  "name": "Contract Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/webhook/contract-mint"
+      },
+      "name": "Contract Mint Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 200]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST", 
+        "path": "/webhook/contract-purchase"
+      },
+      "name": "Contract Purchase Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 400]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Simulate contract interaction\nconst { action, beatId, userAddress, amount } = $json;\nconst hash = `0x${Date.now().toString(16)}${Math.random().toString(16).slice(2)}`;\nreturn [{ json: { hash, status: 'pending', action, beatId, userAddress, amount } }];"
+      },
+      "name": "Simulate Contract",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MCP_SERVER_URL}}/api/success",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "event",
+              "value": "={{$json.action}}_contract"
+            },
+            {
+              "name": "status", 
+              "value": "completed"
+            },
+            {
+              "name": "metadata",
+              "value": "={{$json}}"
+            }
+          ]
+        }
+      },
+      "name": "Log Success",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Contract Mint Webhook": {
+      "main": [
+        [
+          {
+            "node": "Simulate Contract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contract Purchase Webhook": {
+      "main": [
+        [
+          {
+            "node": "Simulate Contract", 
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simulate Contract": {
+      "main": [
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true
+}
