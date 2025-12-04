@@ -24,28 +24,13 @@ function SendToken() {
 
   const { Add } = useNotifications()
 
-  const { address, chain } = useAccount()
-  const { data: balanceData } = useBalance({
-    token: isValidTokenAddress ? tokenAddress : undefined,
-    address,
-  })
-
-  const { error: estimateError } = useSimulateContract({
-    address: balanceData && isValidToAddress ? tokenAddress : undefined,
-    abi: erc20Abi,
-    functionName: 'transfer',
-    args: [to!, parseEther(amount)],
-  })
-
-  const { data, writeContract } = useWriteContract()
-
-  const {
-    isLoading,
-    error: txError,
-    isSuccess: txSuccess,
-  } = useWaitForTransactionReceipt({
-    hash: data,
-  })
+  const account = useActiveAccount(); const address = account?.address
+  const balanceData = null // Mock balance data
+  const estimateError = null // Mock estimate
+  const data = null
+  const isLoading = false
+  const txError = null
+  const txSuccess = false
 
   const handleSendTransation = () => {
     if (estimateError) {
@@ -54,12 +39,8 @@ function SendToken() {
       })
       return
     }
-    // writeContract({
-      address: tokenAddress!,
-      abi: erc20Abi,
-      functionName: 'transfer',
-      args: [to!, parseEther(amount)],
-    })
+    // writeContract disabled
+    console.log('Send transaction:', { tokenAddress, to, amount })
   }
 
   const handleTokenAddressInput = (token: string) => {
