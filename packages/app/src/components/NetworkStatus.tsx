@@ -1,13 +1,15 @@
 'use client'
 
 import React from 'react'
-import { useBlockNumber, useAccount } from 'wagmi'
+import { useActiveAccount } from 'thirdweb/react'
 import { GetNetworkColor } from '@/utils/network'
 import { LinkComponent } from './LinkComponent'
 
 export function NetworkStatus() {
-  const block = useBlockNumber({ watch: true })
-  const { chain } = useAccount()
+  const account = useActiveAccount()
+  const chain = account?.chain
+  // TODO: Implement block number with Thirdweb
+  const block = { data: 0n }
   const explorerUrl = chain?.blockExplorers?.default.url
   const networkName = chain?.name ?? 'Ethereum'
   const color = GetNetworkColor(networkName, 'bgVariant')

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useWeb3Data } from '@/context/Web3DataContext'
-import { useWriteContract, usePublicClient } from 'wagmi'
+// TODO: Replace with Thirdweb contract interactions
 import { BeatNFTConfig } from '@/contracts/BeatNFT'
 import { parseEther } from 'viem'
 import { toast } from 'react-toastify'
@@ -16,8 +16,9 @@ interface BeatManagementProps {
 export default function ProducerBeatManagement({ onBeatUpdate }: BeatManagementProps) {
   const { user } = useUnifiedAuth()
   const { beats, loading, refreshBeats } = useWeb3Data()
-  const { writeContract } = useWriteContract()
-  const publicClient = usePublicClient()
+  // TODO: Implement with Thirdweb
+  const writeContract = () => {}
+  const publicClient = null
   const [editingBeat, setEditingBeat] = useState<Beat | null>(null)
   const [processing, setProcessing] = useState(false)
 

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { trackUserBehavior } from '@/utils/trackUserBehavior'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from 'thirdweb/react'
 
 interface MobileBeatPlayerProps {
   beat: {
@@ -22,7 +22,8 @@ export default function MobileBeatPlayer({ beat, autoPlay = false }: MobileBeatP
   const [duration, setDuration] = useState(0)
   const [loading, setLoading] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
 
   useEffect(() => {
     const audio = audioRef.current

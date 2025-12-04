@@ -7,7 +7,7 @@ import { useWeb3Beats } from '@/hooks/useWeb3Beats'
 import { useWeb3Auth } from '@/hooks/useWeb3Auth'
 import { useBeatNFT } from '@/hooks/useBeatNFT.enhanced'
 import { useIPFS } from '@/hooks/useIPFS'
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+// TODO: Replace with Thirdweb contract interactions
 import { BeatNFTConfig } from '@/contracts/BeatNFT'
 import { parseEther } from 'viem'
 import BuyBeatNFTModal from '@/components/BuyBeatNFTModal'
@@ -52,7 +52,8 @@ export default function BeatUpload() {
   const { balance, canUpload, useCredits, isConnected } = useBeatNFT()
   const { success, error: showError } = useEnhancedToast()
   const { uploadMetadata } = useIPFS()
-  const { writeContract } = useWriteContract()
+  // TODO: Implement with Thirdweb
+  const writeContract = () => {}
   const { uploadFile: uploadToLivepeer, createAssetFromIPFS, getPlaybackUrl, isOptimizedPlayback } = useLivepeer()
   const { isAvailable: supabaseAvailable, logSuccess, trackCredit, saveISRC } = useSupabase()
   const [mintTxHash, setMintTxHash] = useState<string | null>(null)

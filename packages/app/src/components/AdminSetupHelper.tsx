@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from 'thirdweb/react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
 // Super admin wallets (same as UnifiedAuthContext)
@@ -11,7 +11,9 @@ const SUPER_ADMIN_WALLETS = [
 ].filter(Boolean) as string[]
 
 export default function AdminSetupHelper() {
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
+  const isConnected = !!account
   const { user, hasRole } = useUnifiedAuth()
   const [showHelper, setShowHelper] = useState(false)
   

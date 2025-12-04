@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Beat } from '@/types'
 import { useWeb3Auth } from '@/hooks/useWeb3Auth'
 import { useEnhancedToast } from '@/hooks/useToast.enhanced'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from 'thirdweb/react'
 import { getEthExchangeRate, getCurrencySymbol } from '@/utils/currency'
 
 interface PurchaseModalProps {
@@ -34,7 +34,9 @@ export default function PurchaseModal({
   onPurchaseComplete 
 }: PurchaseModalProps) {
   const { user, isAuthenticated } = useWeb3Auth()
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
+  const isConnected = !!account
   const [selectedLicense, setSelectedLicense] = useState('premium')
   const [processing, setProcessing] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('crypto')

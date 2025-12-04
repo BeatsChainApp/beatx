@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from 'thirdweb/react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useUnifiedAuthRouting } from '@/hooks/useUnifiedAuthRouting'
 
@@ -50,7 +50,9 @@ export default function SimplifiedAuth({ isOpen, onClose }: SimplifiedAuthProps)
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null)
   const [step, setStep] = useState<'role' | 'auth'>('role')
   const { signIn } = useUnifiedAuth()
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
+  const isConnected = !!account
   const { user, signIn: walletSignIn, hasRole } = useUnifiedAuth()
 
   const handleRoleSelect = (role: UserRole) => {

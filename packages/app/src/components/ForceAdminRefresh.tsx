@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from 'thirdweb/react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
 const SUPER_ADMIN_WALLETS = [
@@ -9,7 +9,8 @@ const SUPER_ADMIN_WALLETS = [
 ]
 
 export function ForceAdminRefresh() {
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const { user, hasRole } = useUnifiedAuth()
 
   useEffect(() => {

@@ -1,13 +1,14 @@
 'use client'
 
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from 'thirdweb/react'
 
 const SUPER_ADMIN_WALLETS = ['0xc84799a904eeb5c57abbbc40176e7db8be202c10']
 
 export function AdminDebug() {
   const auth = useUnifiedAuth()
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
 
   if (typeof window === 'undefined') return null
 

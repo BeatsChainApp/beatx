@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useActiveAccount, useDisconnect } from 'thirdweb/react'
 import { useSIWE } from '@/hooks/useSIWE'
 import { useEnhancedToast } from '@/hooks/useToast.enhanced'
 
@@ -18,8 +18,10 @@ export default function WalletModal({
   title = "Connect Wallet",
   showSignMessage = true 
 }: WalletModalProps) {
-  const { isConnected, address } = useAccount()
+  const account = useActiveAccount()
   const { disconnect } = useDisconnect()
+  const isConnected = !!account
+  const address = account?.address
   const { user, loading, signIn, signOut, isAuthenticated } = useSIWE()
   const { success, error } = useEnhancedToast()
   const [step, setStep] = useState<'connect' | 'sign' | 'complete'>('connect')

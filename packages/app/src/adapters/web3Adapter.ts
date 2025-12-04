@@ -218,7 +218,7 @@ export class Web3Adapter implements DataAdapter {
       
       // Fallback: Try to fetch blockchain data directly
       try {
-        const { usePublicClient } = await import('wagmi')
+        // TODO: Replace with Thirdweb client
         const { BeatNFTConfig } = await import('@/contracts/BeatNFT')
         const { formatEther } = await import('viem')
         

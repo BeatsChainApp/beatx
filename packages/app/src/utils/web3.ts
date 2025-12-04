@@ -1,4 +1,3 @@
-import { cookieStorage, createStorage } from 'wagmi'
 import { ETH_CHAINS } from './network'
 
 export const THIRDWEB_CLIENT_ID = process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID ?? ''
@@ -11,7 +10,4 @@ export const THIRDWEB_CONFIG = {
   clientId: THIRDWEB_CLIENT_ID,
   networks: ETH_CHAINS,
   ssr: true,
-  storage: createStorage({
-    storage: cookieStorage,
-  }),
 }
