@@ -14,7 +14,8 @@ export function useUserAccessControl() {
   const [isSuspended, setIsSuspended] = useState(false)
   const [suspensionReason, setSuspensionReason] = useState<string>('')
   const [loading, setLoading] = useState(true)
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
 
   useEffect(() => {
     checkSuspensionStatus()

@@ -15,7 +15,8 @@ interface ProducerBeatAnalytics {
 }
 
 export function useProducerBeatAnalytics() {
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const [beatAnalytics, setBeatAnalytics] = useState<ProducerBeatAnalytics[]>([])
   const [loading, setLoading] = useState(true)
 

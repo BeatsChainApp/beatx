@@ -1,5 +1,12 @@
 'use client'
 
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
+
 import { ReactNode } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useUserAccessControl } from '@/hooks/useUserAccessControl'
@@ -93,7 +100,7 @@ export default function ProtectedRoute({
           <div className="text-6xl mb-4">🔒</div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Sign In Required</h2>
           <p className="text-gray-600 mb-6">Connect with Google or your preferred wallet to access this area.</p>
-          <w3m-button size="md" label="Connect with Google" />
+          <ConnectButton client={client} />
         </div>
       </div>
     )
@@ -125,7 +132,7 @@ export default function ProtectedRoute({
               <p style={{ fontSize: '1rem' }}>Your wallet is your key to the decentralized music marketplace</p>
             </div>
             <div style={{ marginBottom: '1rem' }}>
-              <w3m-button size="lg" label="Connect Wallet" />
+              <ConnectButton client={client} />
             </div>
           </div>
         </div>

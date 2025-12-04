@@ -1,5 +1,12 @@
 'use client'
 
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
+
 import { useState } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useActiveAccount } from 'thirdweb/react'
@@ -215,7 +222,7 @@ export default function SimplifiedAuth({ isOpen, onClose }: SimplifiedAuthProps)
                 </button>
               ) : (
                 <div className="text-center">
-                  <w3m-button />
+                  <ConnectButton client={client} />
                   <p className="text-xs text-gray-500 mt-2">Connect wallet for Web3 features</p>
                 </div>
               )}

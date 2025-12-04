@@ -1,8 +1,7 @@
 'use client'
 
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import { useActiveAccount } from "thirdweb/react"
-// Removed Reown AppKit - using Thirdweb
+import { useActiveAccount, useActiveWallet } from "thirdweb/react"
 
 /**
  * Robust authentication hook that consolidates all auth systems
@@ -10,14 +9,18 @@ import { useActiveAccount } from "thirdweb/react"
  */
 export function useRobustAuth() {
   const unifiedAuth = useUnifiedAuth()
-  const { address, isConnected, chainId } = useAccount()
-  const { open } = useAppKit()
-  const { disconnect } = useDisconnect()
+  const account = useActiveAccount()
+  const wallet = useActiveWallet()
+  
+  const address = account?.address
+  const isConnected = !!account && !!wallet
+  const chainId = account?.chainId
 
   // Wallet connection methods
   const connectWallet = async () => {
     try {
-      await open()
+      // ThirdWeb wallet connection handled by ConnectButton component
+      console.log('Use ConnectButton component for wallet connection')
     } catch (error) {
       console.error('Wallet connection failed:', error)
     }
@@ -25,7 +28,9 @@ export function useRobustAuth() {
 
   const disconnectWallet = async () => {
     try {
-      await disconnect()
+      if (wallet) {
+        await wallet.disconnect()
+      }
       await unifiedAuth.signOut()
     } catch (error) {
       console.error('Wallet disconnection failed:', error)

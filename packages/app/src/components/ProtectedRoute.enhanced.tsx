@@ -1,5 +1,12 @@
 'use client'
 
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
+
 import { ReactNode, useState, useEffect } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
@@ -90,7 +97,7 @@ export default function ProtectedRoute({
                   </div>
                 </div>
                 <div className="text-center">
-                  <w3m-button size="lg" label="Connect to Upload" />
+                  <ConnectButton client={client} />
                   <p className="mt-4 text-gray-500">Connect your wallet to start uploading beats</p>
                 </div>
               </div>
@@ -113,7 +120,7 @@ export default function ProtectedRoute({
         </div>
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
-            <w3m-button size="lg" />
+            <ConnectButton client={client} />
           </div>
         </div>
       </div>

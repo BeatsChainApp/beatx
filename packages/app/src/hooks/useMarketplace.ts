@@ -8,7 +8,8 @@ import { BeatNFTMarketplaceABI, BeatNFTMarketplaceAddress } from '../contracts/B
 
 export function useMarketplace() {
   const [loading, setLoading] = useState(false)
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const { writeContract } = useWriteContract()
 
   const listBeatNFT = async (tokenId: string, price: number): Promise<boolean> => {

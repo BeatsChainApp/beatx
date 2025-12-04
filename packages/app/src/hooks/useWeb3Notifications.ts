@@ -6,7 +6,8 @@ import { useEnhancedToast } from './useToast.enhanced'
 import { useFeatureFlag } from '@/lib/featureFlags'
 
 export function useWeb3Notifications() {
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const { success, info } = useEnhancedToast()
   const realTimeNotifications = useFeatureFlag('realTimeNotifications')
   const [notifications, setNotifications] = useState<any[]>([])

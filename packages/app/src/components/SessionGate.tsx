@@ -1,5 +1,12 @@
 'use client'
 
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
+
 import { ReactNode, useEffect, useState } from 'react'
 import { createWalletAdapter, WalletAdapter } from '@/lib/walletAdapter'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
@@ -54,7 +61,7 @@ export default function SessionGate({
           <div className="text-6xl mb-6">🔐</div>
           <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
           <p className="text-gray-600 mb-6">Please sign in to continue</p>
-          <w3m-button size="md" />
+          <ConnectButton client={client} />
         </div>
       </div>
     )

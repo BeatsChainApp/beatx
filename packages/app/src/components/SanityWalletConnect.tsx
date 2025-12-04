@@ -1,5 +1,12 @@
 'use client'
 
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
+
 import { useState, useEffect } from 'react'
 import { client } from '@/lib/sanity-client'
 
@@ -51,7 +58,7 @@ export default function SanityWalletConnect({ placement, className = '' }: Sanit
 
   if (loading || !config) {
     // Default wallet connect button
-    return <w3m-button className={className} />
+    return <ConnectButton client={client} />
   }
 
   const buttonStyle = {
@@ -73,7 +80,7 @@ export default function SanityWalletConnect({ placement, className = '' }: Sanit
   // The actual connection functionality is handled by the Web3Modal library
   return (
     <div className={`sanity-wallet-connect ${className} ${config.buttonStyle?.customClass || ''}`}>
-      <w3m-button />
+      <ConnectButton client={client} />
     </div>
   )
 }

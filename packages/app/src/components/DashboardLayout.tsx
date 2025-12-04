@@ -1,5 +1,12 @@
 'use client'
 
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
+
 import { ReactNode } from 'react'
 import DashboardSidebar from './DashboardSidebar'
 import MobileNavigation from './MobileNavigation'
@@ -24,7 +31,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <p className={`text-gray-600 mb-6 ${isMobile ? 'text-sm' : ''}`}>
             You need to connect your wallet to access the dashboard
           </p>
-          <w3m-button label="Connect Wallet" balance="hide" />
+          <ConnectButton client={client} />
         </div>
       </div>
     )

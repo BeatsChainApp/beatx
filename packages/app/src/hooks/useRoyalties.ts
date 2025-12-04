@@ -31,7 +31,8 @@ export function useRoyalties() {
   })
   const [loading, setLoading] = useState(true)
   
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const { events } = useWeb3Events()
 
   useEffect(() => {

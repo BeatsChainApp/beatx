@@ -40,7 +40,8 @@ const MARKETPLACE_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 export function useBeatNFTTrading() {
   const [loading, setLoading] = useState(false)
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const { writeContract } = useWriteContract()
 
   const listForSale = async (tokenId: string, price: number): Promise<boolean> => {

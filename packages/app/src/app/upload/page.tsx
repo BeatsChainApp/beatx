@@ -1,5 +1,12 @@
 'use client'
 
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
+
 import ResponsiveWrapper from '@/components/ResponsiveWrapper'
 import UniversalLayout from '@/components/UniversalLayout'
 import { Suspense } from 'react'
@@ -53,7 +60,7 @@ function UploadFallback() {
               </div>
             </div>
             <div className="text-center">
-              <w3m-button size="lg" label="Connect to Upload" />
+              <ConnectButton client={client} />
               <p className="mt-4 text-gray-500">Connect your wallet to start uploading beats</p>
             </div>
           </div>

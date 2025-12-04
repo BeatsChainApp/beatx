@@ -24,7 +24,8 @@ interface RealtimeMetrics {
 }
 
 export function useRealtimeAnalytics() {
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const { events } = useWeb3Events()
   const cache = useBlockchainCache<RealtimeMetrics>({ defaultTTL: 60000, maxSize: 50 })
   const [metrics, setMetrics] = useState<RealtimeMetrics>({

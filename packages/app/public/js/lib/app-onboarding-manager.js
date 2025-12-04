@@ -36,8 +36,18 @@ class AppOnboardingManager {
             await this.initializeCoreSystems();
             return true;
         } catch (error) {
-            console.warn('AppOnboardingManager initialization failed:', error);
+            console.error('Onboarding manager initialization failed:', error);
             return false;
+        }
+    }
+
+    async getOnboardingProgress() {
+        try {
+            const progress = localStorage.getItem('beatx_onboarding_progress');
+            return progress ? JSON.parse(progress) : { step: 0, completed: false };
+        } catch (error) {
+            console.warn('Failed to get onboarding progress:', error);
+            return { step: 0, completed: false };
         }
     }
 

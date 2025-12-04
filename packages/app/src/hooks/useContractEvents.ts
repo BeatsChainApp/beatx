@@ -43,7 +43,8 @@ const BeatNFTCreditSystemAddress = {
 } as const
 
 export function useContractEvents() {
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const { addNotification } = useNotifications()
   const publicClient = usePublicClient()
   

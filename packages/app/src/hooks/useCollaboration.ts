@@ -28,7 +28,8 @@ interface CollaborationProject {
 
 export function useCollaboration() {
   const { creator } = useContentCreator()
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const [matches, setMatches] = useState<CollaborationMatch[]>([])
   const [projects, setProjects] = useState<CollaborationProject[]>([])
   const [loading, setLoading] = useState(false)

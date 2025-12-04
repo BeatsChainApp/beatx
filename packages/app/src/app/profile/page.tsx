@@ -2,28 +2,13 @@
 
 import ResponsiveWrapper from '@/components/ResponsiveWrapper'
 import UniversalLayout from '@/components/UniversalLayout'
-import React, { useState, useRef } from 'react'
-import { useUnifiedProfile } from '@/hooks/useUnifiedProfile'
-import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import { BackToDashboard } from '@/components/BackToDashboard'
-import { toast } from 'react-toastify'
-import { useActiveAccount } from "thirdweb/react"
-import { useRouter } from 'next/navigation'
+import React from 'react'
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
 
-export default function ProfilePage() {
-  return (
-    <UniversalLayout requireAuth={true} allowedRoles={["user","producer","admin","super_admin"]}>
-      <ResponsiveWrapper pageType="dashboard">
-        <ProfilePageContent />
-      </ResponsiveWrapper>
-    </UniversalLayout>
-  )
-}
-
-function ProfilePageContent() {
-  const { user, isAuthenticated } = useUnifiedAuth()
-  const { profile: unifiedProfile, updateProfile: updateUnifiedProfile, syncStatus, loading } = useUnifiedProfile()
-  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+}) const address = account?.address; const isConnected = !!account
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -81,7 +66,7 @@ function ProfilePageContent() {
         <h2 className="text-2xl font-bold text-gray-900 mb-2 mobile-heading">Connect Your Wallet</h2>
         <p className="text-gray-600">Please connect your wallet to access your profile.</p>
         <div className="mt-4">
-          <w3m-button />
+          <ConnectButton client={client} />
         </div>
       </div>
     )

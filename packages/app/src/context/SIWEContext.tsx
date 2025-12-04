@@ -23,9 +23,10 @@ const SIWEContext = createContext<SIWEContextType | undefined>(undefined)
 export function SIWEProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<SIWEUser | null>(null)
   const [loading, setLoading] = useState(false)
-  const { address, chainId, isConnected } = useAccount()
-  const { signMessageAsync } = useSignMessage()
-  const { disconnect } = useDisconnect()
+  const account = useActiveAccount()
+  const address = account?.address
+  const chainId = account?.chainId
+  const isConnected = !!account
 
   const signIn = async () => {
     if (!address || !chainId || typeof window === 'undefined') return

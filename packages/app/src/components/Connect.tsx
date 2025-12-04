@@ -1,6 +1,12 @@
 import React from 'react'
+import { ConnectButton } from 'thirdweb/react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import GetStartedButton from './GetStartedButton'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
 
 export function Connect() {
   const { isAuthenticated, user } = useUnifiedAuth()
@@ -18,7 +24,7 @@ export function Connect() {
         <span className="text-sm font-medium hidden sm:inline">
           {user?.displayName || 'User'}
         </span>
-        <w3m-button balance='hide' size='sm' />
+        <ConnectButton client={client} />
       </div>
     )
   }
@@ -26,7 +32,7 @@ export function Connect() {
   return (
     <div className="flex items-center gap-2">
       <GetStartedButton />
-      <w3m-button />
+      <ConnectButton client={client} />
     </div>
   )
 }

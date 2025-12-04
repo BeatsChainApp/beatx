@@ -1,5 +1,12 @@
 'use client'
 
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
+
 import ResponsiveWrapper from '@/components/ResponsiveWrapper'
 import UniversalLayout from '@/components/UniversalLayout'
 import { useState } from 'react'
@@ -30,7 +37,7 @@ function AdminSeedPageContent() {
         <h2 className="text-2xl font-bold text-gray-900 mb-2 mobile-heading">Connect Your Wallet</h2>
         <p className="text-gray-600">Please connect your wallet to access admin tools.</p>
         <div className="mt-4">
-          <w3m-button />
+          <ConnectButton client={client} />
         </div>
       </div>
     )

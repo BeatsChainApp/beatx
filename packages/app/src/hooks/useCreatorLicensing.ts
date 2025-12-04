@@ -13,7 +13,8 @@ const CONTRACT_ADDRESS = '0x0ae18b951a38ef7464e77ec9b309c3505c4eb4a0' // Creator
 
 export function useCreatorLicensing() {
   const [loading, setLoading] = useState(false)
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const { writeContract } = useWriteContract()
 
   const createNegotiation = async (

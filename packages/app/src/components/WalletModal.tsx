@@ -1,5 +1,12 @@
 'use client'
 
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
+
 import { useState, useEffect } from 'react'
 import { useActiveAccount, useDisconnect } from 'thirdweb/react'
 import { useSIWE } from '@/hooks/useSIWE'
@@ -80,7 +87,7 @@ export default function WalletModal({
                 Connect your wallet to access BeatsChain features
               </p>
             </div>
-            <w3m-button />
+            <ConnectButton client={client} />
             <div style={{ marginTop: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>
               <p>Supported wallets: MetaMask, WalletConnect, Coinbase Wallet</p>
             </div>

@@ -12,7 +12,8 @@ export interface AdminConfig {
 export function useAdminSetup() {
   const [config, setConfig] = useState<AdminConfig | null>(null)
   const [loading, setLoading] = useState(true)
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
 
   useEffect(() => {
     loadAdminConfig()

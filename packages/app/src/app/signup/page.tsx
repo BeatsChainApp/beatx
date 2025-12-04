@@ -1,5 +1,12 @@
 'use client'
 
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
+
 import ResponsiveWrapper from '@/components/ResponsiveWrapper'
 import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
@@ -86,7 +93,7 @@ function SignUpPageContent() {
 
   const handleWalletConnect = () => {
     // Trigger wallet connection modal
-    const connectButton = document.querySelector('w3m-button')
+    const connectButton = null
     if (connectButton) {
       (connectButton as any).click()
     }

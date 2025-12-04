@@ -16,7 +16,8 @@ interface CreditListing {
 export function useBeatNFTCreditTrading() {
   const [loading, setLoading] = useState(false)
   const [listings, setListings] = useState<CreditListing[]>([])
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   
   const loadMarketListings = useCallback(async () => {
     if (typeof window === 'undefined' || !address) return

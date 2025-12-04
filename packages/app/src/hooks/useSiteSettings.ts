@@ -53,7 +53,8 @@ export function useSiteSettings() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
 
   useEffect(() => {
     loadSettings()

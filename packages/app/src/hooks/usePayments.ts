@@ -16,7 +16,8 @@ interface PurchaseData {
 export function usePayments() {
   const [processing, setProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const { user } = useUnifiedAuth()
   // const { addPurchase } = useFirestore() // Removed Firebase dependency
   const { writeContract, data: hash } = useWriteContract()

@@ -100,7 +100,63 @@ export default function RootLayout(props: PropsWithChildren) {
 
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         <script src="https://accounts.google.com/gsi/client" async defer></script>
-        <script src="/js/lib/app-onboarding-manager.js" defer onError="console.warn('Failed to load app-onboarding-manager.js')"></script>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            // Inline minimal onboarding manager to prevent loading conflicts
+            class AppOnboardingManager {
+              constructor() {
+                this.currentStep = 0;
+                this.userChoices = {};
+                console.log('✅ AppOnboardingManager constructor verified (inline)');
+              }
+              
+              async checkOnboardingStatus() {
+                try {
+                  if (typeof window === 'undefined' || !window.localStorage) return false;
+                  return localStorage.getItem('beatx_onboarding_completed') === 'true';
+                } catch (error) {
+                  console.warn('Failed to check onboarding status:', error);
+                  return false;
+                }
+              }
+              
+              async initialize() {
+                try {
+                  const completed = await this.checkOnboardingStatus();
+                  console.log('Onboarding status checked:', completed);
+                  return !completed;
+                } catch (error) {
+                  console.warn('AppOnboardingManager initialization failed:', error);
+                  return false;
+                }
+              }
+              
+              async getOnboardingProgress() {
+                try {
+                  const progress = localStorage.getItem('beatx_onboarding_progress');
+                  return progress ? JSON.parse(progress) : { step: 0, completed: false };
+                } catch (error) {
+                  console.warn('Failed to get onboarding progress:', error);
+                  return { step: 0, completed: false };
+                }
+              }
+              
+              reset() {
+                try {
+                  localStorage.removeItem('beatx_onboarding_completed');
+                  this.currentStep = 0;
+                  this.userChoices = {};
+                } catch (error) {
+                  console.warn('Failed to reset onboarding:', error);
+                }
+              }
+            }
+            
+            if (typeof window !== 'undefined') {
+              window.AppOnboardingManager = AppOnboardingManager;
+            }
+          `
+        }} />
         <script dangerouslySetInnerHTML={{
           __html: `
             // Prevent hydration issues by ensuring client-only execution

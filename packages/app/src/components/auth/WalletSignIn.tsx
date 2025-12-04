@@ -1,5 +1,12 @@
 'use client'
 
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
+
 import { useState } from 'react'
 import { useActiveAccount } from "thirdweb/react"
 import { useSIWE } from '@/hooks/useSIWE'
@@ -22,7 +29,7 @@ export function WalletSignIn() {
     return (
       <div style={{ padding: '1rem', textAlign: 'center' }}>
         <p>Please connect your wallet first</p>
-        <w3m-button />
+        <ConnectButton client={client} />
       </div>
     )
   }

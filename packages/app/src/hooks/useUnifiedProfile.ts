@@ -49,7 +49,8 @@ export function useUnifiedProfile(): UseUnifiedProfileReturn {
   const [error, setError] = useState<string | null>(null)
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle')
   
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const { user, isAuthenticated } = useUnifiedAuth()
 
   const getMcpUrl = () => {

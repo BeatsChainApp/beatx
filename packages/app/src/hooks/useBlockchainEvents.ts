@@ -5,7 +5,8 @@ import { useActiveAccount } from "thirdweb/react"
 import { useNotifications } from '@/context/NotificationsEnhanced'
 
 export function useBlockchainEvents() {
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const { addNotification } = useNotifications()
 
   useEffect(() => {

@@ -23,7 +23,8 @@ interface RecommendationData {
 }
 
 export function useRecommendationOptimization() {
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const [data, setData] = useState<RecommendationData>({
     userPreferences: { topGenres: [], priceRange: { min: 0, max: 0 }, recentActivity: [] },
     recommendations: [],

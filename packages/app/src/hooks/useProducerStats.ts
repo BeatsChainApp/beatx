@@ -29,7 +29,8 @@ export function useProducerStats() {
   })
   const [loading, setLoading] = useState(true)
   
-  const { address } = useAccount()
+  const account = useActiveAccount()
+  const address = account?.address
   const { events } = useWeb3Events()
   const { royalties, stats: royaltyStats } = useRoyalties()
 
