@@ -131,8 +131,59 @@ async function handleWebhook(payload) {
   }
 }
 
-module.exports = {
-  createAsset,
-  getAsset,
-  handleWebhook
-};
+class LivepeerAdapter {
+  constructor() {
+    this.apiKey = LIVEPEER_API_KEY;
+    this.apiBase = LIVEPEER_API_BASE;
+    this.tusClient = tusClient;
+  }
+
+  async createAsset(name, options) {
+    return createAsset(name, options);
+  }
+
+  async getAsset(assetId) {
+    return getAsset(assetId);
+  }
+
+  async handleWebhook(payload) {
+    return handleWebhook(payload);
+  }
+
+  async createTUSUpload(options) {
+    return this.createAsset(options.name, options);
+  }
+
+  async finalizeTUSUpload(uploadId) {
+    return this.getAsset(uploadId);
+  }
+
+  async deleteAsset(assetId) {
+    if (!this.apiKey) {
+      console.log('Mock delete asset:', assetId);
+      return { success: true };
+    }
+
+    try {
+      const url = `${this.apiBase.replace(/\/$/, '')}/asset/${assetId}`;
+      const res = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`
+        }
+      });
+
+      return { success: res.ok };
+    } catch (error) {
+      console.error('Delete asset error:', error);
+      throw error;
+    }
+  }
+
+  async generatePlaybackToken(assetId, options) {
+    // Mock implementation for now
+    return `mock-token-${assetId}-${Date.now()}`;
+  }
+}
+
+module.exports = LivepeerAdapter;

@@ -8,11 +8,24 @@ const LivepeerAdapter = require('./livepeerAdapter');
 
 class StreamingManager {
   constructor() {
-    this.supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
-    this.livepeer = new LivepeerAdapter();
+    // Safe initialization with fallbacks
+    try {
+      this.supabase = createClient(
+        process.env.SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+    } catch (error) {
+      console.warn('StreamingManager: Supabase not available:', error.message);
+      this.supabase = null;
+    }
+    
+    try {
+      this.livepeer = new LivepeerAdapter();
+    } catch (error) {
+      console.warn('StreamingManager: LivepeerAdapter not available:', error.message);
+      this.livepeer = null;
+    }
+    
     this.uploadQueue = new Map();
   }
 
@@ -20,6 +33,16 @@ class StreamingManager {
   async initializeUpload(userId, fileInfo) {
     try {
       const uploadId = `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      if (!this.livepeer) {
+        // Mock mode when Livepeer not available
+        return {
+          uploadId,
+          tusUploadUrl: `https://mock-tus-endpoint.com/files/${uploadId}`,
+          chunkSize: 1024 * 1024 * 5,
+          mock: true
+        };
+      }
       
       // Create TUS upload session
       const tusUpload = await this.livepeer.createTUSUpload({
