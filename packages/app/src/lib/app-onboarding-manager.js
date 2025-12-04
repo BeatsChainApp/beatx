@@ -16,38 +16,56 @@ class AppOnboardingManager {
     }
 
     async initialize() {
-        // Check completion status
-        const completed = await this.checkOnboardingStatus();
-        if (completed) {
+        try {
+            // Check completion status
+            const completed = await this.checkOnboardingStatus();
+            if (completed) {
+                return false;
+            }
+
+            // Initialize core systems
+            await this.initializeCoreSystems();
+            
+            return true;
+        } catch (error) {
+            console.warn('AppOnboardingManager initialization failed:', error);
             return false;
         }
-
-        // Initialize core systems
-        await this.initializeCoreSystems();
-        
-        return true;
     }
 
     async checkOnboardingStatus() {
-        const completed = localStorage.getItem('beatx_onboarding_completed');
-        return completed === 'true';
+        try {
+            // Ensure we're in browser environment
+            if (typeof window === 'undefined' || !window.localStorage) {
+                return false;
+            }
+            const completed = localStorage.getItem('beatx_onboarding_completed');
+            return completed === 'true';
+        } catch (error) {
+            console.warn('Failed to check onboarding status:', error);
+            return false;
+        }
     }
 
     async initializeCoreSystems() {
-        // Initialize sponsor manager
-        if (window.SponsorContentManager) {
-            this.sponsorManager = new SponsorContentManager();
-            await this.sponsorManager.initialize();
+        try {
+            // Initialize sponsor manager
+            if (typeof window !== 'undefined' && window.SponsorContentManager) {
+                this.sponsorManager = new window.SponsorContentManager();
+                await this.sponsorManager.initialize();
+            }
+
+            // Initialize MCP client for AI integrations
+            await this.initializeMCPClient();
+
+            // Setup n8n webhook endpoints
+            await this.setupN8NIntegration();
+
+            // Initialize data pipeline
+            await this.initializeDataPipeline();
+        } catch (error) {
+            console.warn('Core systems initialization failed:', error);
         }
-
-        // Initialize MCP client for AI integrations
-        await this.initializeMCPClient();
-
-        // Setup n8n webhook endpoints
-        await this.setupN8NIntegration();
-
-        // Initialize data pipeline
-        await this.initializeDataPipeline();
     }
 
     async initializeMCPClient() {

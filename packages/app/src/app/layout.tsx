@@ -100,54 +100,80 @@ export default function RootLayout(props: PropsWithChildren) {
 
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         <script src="https://accounts.google.com/gsi/client" async defer></script>
-        <script src="/js/lib/app-onboarding-manager.js" defer></script>
+        <script src="/js/lib/app-onboarding-manager.js" defer onError="console.warn('Failed to load app-onboarding-manager.js')"></script>
         <script dangerouslySetInnerHTML={{
           __html: `
-            // Service Worker registration with error handling
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                  .then(registration => {
-                    console.log('SW registered:', registration)
-                    window.dispatchEvent(new CustomEvent('sw-ready'))
-                  })
-                  .catch(error => {
-                    console.warn('SW registration failed:', error)
-                  })
+            // Prevent hydration issues by ensuring client-only execution
+            if (typeof window !== 'undefined') {
+              // Service Worker registration with error handling
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                      console.log('SW registered:', registration)
+                      window.dispatchEvent(new CustomEvent('sw-ready'))
+                    })
+                    .catch(error => {
+                      console.warn('SW registration failed:', error)
+                    })
+                })
+              }
+              
+              // Enhanced global error handler for unhandled promise rejections
+              window.addEventListener('unhandledrejection', function(event) {
+                console.warn('Unhandled promise rejection:', event.reason)
+                
+                // Handle specific error types
+                if (event.reason && event.reason.message) {
+                  if (event.reason.message.includes('AppOnboardingManager')) {
+                    console.warn('Onboarding manager promise rejection - attempting recovery')
+                    event.preventDefault()
+                  } else if (event.reason.message.includes('Minified React error')) {
+                    console.warn('React error detected - may be hydration issue')
+                    event.preventDefault()
+                  } else if (event.reason.message.includes('WagmiProvider')) {
+                    console.warn('Wagmi provider error - using Thirdweb instead')
+                    event.preventDefault()
+                  }
+                }
+              })
+              
+              // Enhanced global error handler for JavaScript errors
+              window.addEventListener('error', function(event) {
+                if (event.error && event.error.message) {
+                  if (event.error.message.includes('AppOnboardingManager')) {
+                    console.warn('Onboarding manager error caught:', event.error)
+                    event.preventDefault()
+                  } else if (event.error.message.includes('Minified React error')) {
+                    console.warn('React minified error caught:', event.error.message)
+                    event.preventDefault()
+                  } else if (event.error.message.includes('Hydration')) {
+                    console.warn('Hydration error caught - this may resolve automatically')
+                    event.preventDefault()
+                  } else if (event.error.message.includes('WagmiProvider')) {
+                    console.warn('Wagmi provider error - check Web3Provider configuration')
+                    event.preventDefault()
+                  }
+                }
+              })
+              
+              // Initialize AppOnboardingManager safely
+              window.addEventListener('DOMContentLoaded', function() {
+                if (window.AppOnboardingManager) {
+                  try {
+                    const manager = new window.AppOnboardingManager()
+                    console.log('✅ AppOnboardingManager constructor verified')
+                    
+                    // Safe initialization with error handling
+                    manager.initialize().catch(error => {
+                      console.warn('AppOnboardingManager initialization failed:', error)
+                    })
+                  } catch (error) {
+                    console.warn('AppOnboardingManager constructor failed:', error)
+                  }
+                }
               })
             }
-            
-            // Enhanced global error handler for unhandled promise rejections
-            window.addEventListener('unhandledrejection', function(event) {
-              console.warn('Unhandled promise rejection:', event.reason)
-              
-              // Handle specific error types
-              if (event.reason && event.reason.message) {
-                if (event.reason.message.includes('AppOnboardingManager')) {
-                  console.warn('Onboarding manager promise rejection - attempting recovery')
-                  event.preventDefault()
-                } else if (event.reason.message.includes('Minified React error')) {
-                  console.warn('React error detected - may be hydration issue')
-                  event.preventDefault()
-                }
-              }
-            })
-            
-            // Enhanced global error handler for JavaScript errors
-            window.addEventListener('error', function(event) {
-              if (event.error && event.error.message) {
-                if (event.error.message.includes('AppOnboardingManager')) {
-                  console.warn('Onboarding manager error caught:', event.error)
-                  event.preventDefault()
-                } else if (event.error.message.includes('Minified React error')) {
-                  console.warn('React minified error caught:', event.error.message)
-                  event.preventDefault()
-                } else if (event.error.message.includes('Hydration')) {
-                  console.warn('Hydration error caught - this may resolve automatically')
-                  event.preventDefault()
-                }
-              }
-            })
           `
         }} />
         <style>{`
