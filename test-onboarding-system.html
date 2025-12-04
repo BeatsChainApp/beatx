@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Onboarding System</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-result { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <h1>🎵 BeatsChain Onboarding System Test</h1>
+    
+    <div id="test-results"></div>
+    
+    <button onclick="testOnboardingSystem()">Test Onboarding System</button>
+    <button onclick="testSponsorSystem()">Test Sponsor System</button>
+    <button onclick="resetOnboarding()">Reset Onboarding</button>
+
+    <!-- Load the onboarding managers -->
+    <script src="/workspaces/beatx/packages/app/public/js/lib/app-onboarding-manager.js"></script>
+    <script src="/workspaces/beatx/packages/app/src/lib/sponsor-content-manager.js"></script>
+
+    <script>
+        const results = document.getElementById('test-results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+
+        async function testOnboardingSystem() {
+            results.innerHTML = '';
+            addResult('🧪 Testing AppOnboardingManager...', 'info');
+            
+            try {
+                // Test AppOnboardingManager
+                if (window.AppOnboardingManager) {
+                    addResult('✅ AppOnboardingManager loaded successfully', 'success');
+                    
+                    const manager = new window.AppOnboardingManager();
+                    addResult('✅ AppOnboardingManager instance created', 'success');
+                    
+                    const initialized = await manager.initialize();
+                    addResult(`✅ AppOnboardingManager initialized: ${initialized}`, 'success');
+                    
+                    const progress = await manager.getOnboardingProgress();
+                    addResult(`✅ Onboarding progress: ${JSON.stringify(progress)}`, 'success');
+                    
+                    // Test methods exist
+                    const methods = ['checkOnboardingStatus', 'startOnboarding', 'recordEvent', 'reset'];
+                    methods.forEach(method => {
+                        if (typeof manager[method] === 'function') {
+                            addResult(`✅ Method ${method} exists`, 'success');
+                        } else {
+                            addResult(`❌ Method ${method} missing`, 'error');
+                        }
+                    });
+                    
+                } else {
+                    addResult('❌ AppOnboardingManager not found', 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSponsorSystem() {
+            addResult('🧪 Testing SponsorContentManager...', 'info');
+            
+            try {
+                if (window.SponsorContentManager) {
+                    addResult('✅ SponsorContentManager loaded successfully', 'success');
+                    
+                    const sponsorManager = new window.SponsorContentManager();
+                    addResult('✅ SponsorContentManager instance created', 'success');
+                    
+                    await sponsorManager.initialize();
+                    addResult('✅ SponsorContentManager initialized', 'success');
+                    
+                    // Test sponsor content creation
+                    const sponsorContent = await sponsorManager.createSponsorContent('onboarding_welcome', {
+                        role: 'producer',
+                        genre: 'Hip-Hop',
+                        experience: 'beginner'
+                    });
+                    
+                    if (sponsorContent) {
+                        addResult('✅ Sponsor content created successfully', 'success');
+                        addResult(`✅ Sponsor: ${sponsorContent.sponsor.name}`, 'success');
+                        
+                        // Add the sponsor content to page
+                        const container = document.createElement('div');
+                        container.style.cssText = 'margin: 20px 0; padding: 20px; border: 2px solid #e5e7eb; border-radius: 8px;';
+                        container.innerHTML = '<h3>📢 Sample Sponsor Content:</h3>';
+                        container.appendChild(sponsorContent.element);
+                        results.appendChild(container);
+                        
+                    } else {
+                        addResult('ℹ️ No sponsor content available for test placement', 'info');
+                    }
+                    
+                    // Test templates
+                    const templates = sponsorManager.getAllSponsorTemplates();
+                    addResult(`✅ ${templates.length} sponsor templates loaded`, 'success');
+                    
+                    templates.forEach(template => {
+                        addResult(`📋 Template: ${template.name} (${template.category})`, 'info');
+                    });
+                    
+                } else {
+                    addResult('❌ SponsorContentManager not found', 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function resetOnboarding() {
+            localStorage.removeItem('beatx_onboarding_completed');
+            localStorage.removeItem('beatx_onboarding_progress');
+            localStorage.removeItem('beatx_user_preferences');
+            localStorage.removeItem('beatx_sponsor_consent');
+            addResult('🔄 Onboarding data reset', 'info');
+        }
+
+        // Auto-run basic test on load
+        window.addEventListener('load', () => {
+            setTimeout(testOnboardingSystem, 1000);
+        });
+    </script>
+</body>
+</html>
