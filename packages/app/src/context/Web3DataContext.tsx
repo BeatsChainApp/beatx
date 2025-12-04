@@ -1,8 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { useAccount, useReadContract, usePublicClient } from 'wagmi'
-import { BeatNFTConfig } from '@/contracts/BeatNFT'
+import { useActiveAccount } from 'thirdweb/react'
 import { formatEther } from 'viem'
 import { useWeb3BeatsBridge } from '@/hooks/useWeb3BeatsBridge'
 
@@ -38,8 +37,8 @@ const METADATA_API = 'https://api.beatschain.app/metadata'
 export function Web3DataProvider({ children }: { children: ReactNode }) {
   const [beats, setBeats] = useState<Beat[]>([])
   const [loading, setLoading] = useState(true)
-  const { address } = useAccount()
-  const publicClient = usePublicClient()
+  const account = useActiveAccount()
+  const address = account?.address
   const { allBeats, communityBeats, localBeats, loading: bridgeLoading, refreshCommunity } = useWeb3BeatsBridge()
 
   const refreshBeats = async () => {
@@ -68,31 +67,9 @@ export function Web3DataProvider({ children }: { children: ReactNode }) {
 
   const fetchBeatsData = async (): Promise<Beat[]> => {
     try {
-      // Try to fetch from blockchain
-      if (publicClient) {
-        try {
-          // Try to fetch beats by checking token IDs 1-10 (reduce API calls)
-          const beatPromises = []
-          
-          // Check first 10 possible token IDs to reduce errors
-          for (let i = 1; i <= 10; i++) {
-            beatPromises.push(fetchBeatData(BigInt(i)))
-          }
-          
-          const beatsData = await Promise.all(beatPromises)
-          const blockchainBeats = beatsData.filter(Boolean) as Beat[]
-          
-          if (blockchainBeats.length > 0) {
-            console.log(`Found ${blockchainBeats.length} blockchain beats`)
-          console.log('Blockchain beats data:', blockchainBeats)
-            // Combine blockchain beats with local beats
-            const localBeats = getLocalBeats()
-            return [...blockchainBeats, ...localBeats]
-          }
-        } catch (err) {
-          console.log('Failed to fetch from blockchain, using local storage')
-        }
-      }
+      // For now, use local storage until Thirdweb contract integration is complete
+      // TODO: Implement Thirdweb contract reading
+      console.log('Using local storage for beats data')
       
       // Fallback to local storage
       return getLocalBeats()
@@ -102,69 +79,10 @@ export function Web3DataProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  // TODO: Implement Thirdweb contract reading
   const fetchBeatData = async (tokenId: bigint): Promise<Beat | null> => {
-    try {
-      // Get beat data from contract
-      const beatData = await publicClient?.readContract({
-        address: BeatNFTConfig.address[11155111] as `0x${string}`,
-        abi: BeatNFTConfig.abi,
-        functionName: 'beats',
-        args: [tokenId]
-      })
-      
-      if (!beatData || beatData[1] === '0x0000000000000000000000000000000000000000') return null
-      
-      // Get token URI
-      const tokenUri = await publicClient?.readContract({
-        address: BeatNFTConfig.address[11155111] as `0x${string}`,
-        abi: BeatNFTConfig.abi,
-        functionName: 'tokenURI',
-        args: [tokenId]
-      }) as string
-      
-      // Fetch metadata
-      let metadata
-      try {
-        const response = await fetch(tokenUri)
-        metadata = await response.json()
-      } catch (err) {
-        // If metadata fetch fails, use local storage or defaults
-        const localMetadata = localStorage.getItem(`beat_metadata_${tokenId.toString()}`)
-        metadata = localMetadata ? JSON.parse(localMetadata) : {
-          name: `Beat #${tokenId}`,
-          description: 'No description available',
-          image: 'https://placehold.co/400x400/purple/white?text=Beat',
-          audio: '',
-          attributes: []
-        }
-      }
-      
-      // Extract data from contract and metadata
-      const price = formatEther(beatData[0] as bigint)
-      const producer = beatData[1] as string
-      const isForSale = beatData[3] as boolean
-      const genre = beatData[4] as string
-      const bpm = Number(beatData[5])
-      
-      // Build beat object
-      return {
-        id: tokenId.toString(),
-        tokenId: tokenId.toString(),
-        title: metadata.name,
-        description: metadata.description,
-        price: parseFloat(price),
-        genre,
-        bpm,
-        producerId: producer,
-        coverImageUrl: metadata.image,
-        audioUrl: metadata.audio,
-        isActive: isForSale,
-        tags: metadata.attributes?.filter(attr => attr.trait_type === 'tag').map(attr => attr.value) || []
-      }
-    } catch (error) {
-      // Silently handle non-existent tokens (expected for most IDs)
-      return null
-    }
+    // Placeholder for Thirdweb implementation
+    return null
   }
 
   const getLocalBeats = (): Beat[] => {

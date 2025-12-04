@@ -29,9 +29,7 @@ export function Web3Provider({ children, cookies }: Props) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThirdwebProvider>
-        <Web3DataProvider>
           {children}
-        </Web3DataProvider>
       </ThirdwebProvider>
     </QueryClientProvider>
   )
