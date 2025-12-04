@@ -57,48 +57,6 @@ class ThirdwebWalletAdapter implements WalletAdapter {
   }
 }
 
-class ReownWalletAdapter implements WalletAdapter {
-  private address: string | null = null
-  private callbacks: ((address: string | null) => void)[] = []
-
-  async initWallet(): Promise<void> {
-    // Fallback to existing Reown implementation
-    if (typeof window !== 'undefined' && (window as any).ethereum) {
-      const accounts = await (window as any).ethereum.request({ method: 'eth_accounts' })
-      this.address = accounts[0] || null
-      this.notifyCallbacks(this.address)
-    }
-  }
-
-  getAddress(): string | null {
-    return this.address
-  }
-
-  async signMessage(message: string): Promise<string> {
-    if (!this.address) throw new Error("Wallet not connected")
-    if (typeof window !== 'undefined' && (window as any).ethereum) {
-      return await (window as any).ethereum.request({
-        method: 'personal_sign',
-        params: [message, this.address]
-      })
-    }
-    throw new Error("No wallet provider available")
-  }
-
-  isReady(): boolean {
-    return !!this.address
-  }
-
-  onChange(callback: (address: string | null) => void): void {
-    this.callbacks.push(callback)
-  }
-
-  private notifyCallbacks(address: string | null): void {
-    this.callbacks.forEach(cb => cb(address))
-  }
-}
-
 export function createWalletAdapter(): WalletAdapter {
-  const useThirdweb = process.env.NEXT_PUBLIC_USE_THIRDWEB === 'true'
-  return useThirdweb ? new ThirdwebWalletAdapter() : new ReownWalletAdapter()
+  return new ThirdwebWalletAdapter()
 }
