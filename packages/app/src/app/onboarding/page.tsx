@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 
 declare global {
   interface Window {
-    EnhancedOnboardingManager: any
+    AppOnboardingManager: any
   }
 }
 
@@ -37,10 +37,11 @@ function OnboardingPageContent() {
 
     // Initialize onboarding manager
     const initOnboarding = async () => {
-      if (window.EnhancedOnboardingManager) {
-        await window.EnhancedOnboardingManager.initialize()
-        const data = await window.EnhancedOnboardingManager.renderStep(1)
-        setStepData(data)
+      if (window.AppOnboardingManager) {
+        const manager = new window.AppOnboardingManager()
+        await manager.initialize()
+        // Use basic onboarding flow
+        setStepData({ type: 'welcome', title: 'Welcome to BeatsChain', content: 'Get started with your music journey' })
         setLoading(false)
       }
     }
@@ -51,33 +52,29 @@ function OnboardingPageContent() {
   }, [router])
 
   const handleNext = async () => {
-    if (window.EnhancedOnboardingManager) {
-      const nextData = await window.EnhancedOnboardingManager.nextStep()
-      
-      if (nextData.type === 'completion') {
-        // Onboarding complete
-        router.push('/dashboard')
-      } else {
-        setStepData(nextData)
-        setCurrentStep(prev => prev + 1)
-      }
+    const nextStep = currentStep + 1
+    if (nextStep > 6) {
+      // Onboarding complete
+      localStorage.setItem('beatx_onboarding_completed', 'true')
+      router.push('/dashboard')
+    } else {
+      setCurrentStep(nextStep)
+      // Set next step data based on step number
+      const stepTypes = ['welcome', 'account_setup', 'role_selection', 'profile_setup', 'feature_tour', 'completion']
+      setStepData({ type: stepTypes[nextStep - 1], title: `Step ${nextStep}`, content: 'Continue your setup' })
     }
   }
 
   const handleRoleSelect = async (role: string) => {
-    if (window.EnhancedOnboardingManager) {
-      await window.EnhancedOnboardingManager.setUserRole(role)
-      setUserData(prev => ({ ...prev, role }))
-      handleNext()
-    }
+    setUserData(prev => ({ ...prev, role }))
+    localStorage.setItem('beatx_user_role', role)
+    handleNext()
   }
 
   const handleProfileSetup = async (profileData: any) => {
-    if (window.EnhancedOnboardingManager) {
-      await window.EnhancedOnboardingManager.setupProfile(profileData)
-      setUserData(prev => ({ ...prev, profile: profileData }))
-      handleNext()
-    }
+    setUserData(prev => ({ ...prev, profile: profileData }))
+    localStorage.setItem('beatx_user_profile', JSON.stringify(profileData))
+    handleNext()
   }
 
   if (loading) {

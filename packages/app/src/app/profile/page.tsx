@@ -2,14 +2,26 @@
 
 import ResponsiveWrapper from '@/components/ResponsiveWrapper'
 import UniversalLayout from '@/components/UniversalLayout'
-import React from 'react'
-import { ConnectButton } from 'thirdweb/react'
+import BackToDashboard from '@/components/BackToDashboard'
+import React, { useState, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import { ConnectButton, useActiveAccount } from 'thirdweb/react'
 import { createThirdwebClient } from 'thirdweb'
+import { useUnifiedProfile } from '@/hooks/useUnifiedProfile'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
+import { toast } from 'react-hot-toast'
 
 const client = createThirdwebClient({
   clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
-}) const address = account?.address; const isConnected = !!account
+})
+
+export default function ProfilePage() {
+  const account = useActiveAccount()
+  const address = account?.address
+  const isConnected = !!account
   const router = useRouter()
+  const { user } = useUnifiedAuth()
+  const { profile: unifiedProfile, loading, updateProfile: updateUnifiedProfile, syncStatus } = useUnifiedProfile()
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)

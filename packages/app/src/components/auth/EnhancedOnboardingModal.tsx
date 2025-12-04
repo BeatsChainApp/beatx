@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAuth } from '@/context/UnifiedAuthContext'
+import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
 interface EnhancedOnboardingModalProps {
   isOpen: boolean
@@ -10,7 +10,7 @@ interface EnhancedOnboardingModalProps {
 }
 
 export default function EnhancedOnboardingModal({ isOpen, onClose, onComplete }: EnhancedOnboardingModalProps) {
-  const { user } = useAuth()
+  const { user } = useUnifiedAuth()
   const [onboardingManager, setOnboardingManager] = useState<any>(null)
   const [isInitialized, setIsInitialized] = useState(false)
 
