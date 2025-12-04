@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useNotifications } from '@/context/NotificationsEnhanced'
 
 export function useBlockchainEvents() {

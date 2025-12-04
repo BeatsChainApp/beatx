@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 
 export interface BeatCollection {
   id: string
@@ -36,7 +36,7 @@ export function useAdvancedNFT() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
 
   // Beat Collections
   const createCollection = async (

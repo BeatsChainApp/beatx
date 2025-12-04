@@ -1,7 +1,7 @@
 'use client'
 
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 // Removed Reown AppKit - using Thirdweb
 
 /**

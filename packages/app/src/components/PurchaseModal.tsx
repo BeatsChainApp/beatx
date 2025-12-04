@@ -45,7 +45,6 @@ export default function PurchaseModal({ isOpen, onClose, beat }: PurchaseModalPr
     try {
       if (paymentMethod === 'crypto') {
         // Check if wallet is connected for crypto payments
-        const { address } = await import('wagmi')
         if (!address) {
           alert('Please connect your wallet for crypto payments')
           return

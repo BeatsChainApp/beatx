@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { parseEther } from 'viem'
 import { toast } from 'react-toastify'
 
@@ -85,7 +85,7 @@ export function useBeatNFT() {
     totalUsed: 0
   })
   const [loading, setLoading] = useState(false)
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
 
   useEffect(() => {
     if (isConnected && address) {

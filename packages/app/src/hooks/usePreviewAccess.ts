@@ -1,9 +1,9 @@
 'use client'
 
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 
 export function usePreviewAccess() {
-  const { isConnected } = useAccount()
+  const account = useActiveAccount(); const isConnected = !!account
 
   // Simple rule: Connected wallets get full access, unconnected get 30s previews
   const canAccessFullBeat = isConnected

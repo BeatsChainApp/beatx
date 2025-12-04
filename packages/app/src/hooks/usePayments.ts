@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { parseEther } from 'viem'
 import { useUnifiedAuth } from './useUnifiedAuth'
 // import { useFirestore } from './useFirestore' // Removed Firebase dependency

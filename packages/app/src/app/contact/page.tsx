@@ -21,7 +21,7 @@ export default function ContactPage() {
 }
 
 function ContactPageContent() {
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
   const { user } = useUnifiedAuth()
   const [heroData, setHeroData] = useState(null)
   

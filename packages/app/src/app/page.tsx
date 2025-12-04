@@ -22,7 +22,7 @@ export default function Home() {
 
 function HomeContent() {
   const { totalBeats, totalUsers, totalRevenue, isLoading } = usePlatformStats()
-  const { isConnected } = useAccount()
+  const account = useActiveAccount(); const isConnected = !!account
   const [beatNFTStats, setBeatNFTStats] = useState({
     totalCreditsIssued: 0,
     activeUsers: 0,

@@ -5,7 +5,7 @@ import { useActiveAccount } from "thirdweb/react"
 
 export default function AuthDebug() {
   const { user, isAuthenticated, hasRole, hasAnyRole } = useUnifiedAuth()
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
 
   if (process.env.NODE_ENV === 'production') return null
 

@@ -20,8 +20,6 @@ export class Web3Adapter implements DataAdapter {
       
       // Safely import Web3 dependencies
       try {
-        const { readContract } = await import('wagmi/actions');
-        const { config } = await import('@/lib/wagmi');
         const { beatNFTABI } = await import('@/abis');
         
         // Get producer's NFT balance
@@ -59,8 +57,6 @@ export class Web3Adapter implements DataAdapter {
       
       // Safely import Web3 dependencies
       try {
-        const { readContract } = await import('wagmi/actions');
-        const { config } = await import('@/lib/wagmi');
         const { beatNFTABI } = await import('@/abis');
         
         // Get producer's NFT balance
@@ -139,8 +135,6 @@ export class Web3Adapter implements DataAdapter {
       
       // Safely import Web3 dependencies
       try {
-        const { readContract } = await import('wagmi/actions');
-        const { config } = await import('@/lib/wagmi');
         const { beatNFTABI } = await import('@/abis');
         
         // Get token URI

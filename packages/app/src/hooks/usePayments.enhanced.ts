@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { parseEther } from 'viem'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
@@ -15,7 +15,7 @@ interface PurchaseData {
 export function usePayments() {
   const [processing, setProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
   const { user } = useUnifiedAuth()
   const { writeContract, data: hash } = useWriteContract()
   const { isLoading: isConfirming } = useWaitForTransactionReceipt({ hash })

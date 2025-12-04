@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { BeatNFTConfig } from '@/contracts/BeatNFT'
 import { parseEther } from 'viem'
 import { useIPFS } from '@/hooks/useIPFS'

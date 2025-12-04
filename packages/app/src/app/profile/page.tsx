@@ -23,7 +23,7 @@ export default function ProfilePage() {
 function ProfilePageContent() {
   const { user, isAuthenticated } = useUnifiedAuth()
   const { profile: unifiedProfile, updateProfile: updateUnifiedProfile, syncStatus, loading } = useUnifiedProfile()
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)

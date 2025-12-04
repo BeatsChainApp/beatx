@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 
 interface ProducerBeatAnalytics {
   beatId: string

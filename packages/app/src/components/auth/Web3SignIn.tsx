@@ -6,7 +6,7 @@ import { useSIWE } from '@/context/SIWEContext'
 
 export default function Web3SignIn() {
   const [isConnecting, setIsConnecting] = useState(false)
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
   const { user, signIn, signOut, loading, isAuthenticated } = useSIWE()

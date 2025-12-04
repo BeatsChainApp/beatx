@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAccount, useWriteContract, useReadContract } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { parseEther } from 'viem'
 import { toast } from 'react-toastify'
 import { BeatNFTMarketplaceABI, BeatNFTMarketplaceAddress } from '../contracts/BeatNFTMarketplace'

@@ -1,6 +1,5 @@
 import { useCallback } from 'react'
 import { normalize } from 'viem/ens'
-import { useEnsAddress, useEnsAvatar, useEnsText } from 'wagmi'
 
 const useEnsProfile = ({ ensName, key }: { ensName: string; key?: string }) => {
   const normalizedName = useCallback(() => {

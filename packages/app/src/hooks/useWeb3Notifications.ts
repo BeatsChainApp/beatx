@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useAccount, useWatchContractEvent } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useEnhancedToast } from './useToast.enhanced'
 import { useFeatureFlag } from '@/lib/featureFlags'
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useContentCreator } from './useContentCreator'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 
 interface CollaborationMatch {
   id: string

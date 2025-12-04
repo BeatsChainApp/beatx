@@ -5,7 +5,7 @@ import { useActiveAccount } from "thirdweb/react"
 import { useSIWE } from '@/hooks/useSIWE'
 
 export function WalletSignIn() {
-  const { isConnected } = useAccount()
+  const account = useActiveAccount(); const isConnected = !!account
   const { user, loading, signIn, signOut, isAuthenticated } = useSIWE()
   const [error, setError] = useState<string | null>(null)
 

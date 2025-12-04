@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { ContentCreator, BeatNFTLicense, NegotiationRecord } from '@/types'
 import { toast } from 'react-toastify'
 
@@ -15,7 +15,7 @@ export function useContentCreator() {
   const [creator, setCreator] = useState<ContentCreator | null>(null)
   const [loading, setLoading] = useState(false)
   const [licenses, setLicenses] = useState<BeatNFTLicense[]>([])
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
 
   useEffect(() => {
     if (isConnected && address) {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 
 export interface Proposal {
   id: string
@@ -26,7 +26,7 @@ export function useGovernance() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
 
   useEffect(() => {
     // Mock governance data - in real implementation, fetch from DAO contract

@@ -1,5 +1,4 @@
 'use client'
-import { useBalance, useReadContract } from 'wagmi'
 import { useEffect } from 'react'
 import { formatBalance } from '@/utils/format'
 import { erc20Abi } from 'viem'

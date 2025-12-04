@@ -1,9 +1,7 @@
 'use client'
 
-import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { parseEther, formatEther } from 'viem'
 import { BeatNFTAbi, BeatNFTAddress } from '@/contracts/BeatNFT'
-import { useChainId } from 'wagmi'
 
 type ChainId = keyof typeof BeatNFTAddress
 

@@ -5,7 +5,7 @@ import { useActiveAccount } from "thirdweb/react"
 
 export default function MockWalletSignIn() {
   const { user, updateProfile } = useUnifiedAuth()
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
 
   const handleLinkWallet = async () => {
     if (address) {

@@ -1,5 +1,4 @@
 import { parseEther, formatEther, erc20Abi } from 'viem'
-import { writeContract, readContract } from 'wagmi/actions'
 
 export interface PaymentToken {
   address: string

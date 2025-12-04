@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useWeb3Events } from './useWeb3Events'
 import { useBlockchainCache } from './useBlockchainCache'
 

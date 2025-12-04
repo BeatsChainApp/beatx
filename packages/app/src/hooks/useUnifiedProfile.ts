@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
 interface UnifiedProfile {

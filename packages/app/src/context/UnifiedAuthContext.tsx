@@ -64,7 +64,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
   
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
   const siweContext = useSIWE()
   const { profile: web3Profile, loading: profileLoading } = useWeb3Profile()
   

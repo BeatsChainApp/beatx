@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useSIWE } from './useSIWE'
 
 interface UseWalletModalReturn {
@@ -22,7 +22,7 @@ export function useWalletModal(): UseWalletModalReturn {
     title: 'Connect Wallet',
     showSignMessage: true
   })
-  const { isConnected } = useAccount()
+  const account = useActiveAccount(); const isConnected = !!account
   const { isAuthenticated } = useSIWE()
 
   const openModal = useCallback((options?: { title?: string; showSignMessage?: boolean }) => {

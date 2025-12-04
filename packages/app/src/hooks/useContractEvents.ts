@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useAccount, usePublicClient, useWatchContractEvent } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useNotifications } from '@/context/NotificationsEnhanced'
 import { formatEther } from 'viem'
 

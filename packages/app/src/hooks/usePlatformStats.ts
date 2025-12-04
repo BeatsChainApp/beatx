@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useWeb3Events } from './useWeb3Events'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 
 interface PlatformStats {
   totalBeats: number
@@ -15,7 +15,7 @@ interface PlatformStats {
 
 export function usePlatformStats(): PlatformStats {
   const { events } = useWeb3Events()
-  const { isConnected } = useAccount()
+  const account = useActiveAccount(); const isConnected = !!account
   const [stats, setStats] = useState<PlatformStats>({
     totalBeats: 0,
     totalUsers: 0,

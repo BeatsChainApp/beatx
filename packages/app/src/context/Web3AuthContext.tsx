@@ -41,7 +41,7 @@ const Web3AuthContext = createContext<Web3AuthContextType | undefined>(undefined
 export function Web3AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<Web3User | null>(null)
   const [loading, setLoading] = useState(false)
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
   const { signMessageAsync } = useSignMessage()
 
   const signIn = async () => {

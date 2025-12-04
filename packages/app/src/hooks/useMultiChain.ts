@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAccount, useSwitchChain } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { SUPPORTED_CHAINS, getChainById, getChainIcon } from '@/config/chains'
 
 export function useMultiChain() {

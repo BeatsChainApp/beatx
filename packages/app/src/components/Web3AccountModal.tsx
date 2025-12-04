@@ -18,7 +18,7 @@ export default function Web3AccountModal({ isOpen, onClose }: Web3AccountModalPr
   })
   const [loading, setLoading] = useState(false)
   
-  const { address, isConnected } = useAccount()
+  const account = useActiveAccount(); const address = account?.address; const isConnected = !!account
   const { disconnect } = useDisconnect()
   const { signIn, user } = useUnifiedAuth()
 
