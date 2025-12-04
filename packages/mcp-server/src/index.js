@@ -763,6 +763,15 @@ try {
   console.log('ℹ️ RBAC routes not found');
 }
 
+// Load Admin routes
+try {
+  const adminRoutes = require('./routes/admin');
+  app.use('/api/admin', adminRoutes);
+  console.log('✅ Admin routes loaded');
+} catch (e) {
+  console.log('ℹ️ Admin routes not found:', e.message);
+}
+
 // Load Unified Profiles routes
 try {
   const unifiedProfilesRoutes = require('./routes/unified-profiles');

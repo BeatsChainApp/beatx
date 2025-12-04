@@ -4,6 +4,7 @@ import { ReactNode } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import SessionGate from './SessionGate'
 import AuthDebug from './AuthDebug'
+import AdminWalletSetup from './AdminWalletSetup'
 
 interface UniversalLayoutProps {
   children: ReactNode
@@ -74,6 +75,13 @@ export default function UniversalLayout({
   return (
     <SessionGate requireWallet={requireWallet}>
       <div className={containerClass}>
+        {/* Admin Wallet Setup - Show on all authenticated pages */}
+        {auth.isAuthenticated && (
+          <div className="fixed top-4 right-4 z-50 max-w-sm">
+            <AdminWalletSetup />
+          </div>
+        )}
+        
         {children}
         <AuthDebug />
       </div>

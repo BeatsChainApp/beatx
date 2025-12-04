@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useBeatNFT } from '@/hooks/useBeatNFT'
 import { useSiteSettings } from '@/hooks/useSiteSettings'
+import { useAdminAuth } from '@/hooks/useAdminAuth'
 import BeatNFTAdminDashboard from '@/components/BeatNFTAdminDashboard'
 import CampaignManager from '@/components/CampaignManager'
 import { LinkComponent } from '@/components/LinkComponent'
@@ -15,6 +16,7 @@ import { toast } from 'react-toastify'
 
 export default function AdminDashboard() {
   const { user, isAuthenticated, loading } = useUnifiedAuth()
+  const { verification, isAdmin, isSuperAdmin, adminLevel, verifyAdminAccess } = useAdminAuth()
   const router = useRouter()
   const { getOverview, getBeatAnalytics, getProducerAnalytics } = useAnalytics()
   const { balance } = useBeatNFT()
@@ -36,20 +38,39 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (!mounted) return
     
-    if (!loading && (!isAuthenticated || (user?.role !== 'admin' && user?.role !== 'super_admin'))) {
+    if (!loading && (!isAuthenticated || !isAdmin)) {
       router.push('/dashboard')
       return
     }
     
-    if (isAuthenticated && (user?.role === 'admin' || user?.role === 'super_admin')) {
+    if (isAuthenticated && isAdmin) {
       loadDashboardData()
     }
-  }, [user, isAuthenticated, loading, mounted])
+  }, [user, isAuthenticated, loading, mounted, isAdmin])
 
   const loadDashboardData = async () => {
     try {
+      // Load admin dashboard data from MCP server
+      const mcpUrl = process.env.NEXT_PUBLIC_MCP_SERVER_URL || 'https://beatx-mcp-server-production.up.railway.app'
+      
+      const response = await fetch(`${mcpUrl}/api/admin/dashboard`, {
+        headers: {
+          'x-wallet-address': user?.address || '',
+          'x-user-email': user?.email || ''
+        }
+      })
+      
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          setOverview(result.data.overview)
+          setSystemHealth(result.data.systemHealth)
+        }
+      }
+      
+      // Fallback to local analytics
       const overviewData = await getOverview()
-      setOverview(overviewData)
+      if (!overview) setOverview(overviewData)
 
       const beatData = await getBeatAnalytics()
       setBeatStats(beatData)
@@ -94,8 +115,28 @@ export default function AdminDashboard() {
     return <div className="p-8">Loading...</div>
   }
 
-  if (!isAuthenticated || (user?.role !== 'admin' && user?.role !== 'super_admin')) {
-    return <div className="p-8">Access denied</div>
+  if (!isAuthenticated || !isAdmin) {
+    return (
+      <div className="p-8 text-center">
+        <div className="text-6xl mb-4">🔒</div>
+        <h2 className="text-2xl font-bold mb-2">Admin Access Required</h2>
+        <p className="text-gray-600 mb-4">
+          You need admin privileges to access this page.
+        </p>
+        {verification && (
+          <div className="bg-gray-50 p-4 rounded-lg max-w-md mx-auto">
+            <p className="text-sm text-gray-700">
+              Current level: <span className="font-medium">{adminLevel}</span>
+            </p>
+            {user?.address && (
+              <p className="text-xs text-gray-500 mt-1">
+                Wallet: {user.address.slice(0, 6)}...{user.address.slice(-4)}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+    )
   }
 
   const tabs = [

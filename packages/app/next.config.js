@@ -10,9 +10,11 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+
   experimental: {
-    optimizePackageImports: ['@reown/appkit', 'wagmi', 'viem']
+    optimizePackageImports: ['@reown/appkit', 'viem']
   },
+
   serverExternalPackages: ['@sanity/client', 'firebase-admin'],
   // Force static optimization for better performance
   async headers() {

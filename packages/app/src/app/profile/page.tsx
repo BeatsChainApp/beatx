@@ -13,12 +13,12 @@ import { toast } from 'react-hot-toast'
 
 const client = createThirdwebClient({
   clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
-})
+});
 
 export default function ProfilePage() {
-  const account = useActiveAccount()
-  const address = account?.address
-  const isConnected = !!account
+  const account = useActiveAccount();
+  const address = account?.address;
+  const isConnected = !!account;
   const router = useRouter()
   const { user } = useUnifiedAuth()
   const { profile: unifiedProfile, loading, updateProfile: updateUnifiedProfile, syncStatus } = useUnifiedProfile()
@@ -452,7 +452,7 @@ export default function ProfilePage() {
                   checked={profile?.role === 'user'}
                   onChange={async (e) => {
                     if (e.target.checked) {
-                      const success = await updateProfile({ role: 'user' })
+                      const success = await updateUnifiedProfile({ role: 'user' })
                       if (success) {
                         toast.success('Switched to Music Fan account!', { toastId: 'role-change' })
                         setTimeout(() => {
@@ -484,7 +484,7 @@ export default function ProfilePage() {
                   checked={profile?.role === 'producer'}
                   onChange={async (e) => {
                     if (e.target.checked) {
-                      const success = await updateProfile({ role: 'producer' })
+                      const success = await updateUnifiedProfile({ role: 'producer' })
                       if (success) {
                         toast.success('Switched to Producer account! Redirecting to dashboard...', { toastId: 'role-change' })
                         setTimeout(() => {

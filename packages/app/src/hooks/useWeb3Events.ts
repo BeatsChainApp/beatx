@@ -38,38 +38,19 @@ export function useWeb3Events(contractAddress?: string) {
     EventIndexer.storeEvents([newEvent])
   }, [mounted])
 
-  // Watch for BeatMinted events (client-side only)
-  useWatchContractEvent({
-    address: address as `0x${string}`,
-    abi: [BEAT_NFT_EVENTS.BeatMinted],
-    eventName: 'BeatMinted',
-    onLogs: (logs) => {
-      logs.forEach(log => handleNewEvent(log, 'mint'))
-    },
-    enabled: !!address && mounted
-  })
-
-  // Watch for BeatPurchased events (client-side only)
-  useWatchContractEvent({
-    address: address as `0x${string}`,
-    abi: [BEAT_NFT_EVENTS.BeatPurchased],
-    eventName: 'BeatPurchased',
-    onLogs: (logs) => {
-      logs.forEach(log => handleNewEvent(log, 'purchase'))
-    },
-    enabled: !!address && mounted
-  })
-
-  // Watch for Transfer events (client-side only)
-  useWatchContractEvent({
-    address: address as `0x${string}`,
-    abi: [BEAT_NFT_EVENTS.Transfer],
-    eventName: 'Transfer',
-    onLogs: (logs) => {
-      logs.forEach(log => handleNewEvent(log, 'transfer'))
-    },
-    enabled: !!address && mounted
-  })
+  // TODO: Replace with Thirdweb contract event watching
+  // For now, use polling or manual event fetching
+  useEffect(() => {
+    if (!address || !mounted) return
+    
+    // Simulate event watching with periodic checks
+    const interval = setInterval(() => {
+      // This would be replaced with actual Thirdweb event listening
+      console.log('Checking for contract events...')
+    }, 30000) // Check every 30 seconds
+    
+    return () => clearInterval(interval)
+  }, [address, mounted])
 
   const indexHistoricalEvents = async () => {
     if (!address || !mounted || typeof window === 'undefined') return
