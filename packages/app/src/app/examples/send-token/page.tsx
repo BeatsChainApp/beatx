@@ -2,8 +2,8 @@
 import ResponsiveWrapper from '@/components/ResponsiveWrapper'
 import UniversalLayout from '@/components/UniversalLayout'
 import dynamic from 'next/dynamic'
-import { useActiveAccount } from "thirdweb/react"
-import { erc20Abi, isAddress } from 'viem'
+import { useActiveAccount, useReadContract, useSendTransaction } from "thirdweb/react"
+import { isAddress } from 'viem'
 import { useState, useEffect } from 'react'
 import { parseEther } from 'viem'
 import { useNotifications } from '@/context/Notifications'
@@ -24,13 +24,19 @@ function SendToken() {
 
   const { Add } = useNotifications()
 
-  const account = useActiveAccount(); const address = account?.address
-  const balanceData = null // Mock balance data
-  const estimateError = null // Mock estimate
-  const data = null
-  const isLoading = false
-  const txError = null
-  const txSuccess = false
+  const account = useActiveAccount()
+  const address = account?.address
+  const { mutate: sendTransaction, data, isPending: isLoading, error: txError } = useSendTransaction()
+  const txSuccess = !!data
+  
+  // Read token balance
+  const { data: balanceData } = useReadContract({
+    contract: tokenAddress ? { address: tokenAddress, abi: [] } : undefined,
+    method: 'balanceOf',
+    params: address ? [address] : undefined
+  })
+  
+  const estimateError = null // Will be handled by sendTransaction
 
   const handleSendTransation = () => {
     if (estimateError) {
@@ -39,8 +45,12 @@ function SendToken() {
       })
       return
     }
-    // writeContract disabled
-    console.log('Send transaction:', { tokenAddress, to, amount })
+    if (!tokenAddress || !to || !amount) return
+    
+    sendTransaction({
+      to: tokenAddress,
+      data: `0xa9059cbb${to.slice(2).padStart(64, '0')}${parseEther(amount).toString(16).padStart(64, '0')}`
+    })
   }
 
   const handleTokenAddressInput = (token: string) => {
@@ -56,17 +66,17 @@ function SendToken() {
   }
 
   useEffect(() => {
-    if (txSuccess) {
+    if (txSuccess && data) {
       Add(`Transaction successful`, {
         type: 'success',
-        href: chain?.blockExplorers?.default.url ? `${chain.blockExplorers.default.url}/tx/${data}` : undefined,
+        href: `https://etherscan.io/tx/${data.transactionHash}`
       })
     } else if (txError) {
-      Add(`Transaction failed: ${txError.cause}`, {
+      Add(`Transaction failed: ${txError.message}`, {
         type: 'error',
       })
     }
-  }, [txSuccess, txError])
+  }, [txSuccess, txError, data])
 
   return (
     <div className='flex-column align-center '>
@@ -131,7 +141,7 @@ function SendToken() {
               className='btn btn-wide w-[100%] '
               onClick={handleSendTransation}
               disabled={!isValidToAddress || !address || Boolean(estimateError) || amount === ''}>
-              {isLoading ? <span className='loading loading-dots loading-sm'></span> : 'Send ethers'}
+              {isLoading ? <span className='loading loading-dots loading-sm'></span> : 'Send Tokens'}
             </button>
           </div>
         </div>
