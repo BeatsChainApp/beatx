@@ -1,7 +1,7 @@
 'use client'
 
 import { useMockAuth as useUnifiedAuth } from '@/context/MockAuthContext'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 
 export default function MockWalletSignIn() {
   const { user, updateProfile } = useUnifiedAuth()

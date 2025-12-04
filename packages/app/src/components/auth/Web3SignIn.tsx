@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useSIWE } from '@/context/SIWEContext'
 
 export default function Web3SignIn() {

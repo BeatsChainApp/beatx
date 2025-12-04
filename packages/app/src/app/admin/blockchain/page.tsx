@@ -3,7 +3,7 @@
 import ResponsiveWrapper from '@/components/ResponsiveWrapper'
 import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useBeatNFT } from '@/hooks/useBeatNFT.enhanced'
 
 export default function AdminBlockchainPage() {

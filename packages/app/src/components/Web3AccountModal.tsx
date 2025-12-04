@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 
 interface Web3AccountModalProps {

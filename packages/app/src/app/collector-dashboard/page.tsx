@@ -5,7 +5,7 @@ import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { useBeatNFT } from '@/hooks/useBeatNFT.enhanced'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import DashboardLayout from '@/components/DashboardLayout'
 import TransactionHistory from '@/components/TransactionHistory'
 import { LinkComponent } from '@/components/LinkComponent'
@@ -14,7 +14,7 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 function CollectorDashboardContent() {
   const { user } = useUnifiedAuth()
   const { balance } = useBeatNFT()
-  const { address } = useAccount()
+  const account = useActiveAccount(); const address = account?.address
   const [collection, setCollection] = useState<any[]>([])
   const [portfolioValue, setPortfolioValue] = useState(0)
   const [stats, setStats] = useState({

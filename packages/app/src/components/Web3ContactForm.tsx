@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react'
 import { useContactFormStyle } from '@/hooks/useContactFormStyle'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 
 interface Web3ContactFormProps {
   onSubmitSuccess?: () => void
@@ -10,7 +10,7 @@ interface Web3ContactFormProps {
 
 export default function Web3ContactForm({ onSubmitSuccess }: Web3ContactFormProps) {
   const { style, loading } = useContactFormStyle()
-  const { address } = useAccount()
+  const account = useActiveAccount(); const address = account?.address
   
   const [formState, setFormState] = useState<Record<string, string>>({})
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')

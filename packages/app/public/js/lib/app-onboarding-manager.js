@@ -1,5 +1,5 @@
 /**
- * App Onboarding Manager - Fixed Version
+ * App Onboarding Manager - Fixed Version Based on Extension Pattern
  */
 
 class AppOnboardingManager {
@@ -14,6 +14,19 @@ class AppOnboardingManager {
         this.dataPipeline = null;
     }
 
+    async checkOnboardingStatus() {
+        try {
+            if (typeof window === 'undefined' || !window.localStorage) {
+                return false;
+            }
+            const completed = localStorage.getItem('beatx_onboarding_completed');
+            return completed === 'true';
+        } catch (error) {
+            console.warn('Failed to check onboarding status:', error);
+            return false;
+        }
+    }
+
     async initialize() {
         try {
             const completed = await this.checkOnboardingStatus();
@@ -24,19 +37,6 @@ class AppOnboardingManager {
             return true;
         } catch (error) {
             console.warn('AppOnboardingManager initialization failed:', error);
-            return false;
-        }
-    }
-
-    async checkOnboardingStatus() {
-        try {
-            if (typeof window === 'undefined' || !window.localStorage) {
-                return false;
-            }
-            const completed = localStorage.getItem('beatx_onboarding_completed');
-            return completed === 'true';
-        } catch (error) {
-            console.warn('Failed to check onboarding status:', error);
             return false;
         }
     }
@@ -89,18 +89,112 @@ class AppOnboardingManager {
         };
     }
 
+    async startOnboarding() {
+        try {
+            // Record onboarding start
+            await this.recordEvent('onboarding_started', {
+                timestamp: Date.now(),
+                userAgent: navigator.userAgent,
+                referrer: document.referrer
+            });
+
+            // Trigger n8n workflow
+            await this.triggerN8NWorkflow('userSignup', {
+                event: 'onboarding_started',
+                timestamp: Date.now()
+            });
+
+            this.dispatchOnboardingEvent('start');
+        } catch (error) {
+            console.warn('Failed to start onboarding:', error);
+        }
+    }
+
+    async recordEvent(eventType, eventData) {
+        try {
+            const event = {
+                type: eventType,
+                data: eventData,
+                timestamp: Date.now(),
+                sessionId: this.getSessionId()
+            };
+
+            if (this.dataPipeline && this.dataPipeline.events) {
+                this.dataPipeline.events.push(event);
+            }
+
+            // Send to real-time analytics
+            if (window.gtag) {
+                window.gtag('event', eventType, {
+                    custom_parameter: JSON.stringify(eventData),
+                    platform: 'web_app'
+                });
+            }
+        } catch (error) {
+            console.warn('Failed to record event:', error);
+        }
+    }
+
+    async triggerN8NWorkflow(webhookType, data) {
+        const webhookUrl = this.n8nWebhooks[webhookType];
+        if (!webhookUrl) return;
+
+        try {
+            await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...data,
+                    source: 'beatx_app_onboarding',
+                    timestamp: Date.now()
+                })
+            });
+        } catch (error) {
+            console.warn(`n8n webhook ${webhookType} failed:`, error);
+        }
+    }
+
+    getSessionId() {
+        try {
+            let sessionId = sessionStorage.getItem('beatx_session_id');
+            if (!sessionId) {
+                sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                sessionStorage.setItem('beatx_session_id', sessionId);
+            }
+            return sessionId;
+        } catch (error) {
+            return 'fallback_session_' + Date.now();
+        }
+    }
+
+    dispatchOnboardingEvent(type, data = {}) {
+        try {
+            const event = new CustomEvent('app-onboarding', {
+                detail: { type, data, manager: this }
+            });
+            window.dispatchEvent(event);
+        } catch (error) {
+            console.warn('Failed to dispatch onboarding event:', error);
+        }
+    }
+
     reset() {
-        localStorage.removeItem('beatx_onboarding_completed');
-        localStorage.removeItem('beatx_onboarding_choices');
-        localStorage.removeItem('beatx_user_preferences');
-        localStorage.removeItem('beatx_ai_recommendations');
-        localStorage.removeItem('beatx_onboarding_pipeline');
-        this.currentStep = 0;
-        this.userChoices = {};
-        this.dataPipeline = null;
+        try {
+            localStorage.removeItem('beatx_onboarding_completed');
+            localStorage.removeItem('beatx_onboarding_choices');
+            localStorage.removeItem('beatx_user_preferences');
+            localStorage.removeItem('beatx_ai_recommendations');
+            localStorage.removeItem('beatx_onboarding_pipeline');
+            this.currentStep = 0;
+            this.userChoices = {};
+            this.dataPipeline = null;
+        } catch (error) {
+            console.warn('Failed to reset onboarding:', error);
+        }
     }
 }
 
+// Safe initialization
 if (typeof window !== 'undefined') {
     window.AppOnboardingManager = AppOnboardingManager;
     console.log('✅ AppOnboardingManager constructor verified');

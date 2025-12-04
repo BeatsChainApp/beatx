@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { useAccount, useSignMessage } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { SiweMessage } from 'siwe'
 
 // Super admin wallets

@@ -7,7 +7,7 @@ import { useUnifiedProfile } from '@/hooks/useUnifiedProfile'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { BackToDashboard } from '@/components/BackToDashboard'
 import { toast } from 'react-toastify'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useRouter } from 'next/navigation'
 
 export default function ProfilePage() {

@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { useAccount, useSignMessage, useDisconnect } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 
 interface SIWEUser {
   address: string

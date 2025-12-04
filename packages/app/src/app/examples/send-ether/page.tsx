@@ -2,7 +2,7 @@
 import ResponsiveWrapper from '@/components/ResponsiveWrapper'
 import UniversalLayout from '@/components/UniversalLayout'
 import dynamic from 'next/dynamic'
-import { useAccount, useBalance, useEstimateGas, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useState, useEffect } from 'react'
 import { parseEther, isAddress } from 'viem'
 import { useNotifications } from '@/context/Notifications'

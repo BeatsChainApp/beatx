@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useSIWE } from './SIWEContext'
 import { useWeb3Profile } from '@/hooks/useWeb3Profile'
 

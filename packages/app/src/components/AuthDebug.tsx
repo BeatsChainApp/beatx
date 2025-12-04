@@ -1,7 +1,7 @@
 'use client'
 
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 
 export default function AuthDebug() {
   const { user, isAuthenticated, hasRole, hasAnyRole } = useUnifiedAuth()

@@ -2,7 +2,7 @@
 
 import React, { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { useUnifiedAuth } from './UnifiedAuthContext'
@@ -61,7 +61,7 @@ export const useNotifications = () => {
 
 export function NotificationProvider(props: PropsWithChildren) {
   const [notifications, setNotifications] = useState<Notification[]>([])
-  const { address } = useAccount()
+  const account = useActiveAccount(); const address = account?.address
   const { user } = useUnifiedAuth()
 
   // Calculate unread count

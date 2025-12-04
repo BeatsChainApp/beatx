@@ -3,7 +3,7 @@
 import React, { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import { Notification } from '@/utils/types'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import dayjs from 'dayjs'
 import 'react-toastify/dist/ReactToastify.min.css'
 import '@/assets/notifications.css'
@@ -36,7 +36,7 @@ export const useNotifications = () => {
 
 export function NotificationProvider(props: PropsWithChildren) {
   const [notifications, setNotifications] = useState<Notification[]>([])
-  const { address } = useAccount()
+  const account = useActiveAccount(); const address = account?.address
 
   useEffect(() => {
     if (typeof window !== 'undefined') {

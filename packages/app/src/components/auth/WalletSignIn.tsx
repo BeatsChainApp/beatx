@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useSIWE } from '@/hooks/useSIWE'
 
 export function WalletSignIn() {

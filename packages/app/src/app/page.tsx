@@ -4,7 +4,7 @@ import ResponsiveWrapper from '@/components/ResponsiveWrapper'
 import UniversalLayout from '@/components/UniversalLayout'
 import { useState, useEffect } from 'react'
 import { usePlatformStats } from '@/hooks/usePlatformStats'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { client } from '@/lib/sanity'
 import CmsHeroSection from '@/components/HeroSection'
 import RecommendedBeats from '@/components/RecommendedBeats'

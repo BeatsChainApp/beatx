@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from 'thirdweb/react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import SimplifiedAuth from './SimplifiedAuth'
 
@@ -11,7 +11,9 @@ interface SimplifiedWalletConnectProps {
 
 export default function SimplifiedWalletConnect({ className = '' }: SimplifiedWalletConnectProps) {
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const { isConnected, address } = useAccount()
+  const account = useActiveAccount()
+  const isConnected = !!account
+  const address = account?.address
   const { user, isAuthenticated, hasRole } = useUnifiedAuth()
 
   const handleSignIn = () => {

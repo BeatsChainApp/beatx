@@ -6,7 +6,7 @@ import { useState } from 'react'
 import DashboardLayout from '@/components/DashboardLayout'
 import TransactionHistory from '@/components/TransactionHistory'
 import BuyBeatNFTModal from '@/components/BuyBeatNFTModal'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { useBeatNFT } from '@/hooks/useBeatNFT.enhanced'
 
 export default function BlockchainDashboardPage() {

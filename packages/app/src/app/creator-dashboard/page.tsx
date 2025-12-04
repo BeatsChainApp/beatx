@@ -12,7 +12,7 @@ import CollaborationHub from '@/components/CollaborationHub'
 import DashboardLayout from '@/components/DashboardLayout'
 import TransactionHistory from '@/components/TransactionHistory'
 import { useBeatNFT } from '@/hooks/useBeatNFT.enhanced'
-import { useAccount } from 'wagmi'
+import { useActiveAccount } from "thirdweb/react"
 import { toast } from 'react-toastify'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
@@ -20,7 +20,7 @@ function CreatorDashboardContent() {
   const { creator, licenses, loading, isCreator, getCreatorStats } = useContentCreator()
   const { user } = useWeb3Auth()
   const { balance } = useBeatNFT()
-  const { address } = useAccount()
+  const account = useActiveAccount(); const address = account?.address
   const [stats, setStats] = useState<any>(null)
   const [showBlockchain, setShowBlockchain] = useState(false)
   
