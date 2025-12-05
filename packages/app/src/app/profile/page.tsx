@@ -58,18 +58,20 @@ export default function ProfilePage() {
   }
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Initialize form data when profile loads
+  // Initialize form data when profile loads - PRIORITY: Email-based profiles
   React.useEffect(() => {
-    if (profile) {
-      const nameParts = profile.displayName?.split(' ') || ['', '']
+    const profileData = profile || user
+    if (profileData) {
+      const displayName = profileData.display_name || profileData.displayName || ''
+      const nameParts = displayName.split(' ') || ['', '']
       setFormData({
         firstName: nameParts[0] || '',
         lastName: nameParts.slice(1).join(' ') || '',
-        email: profile.email || '',
-        bio: profile.bio || ''
+        email: profileData.email || user?.email || '',
+        bio: profileData.bio || ''
       })
     }
-  }, [profile])
+  }, [profile, user])
 
   // PRIORITY: Check email authentication first
   if (!user) {
@@ -115,7 +117,7 @@ export default function ProfilePage() {
       <div className="p-8 text-center">
         <div className="text-6xl mb-4 mobile-heading">⏳</div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2 mobile-heading">Loading Profile...</h2>
-        <p className="text-gray-600">Fetching your profile data...</p>
+        <p className="text-gray-600">Loading email-based profile data...</p>
       </div>
     )
   }

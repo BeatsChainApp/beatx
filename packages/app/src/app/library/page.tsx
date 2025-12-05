@@ -20,14 +20,22 @@ function LibraryContent() {
 
   useEffect(() => {
     const loadPurchasedBeats = async () => {
-      if (!user?.address) {
+      // PRIORITY: Use email as primary identifier, wallet as fallback
+      const userIdentifier = user?.email || user?.address
+      if (!userIdentifier) {
         setLoading(false)
         return
       }
 
       try {
-        const purchaseKey = `purchases_${user.address}`
-        const stored = localStorage.getItem(purchaseKey)
+        // Try email-based storage first, then wallet-based
+        const emailKey = `purchases_email_${user.email}`
+        const walletKey = `purchases_${user.address}`
+        
+        let stored = user?.email ? localStorage.getItem(emailKey) : null
+        if (!stored && user?.address) {
+          stored = localStorage.getItem(walletKey)
+        }
         
         if (stored) {
           const purchases = JSON.parse(stored)
@@ -44,7 +52,7 @@ function LibraryContent() {
     }
 
     loadPurchasedBeats()
-  }, [user?.address])
+  }, [user?.email, user?.address])
 
   return (
     <div>
