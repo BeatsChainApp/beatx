@@ -62,7 +62,11 @@ export default function EnhancedBeatUpload() {
     walletAdapter = { getAddress: () => null }
   }
   
-  const user = authHook?.user || { address: walletAdapter?.getAddress?.() }
+  // PRIORITY: Support email-authenticated users without wallet
+  const user = authHook?.user || { 
+    address: walletAdapter?.getAddress?.() || `email:${Date.now()}`, // Fallback for email-only users
+    email: typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('google_auth_result') || '{}')?.email : null
+  }
   const uploadBeatAudio = uploadHook?.uploadBeatAudio || (() => Promise.reject('Upload not available'))
   const canUpload = nftHook?.canUpload || false
   const success = toastHook?.success || ((msg: string) => console.log('Success:', msg?.replace(/[\r\n]/g, ' ')))
@@ -373,13 +377,14 @@ Generated: ${new Date().toLocaleString()}`
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          producer: user?.address,
+          producer: user?.address || user?.email || 'anonymous', // Support email-only users
           metadataUri,
           price: formData.price,
           genre: formData.genre,
           bpm: formData.bpm,
           key: formData.key,
-          creditsToUse: 1
+          creditsToUse: 1,
+          authMethod: user?.email ? 'email' : 'wallet' // Track auth method
         })
       })
 

@@ -79,43 +79,27 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
       return
     }
     
-    // Prevent execution if hooks failed to initialize
-    if (!address) {
+    // PRIORITY: Check for Google auth first (EMAIL OVER WALLET)
+    const hasGoogleAuth = localStorage.getItem('google_auth_result')
+    
+    // If no Google auth and no wallet, exit
+    if (!hasGoogleAuth && !address) {
       setUser(null)
       setLoading(false)
       return
     }
     
-    // Prevent loops by checking if user data actually changed
-    const currentUserKey = `${address}-${web3Profile?.role}`
-    const lastUserKey = user ? `${user.address}-${user.role}` : null
-    
-    if (currentUserKey === lastUserKey && user) {
-      setLoading(false)
-      return // No change, skip rebuild
-    }
-    
     setLoading(true)
     
     try {
-      // Check for Google auth even without wallet
-      const hasGoogleAuth = localStorage.getItem('google_auth_result')
-      
-      // No wallet connected and no Google auth
-      if ((!address || !isConnected) && !hasGoogleAuth) {
-        setUser(null)
-        setLoading(false)
-        return
-      }
-      
-      // Handle Google-only auth (no wallet)
-      if (!address && hasGoogleAuth) {
+      // PRIORITY 1: Handle Google-only auth (EMAIL FIRST)
+      if (hasGoogleAuth) {
         try {
           const googleData = JSON.parse(hasGoogleAuth)
           const role = ADMIN_EMAILS.includes(googleData.email?.toLowerCase()) ? 'super_admin' : 'user'
           
           const googleUser: UnifiedUser = {
-            address: `google:${googleData.sub}`,
+            address: address || `google:${googleData.sub}`,
             displayName: googleData.name,
             email: googleData.email,
             role,
@@ -131,6 +115,13 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
         } catch (error) {
           console.error('Error processing Google auth:', error)
         }
+      }
+      
+      // PRIORITY 2: If no Google auth but wallet connected, continue with wallet auth
+      if (!address) {
+        setUser(null)
+        setLoading(false)
+        return
       }
 
       // Determine role with super admin priority
@@ -365,12 +356,12 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // Check if user is authenticated via Google or Web3 - only after mount
+  // Check if user is authenticated via Google or Web3 - PRIORITIZE EMAIL
   const hasGoogleAuth = mounted && typeof window !== 'undefined' && localStorage.getItem('google_auth_result')
   
   const isAuthenticated = mounted && Boolean(
-    (isConnected && address && (siweAuth || (address && SUPER_ADMIN_WALLETS.includes(address.toLowerCase())))) || // Web3 auth
-    hasGoogleAuth // Google auth
+    hasGoogleAuth || // PRIORITY: Google auth (EMAIL)
+    (isConnected && address && (siweAuth || (address && SUPER_ADMIN_WALLETS.includes(address.toLowerCase())))) // Fallback: Web3 auth
   )
 
   const value: UnifiedAuthContextType = {

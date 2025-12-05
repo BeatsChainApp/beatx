@@ -71,14 +71,40 @@ export default function ProfilePage() {
     }
   }, [profile])
 
+  // PRIORITY: Check email authentication first
+  if (!user) {
+    return (
+      <div className="p-8 text-center">
+        <div className="text-6xl mb-4 mobile-heading">📧</div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2 mobile-heading">Email Authentication Required</h2>
+        <p className="text-gray-600">Please sign in with your email to access your profile.</p>
+        <div className="mt-4 space-y-4">
+          <button className="bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors">
+            🔐 Sign in with Google
+          </button>
+          <div className="text-sm text-gray-500">or</div>
+          <ConnectButton client={client} />
+          <p className="text-xs text-gray-400">Wallet connection is optional</p>
+        </div>
+      </div>
+    )
+  }
+  
+  // SECONDARY: Suggest wallet connection if not connected (but don't block)
   if (!isConnected) {
     return (
       <div className="p-8 text-center">
-        <div className="text-6xl mb-4 mobile-heading">🔗</div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2 mobile-heading">Connect Your Wallet</h2>
-        <p className="text-gray-600">Please connect your wallet to access your profile.</p>
-        <div className="mt-4">
+        <div className="text-6xl mb-4 mobile-heading">👛</div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2 mobile-heading">Wallet Connection Recommended</h2>
+        <p className="text-gray-600">Connect your wallet for blockchain features and NFT management.</p>
+        <div className="mt-4 space-y-4">
           <ConnectButton client={client} />
+          <button 
+            onClick={() => window.location.reload()}
+            className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors text-sm"
+          >
+            Continue without wallet
+          </button>
         </div>
       </div>
     )

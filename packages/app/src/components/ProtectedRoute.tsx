@@ -92,22 +92,29 @@ export default function ProtectedRoute({
     )
   }
 
-  // Check authentication first - prioritize social login
+  // PRIORITY: Check email authentication first
   if (!isAuthenticated) {
     return fallback || (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center p-8 max-w-md">
-          <div className="text-6xl mb-4">🔒</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Sign In Required</h2>
-          <p className="text-gray-600 mb-6">Connect with Google or your preferred wallet to access this area.</p>
-          <ConnectButton client={client} />
+          <div className="text-6xl mb-4">📧</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Email Authentication Required</h2>
+          <p className="text-gray-600 mb-6">Sign in with your email to access this area.</p>
+          <div className="space-y-4">
+            <button className="w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors">
+              🔐 Sign in with Google
+            </button>
+            <div className="text-sm text-gray-500">or</div>
+            <ConnectButton client={client} />
+            <p className="text-xs text-gray-400">Wallet connection is optional</p>
+          </div>
         </div>
       </div>
     )
   }
 
-  // Optional wallet requirement (only if explicitly needed)
-  if (requireWallet && !wallet.isConnected) {
+  // SECONDARY: Optional wallet requirement (only if explicitly needed AND authenticated)
+  if (requireWallet && isAuthenticated && !wallet.isConnected) {
     return fallback || (
       <div>
         {/* Hero Section */}
@@ -123,16 +130,22 @@ export default function ProtectedRoute({
           <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '4rem 2rem', position: 'relative', zIndex: 1, textAlign: 'center' }}>
             <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔗</div>
             <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-              Connect Your Wallet
+              Wallet Connection Recommended
             </h1>
             <p style={{ fontSize: '1.25rem', opacity: 0.9, marginBottom: '2rem' }}>
-              Access Web3 features by connecting your wallet to BeatsChain
+              Connect your wallet for blockchain features like NFT minting
             </p>
             <div style={{ background: 'rgba(255,255,255,0.1)', padding: '1.5rem', borderRadius: '1rem', marginBottom: '2rem', maxWidth: '500px', margin: '0 auto 2rem' }}>
-              <p style={{ fontSize: '1rem' }}>Your wallet is your key to the decentralized music marketplace</p>
+              <p style={{ fontSize: '1rem' }}>Your wallet enables Web3 features in the music marketplace</p>
             </div>
-            <div style={{ marginBottom: '1rem' }}>
+            <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <ConnectButton client={client} />
+              <button 
+                onClick={() => window.location.reload()}
+                style={{ background: 'rgba(255,255,255,0.2)', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.5rem', border: 'none', cursor: 'pointer' }}
+              >
+                Continue without wallet
+              </button>
             </div>
           </div>
         </div>

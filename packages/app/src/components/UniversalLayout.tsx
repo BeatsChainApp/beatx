@@ -39,6 +39,28 @@ export default function UniversalLayout({
       </div>
     )
   }
+  
+  // PRIORITY: Check email authentication first
+  if (requireAuth && !auth.isAuthenticated) {
+    return (
+      <div className={containerClass}>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center p-8">
+            <div className="text-6xl mb-4">📧</div>
+            <h2 className="text-2xl font-bold mb-2">Email Authentication Required</h2>
+            <p className="text-gray-600 mb-6">Please sign in with your email to continue</p>
+            <div className="space-y-4">
+              <button className="w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors">
+                🔐 Sign in with Google
+              </button>
+              <div className="text-sm text-gray-500">or</div>
+              <div>Wallet connection available as backup</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   // Check role permissions
   if (allowedRoles && !auth.hasAnyRole(allowedRoles)) {
@@ -70,9 +92,9 @@ export default function UniversalLayout({
     )
   }
 
-  // Use SessionGate for auth/wallet requirements
+  // Use SessionGate for auth/wallet requirements (email prioritized)
   return (
-    <SessionGate requireWallet={requireWallet}>
+    <SessionGate requireWallet={requireWallet && auth.isAuthenticated}>
       <div className={containerClass}>
         {children}
         <AuthDebug />

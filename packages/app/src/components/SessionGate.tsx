@@ -19,7 +19,7 @@ interface SessionGateProps {
 
 export default function SessionGate({ 
   children, 
-  requireWallet = true, 
+  requireWallet = false, // CHANGED: Default to false - email auth prioritized
   fallback 
 }: SessionGateProps) {
   const [walletAdapter, setWalletAdapter] = useState<WalletAdapter | null>(null)
@@ -53,29 +53,37 @@ export default function SessionGate({
     )
   }
 
-  // Check wallet connection if required (prioritize wallet over auth for upload)
-  if (requireWallet && !auth.wallet.isConnected) {
+  // PRIORITY: Check email authentication first
+  if (!auth.isAuthenticated) {
     return fallback || (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
         <div className="text-center max-w-md mx-auto p-8">
-          <div className="text-6xl mb-6">👛</div>
-          <h2 className="text-2xl font-bold mb-4">Wallet Connection Required</h2>
-          <p className="text-gray-600 mb-6">Connect your wallet to upload beats</p>
-          <ConnectButton client={client} />
+          <div className="text-6xl mb-6">📧</div>
+          <h2 className="text-2xl font-bold mb-4">Email Authentication Required</h2>
+          <p className="text-gray-600 mb-6">Please sign in with your email to continue</p>
+          <div className="space-y-4">
+            <button className="w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors">
+              🔐 Sign in with Google
+            </button>
+            <div className="text-sm text-gray-500">or</div>
+            <ConnectButton client={client} />
+            <p className="text-xs text-gray-400">Wallet connection is optional</p>
+          </div>
         </div>
       </div>
     )
   }
 
-  // Check authentication for non-wallet features
-  if (!requireWallet && !auth.isAuthenticated) {
+  // SECONDARY: Check wallet connection only if specifically required AND user is authenticated
+  if (requireWallet && auth.isAuthenticated && !auth.wallet.isConnected) {
     return fallback || (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50">
         <div className="text-center max-w-md mx-auto p-8">
-          <div className="text-6xl mb-6">🔐</div>
-          <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
-          <p className="text-gray-600 mb-6">Please sign in to continue</p>
+          <div className="text-6xl mb-6">👛</div>
+          <h2 className="text-2xl font-bold mb-4">Wallet Connection Required</h2>
+          <p className="text-gray-600 mb-6">Connect your wallet for blockchain features</p>
           <ConnectButton client={client} />
+          <p className="text-xs text-gray-400 mt-4">Required for uploading and minting NFTs</p>
         </div>
       </div>
     )

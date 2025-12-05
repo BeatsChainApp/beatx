@@ -59,7 +59,15 @@ export function useUnifiedProfile(): UseUnifiedProfileReturn {
   }
 
   const authenticateUser = useCallback(async () => {
-    if (!isAuthenticated || !user) {
+    // PRIORITY: Allow authentication with email even without wallet
+    if (!isAuthenticated) {
+      setProfile(null)
+      setLoading(false)
+      return
+    }
+    
+    // Continue if user exists (email auth) even without wallet
+    if (!user) {
       setProfile(null)
       setLoading(false)
       return
@@ -82,14 +90,14 @@ export function useUnifiedProfile(): UseUnifiedProfileReturn {
 
       const userData = {
         email: user.email || googleData?.email,
-        wallet_address: address,
+        wallet_address: address || null, // Allow null wallet
         google_id: googleData?.sub,
         display_name: user.displayName || googleData?.name,
         profile_image: user.profileImage || googleData?.picture,
         verified_email: googleData?.verified_email || user.isVerified,
         app_role: user.role?.toUpperCase(),
         platform: 'app',
-        auth_method: googleData ? 'google' : 'wallet'
+        auth_method: googleData ? 'google' : (address ? 'wallet' : 'email') // Support email-only auth
       }
 
       const response = await fetch(`${getMcpUrl()}/api/profiles/authenticate`, {

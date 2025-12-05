@@ -238,7 +238,7 @@ function LibraryContent() {
 
 function LibraryPage() {
   return (
-    <ProtectedRoute requireWallet={true}>
+    <ProtectedRoute requireWallet={false}>
       <LibraryContent />
     </ProtectedRoute>
   )
