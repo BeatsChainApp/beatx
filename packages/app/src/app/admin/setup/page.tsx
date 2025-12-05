@@ -5,8 +5,9 @@ import UniversalLayout from '@/components/UniversalLayout'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
-import { ConnectButton } from 'thirdweb/react'
+import { ConnectButton, useConnect } from 'thirdweb/react'
 import { createThirdwebClient } from 'thirdweb'
+import { inAppWallet } from 'thirdweb/wallets'
 
 const client = createThirdwebClient({
   clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
@@ -27,19 +28,7 @@ function AdminSetupPageContent() {
   const { user, isAuthenticated } = useUnifiedAuth()
   const router = useRouter()
   
-  const handleGoogleSignIn = async () => {
-    setLoading(true)
-    try {
-      const { googleAuth } = await import('@/lib/googleAuth')
-      await googleAuth.initialize()
-      await googleAuth.signIn()
-      window.location.reload()
-    } catch (error) {
-      console.error('Google sign in failed:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  // Thirdweb handles authentication internally
   
   // If already authenticated as admin, redirect
   useEffect(() => {
@@ -59,23 +48,17 @@ function AdminSetupPageContent() {
           </div>
           
           <div className="space-y-4">
-            <button 
-              onClick={async () => {
-                try {
-                  const { googleAuth } = await import('@/lib/googleAuth')
-                  await googleAuth.initialize()
-                  await googleAuth.signIn()
-                  window.location.reload()
-                } catch (error) {
-                  console.error('Google sign in failed:', error)
-                }
+            <ConnectButton 
+              client={client}
+              wallets={[inAppWallet({ auth: { providers: ["google", "email"] } })]}
+              connectButton={{
+                label: "🔐 Sign in with Google or Email",
+                className: "w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors"
               }}
-              className="w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors"
-            >
-              🔐 Sign in with Google
-            </button>
-            <div className="text-sm text-gray-500">or</div>
-            <ConnectButton client={client} />
+            />
+            <div className="text-xs text-gray-500 text-center">
+              Uses Thirdweb embedded wallet with Google OAuth
+            </div>
           </div>
           
           <div className="mt-6 p-4 bg-blue-50 rounded-lg">
