@@ -72,7 +72,7 @@ function UploadFallback() {
 
 export default function UploadPage() {
   return (
-    <UniversalLayout requireAuth={true} requireWallet={false} allowedRoles={["producer","admin","super_admin"]}>
+    <UniversalLayout requireAuth={true} allowedRoles={["producer","admin","super_admin"]}>
       <ResponsiveWrapper pageType="upload">
         <UploadPageContent />
       </ResponsiveWrapper>
@@ -83,9 +83,7 @@ export default function UploadPage() {
 function UploadPageContent() {
   return (
     <Suspense fallback={<LoadingFallback />}>
-      <SessionGate requireWallet={false} fallback={<UploadFallback />}>
-        <EnhancedBeatUpload />
-      </SessionGate>
+      <EnhancedBeatUpload />
     </Suspense>
   )
 }
