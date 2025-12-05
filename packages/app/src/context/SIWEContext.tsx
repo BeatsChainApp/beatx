@@ -76,9 +76,11 @@ export function SIWEProvider({ children }: { children: ReactNode }) {
         nonce
       })
 
-      // Sign message
-      const signature = await signMessageAsync({
-        message: message.prepareMessage()
+      // Sign message using thirdweb utils
+      const { signMessage } = await import('thirdweb/utils')
+      const signature = await signMessage({
+        message: message.prepareMessage(),
+        account
       })
 
       try {
@@ -175,7 +177,6 @@ export function SIWEProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     setUser(null);
-    disconnect();
     
     // Clear stored authentication
     if (typeof window !== 'undefined') {

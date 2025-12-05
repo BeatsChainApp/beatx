@@ -59,16 +59,34 @@ function AdminSetupPageContent() {
           </div>
           
           <div className="space-y-4">
+            <button 
+              onClick={async () => {
+                try {
+                  const { googleAuth } = await import('@/lib/googleAuth')
+                  await googleAuth.initialize()
+                  await googleAuth.signIn()
+                  window.location.reload()
+                } catch (error) {
+                  console.error('Google sign in failed:', error)
+                }
+              }}
+              className="w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors"
+            >
+              🔐 Sign in with Google
+            </button>
+            <div className="text-sm text-gray-500">or</div>
             <ConnectButton client={client} />
           </div>
           
           <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <h3 className="font-medium text-blue-900 mb-2">Admin Emails:</h3>
-            <ul className="text-sm text-blue-700 space-y-1">
-              <li>• info@unamifoundation.org</li>
-              <li>• admin@beatschain.app</li>
-              <li>• support@beatschain.app</li>
-            </ul>
+            <h3 className="font-medium text-blue-900 mb-2">Admin Access:</h3>
+            <div className="text-sm text-blue-700 space-y-1">
+              <p><strong>Email:</strong> info@unamifoundation.org</p>
+              <p><strong>Wallet:</strong> 0xc84799a904eeb5c57abbbc40176e7db8be202c10</p>
+            </div>
+            <p className="text-xs text-blue-600 mt-2">
+              Use Google sign-in with admin email or connect super admin wallet
+            </p>
           </div>
         </div>
       </div>

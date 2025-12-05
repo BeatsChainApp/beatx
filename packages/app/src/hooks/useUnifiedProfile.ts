@@ -90,7 +90,7 @@ export function useUnifiedProfile(): UseUnifiedProfileReturn {
 
       const userData = {
         email: user.email || googleData?.email,
-        wallet_address: address || null, // Allow null wallet
+        wallet_address: address || null, // Allow null wallet for email-only auth
         google_id: googleData?.sub,
         display_name: user.displayName || googleData?.name,
         profile_image: user.profileImage || googleData?.picture,

@@ -79,7 +79,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
       return
     }
     
-    // PRIORITY: Check for Google auth first (EMAIL OVER WALLET)
+    // Check for Google auth first, then wallet
     const hasGoogleAuth = localStorage.getItem('google_auth_result')
     
     // If no Google auth and no wallet, exit
@@ -117,7 +117,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
         }
       }
       
-      // PRIORITY 2: If no Google auth but wallet connected, continue with wallet auth
+      // PRIORITY 2: Wallet auth if no Google auth
       if (!address) {
         setUser(null)
         setLoading(false)
@@ -356,7 +356,7 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // Check if user is authenticated via Google or Web3 - PRIORITIZE EMAIL
+  // Check if user is authenticated via Google or wallet
   const hasGoogleAuth = mounted && typeof window !== 'undefined' && localStorage.getItem('google_auth_result')
   
   const isAuthenticated = mounted && Boolean(
