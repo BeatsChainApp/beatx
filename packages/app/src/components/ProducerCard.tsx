@@ -22,16 +22,19 @@ export default function ProducerCard({ producer }: ProducerCardProps) {
         borderRadius: producerCardStyle.borderRadius,
         boxShadow: isHovered ? 'rgba(0, 0, 0, 0.15) 0px 4px 12px' : getShadowClass(producerCardStyle.shadowSize),
         border: `1px solid ${producerCardStyle.borderColor}`,
-        padding: '1.5rem',
+        padding: 'clamp(1rem, 3vw, 1.5rem)',
         cursor: 'pointer',
         transition: 'transform 0.2s, box-shadow 0.2s',
-        transform: isHovered ? 'translateY(-2px)' : 'translateY(0)'
+        transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
+        width: '100%',
+        maxWidth: '100%',
+        overflow: 'hidden'
       }}
       onMouseOver={() => setIsHovered(true)}
       onMouseOut={() => setIsHovered(false)}
     >
       {/* Producer Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.5rem, 2vw, 1rem)', marginBottom: '1rem', flexWrap: 'wrap' }}>
         <div style={{
           width: producerCardStyle.profileImageSize,
           height: producerCardStyle.profileImageSize,
@@ -66,7 +69,7 @@ export default function ProducerCard({ producer }: ProducerCardProps) {
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#1f2937', margin: 0 }}>
+            <h3 style={{ fontSize: 'clamp(1rem, 3vw, 1.25rem)', fontWeight: '600', color: '#1f2937', margin: 0, wordBreak: 'break-word' }}>
               {producer.name}
             </h3>
             {producer.verified && (
@@ -129,17 +132,18 @@ export default function ProducerCard({ producer }: ProducerCardProps) {
       )}
 
       {/* Actions */}
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', gap: 'clamp(0.25rem, 1vw, 0.5rem)', flexWrap: 'wrap' }}>
         <a href={`/producer/${producer.id}`} style={{
           flex: 1,
+          minWidth: '120px',
           background: producerCardStyle.accentColor,
           color: 'white',
-          padding: '0.75rem',
+          padding: 'clamp(0.5rem, 2vw, 0.75rem)',
           border: 'none',
           borderRadius: '0.375rem',
           fontWeight: '500',
           cursor: 'pointer',
-          fontSize: '0.875rem',
+          fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
           textDecoration: 'none',
           textAlign: 'center',
           display: 'block'
@@ -147,12 +151,13 @@ export default function ProducerCard({ producer }: ProducerCardProps) {
           View Beats
         </a>
         <button style={{
-          padding: '0.75rem',
+          padding: 'clamp(0.5rem, 2vw, 0.75rem)',
           background: 'white',
           border: '1px solid #d1d5db',
           borderRadius: '0.375rem',
           cursor: 'pointer',
-          fontSize: '0.875rem'
+          fontSize: 'clamp(0.75rem, 2vw, 0.875rem)',
+          minWidth: '80px'
         }}>
           Follow
         </button>

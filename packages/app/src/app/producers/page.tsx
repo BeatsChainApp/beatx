@@ -224,8 +224,8 @@ function ProducersPageContent() {
       ) : (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-          gap: '1.5rem',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(min(350px, 100%), 1fr))',
+          gap: 'clamp(1rem, 3vw, 1.5rem)',
           marginBottom: '2rem'
         }}>
           {currentProducers.map((producer, index) => (

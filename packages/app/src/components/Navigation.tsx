@@ -115,9 +115,9 @@ export default function Navigation() {
           
           {/* Mobile menu button */}
           <div className="sm:hidden flex items-center gap-2">
-            {/* Mobile user indicator */}
+            {/* Mobile user indicator - compact */}
             {user && (
-              <div className="text-xs bg-gray-100 px-2 py-1 rounded">
+              <div className="text-xs bg-gray-100 px-1 py-1 rounded max-w-16 truncate">
                 {user.role === 'super_admin' ? '👑' : 
                  user.role === 'admin' ? '🛡️' : 
                  user.role === 'producer' ? '🎵' : '👤'}
@@ -143,15 +143,16 @@ export default function Navigation() {
               <SimplifiedWalletConnect />
             </div>
             
-            {/* User info for mobile */}
+            {/* User info for mobile - compact */}
             {user && (
               <div className="px-4 py-2 bg-gray-50 text-sm">
                 <div className="flex items-center gap-2">
                   <span>{user.role === 'super_admin' ? '👑' : 
                          user.role === 'admin' ? '🛡️' : 
                          user.role === 'producer' ? '🎵' : '👤'}</span>
-                  <span className="font-medium">{user.displayName}</span>
-                  <span className="text-gray-500">({user.role})</span>
+                  <span className="font-medium truncate max-w-32">
+                    {user.displayName || `${user.address?.slice(0, 6)}...${user.address?.slice(-4)}`}
+                  </span>
                 </div>
               </div>
             )}
