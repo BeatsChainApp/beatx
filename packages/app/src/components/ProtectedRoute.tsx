@@ -101,24 +101,8 @@ export default function ProtectedRoute({
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Email Authentication Required</h2>
           <p className="text-gray-600 mb-6">Sign in with your email to access this area.</p>
           <div className="space-y-4">
-            <button 
-              onClick={async () => {
-                try {
-                  const { googleAuth } = await import('@/lib/googleAuth')
-                  await googleAuth.initialize()
-                  await googleAuth.signIn()
-                  window.location.reload()
-                } catch (error) {
-                  console.error('Google sign in failed:', error)
-                }
-              }}
-              className="w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors"
-            >
-              🔐 Sign in with Google
-            </button>
-            <div className="text-sm text-gray-500">or</div>
             <ConnectButton client={client} />
-            <p className="text-xs text-gray-400">Wallet connection is optional</p>
+            <p className="text-xs text-gray-400">Connect wallet to continue</p>
           </div>
         </div>
       </div>

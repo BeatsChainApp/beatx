@@ -5,6 +5,12 @@ import UniversalLayout from '@/components/UniversalLayout'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
 
 export default function AdminSetupPage() {
   return (
@@ -53,13 +59,7 @@ function AdminSetupPageContent() {
           </div>
           
           <div className="space-y-4">
-            <button
-              onClick={handleGoogleSignIn}
-              disabled={loading}
-              className="w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Signing in...' : '🔐 Sign in with Google'}
-            </button>
+            <ConnectButton client={client} />
           </div>
           
           <div className="mt-6 p-4 bg-blue-50 rounded-lg">
