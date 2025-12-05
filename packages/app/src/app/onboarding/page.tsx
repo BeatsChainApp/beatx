@@ -13,8 +13,8 @@ declare global {
 
 export default function OnboardingPage() {
   return (
-    <UniversalLayout requireAuth={true}>
-      <ResponsiveWrapper pageType="auth">
+    <UniversalLayout>
+      <ResponsiveWrapper pageType="public">
         <OnboardingPageContent />
       </ResponsiveWrapper>
     </UniversalLayout>
