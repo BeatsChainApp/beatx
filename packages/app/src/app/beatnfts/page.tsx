@@ -54,15 +54,10 @@ function MarketplacePageContent() {
         setLoading(true)
         setError(null)
         
-        // Use Livepeer-first provider for enhanced performance
-        try {
-          const fetchedBeats = await livepeerDataProvider.getFeaturedBeats()
-          console.log('Using Livepeer-first provider beats:', fetchedBeats.length)
-          setBeats(fetchedBeats)
-        } catch (beatsError) {
-          console.error('Error fetching beats:', beatsError)
-          setBeats([])
-        }
+        // WEB3 PIPELINE: Supabase + Livepeer + IPFS (PRIMARY)
+        const web3Beats = await livepeerDataProvider.getFeaturedBeats(50)
+        console.log('Web3 pipeline (Supabase+Livepeer+IPFS):', web3Beats.length)
+        setBeats(web3Beats)
         
         // Load hero data from Sanity
         if (client) {

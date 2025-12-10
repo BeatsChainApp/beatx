@@ -4,6 +4,12 @@ import { ReactNode } from 'react'
 import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import SessionGate from './SessionGate'
 import AuthDebug from './AuthDebug'
+import { ConnectButton } from 'thirdweb/react'
+import { createThirdwebClient } from 'thirdweb'
+
+const client = createThirdwebClient({
+  clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
+})
 
 interface UniversalLayoutProps {
   children: ReactNode
