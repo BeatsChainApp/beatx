@@ -1,17 +1,6 @@
 {
   "framework": "nextjs",
   "buildCommand": "npm run vercel-build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install",
-  "functions": {
-    "packages/app/src/app/api/**/*.ts": {
-      "maxDuration": 30
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/packages/app/src/app/api/$1"
-    }
-  ]
+  "outputDirectory": "packages/app/.next",
+  "installCommand": "npm install"
 }
