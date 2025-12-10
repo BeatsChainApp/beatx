@@ -2,7 +2,7 @@
 
 import ResponsiveWrapper from '@/components/ResponsiveWrapper'
 import UniversalLayout from '@/components/UniversalLayout'
-import BackToDashboard from '@/components/BackToDashboard'
+import { BackToDashboard } from '@/components/BackToDashboard'
 import React, { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { ConnectButton, useActiveAccount } from 'thirdweb/react'

@@ -56,6 +56,40 @@
         <button class="retry-btn" onclick="window.location.reload()">
             🔄 Try Again
         </button>
+        <button class="retry-btn" onclick="clearCacheAndReload()" style="margin-top: 1rem; background: rgba(255,255,255,0.1);">
+            🗑️ Clear Cache & Reload
+        </button>
+    </div>
+    
+    <script>
+        function clearCacheAndReload() {
+            // Clear service worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for(let registration of registrations) {
+                        registration.unregister()
+                    }
+                })
+            }
+            
+            // Clear all caches
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name)
+                    }
+                })
+            }
+            
+            // Clear localStorage
+            localStorage.clear()
+            
+            // Force reload
+            setTimeout(() => {
+                window.location.href = window.location.origin
+            }, 1000)
+        }
+    </script>
     </div>
 </body>
 </html>
