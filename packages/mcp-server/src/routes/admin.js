@@ -4,8 +4,16 @@ const router = express.Router();
 // Admin wallets and emails configuration
 const SUPER_ADMIN_WALLETS = [
   process.env.SUPER_ADMIN_WALLET?.toLowerCase(),
+  process.env.NEXT_PUBLIC_SUPER_ADMIN_WALLET?.toLowerCase(),
   '0xc84799a904eeb5c57abbbc40176e7db8be202c10', // Your wallet address
 ].filter(Boolean);
+
+// Debug admin configuration
+console.log('🔧 MCP SUPER_ADMIN_WALLETS:', SUPER_ADMIN_WALLETS);
+console.log('🔧 MCP ENV WALLETS:', {
+  SUPER_ADMIN_WALLET: process.env.SUPER_ADMIN_WALLET,
+  NEXT_PUBLIC_SUPER_ADMIN_WALLET: process.env.NEXT_PUBLIC_SUPER_ADMIN_WALLET
+});
 
 const ADMIN_EMAILS = [
   'info@unamifoundation.org',
@@ -247,9 +255,13 @@ router.post('/verify-wallet', async (req, res) => {
     
     // Check wallet address
     if (walletAddress && SUPER_ADMIN_WALLETS.includes(walletAddress.toLowerCase())) {
+      console.log('✅ MCP: SUPER ADMIN WALLET VERIFIED:', walletAddress.toLowerCase());
       verification.isAdmin = true;
       verification.isSuperAdmin = true;
       verification.adminLevel = 'super_admin';
+    } else if (walletAddress) {
+      console.log('❌ MCP: WALLET NOT IN ADMIN LIST:', walletAddress.toLowerCase());
+      console.log('🔍 MCP: CHECKING AGAINST:', SUPER_ADMIN_WALLETS);
     }
     
     // Check email

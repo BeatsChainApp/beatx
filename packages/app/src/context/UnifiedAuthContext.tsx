@@ -12,6 +12,12 @@ const SUPER_ADMIN_WALLETS = [
   '0xc84799a904eeb5c57abbbc40176e7db8be202c10', // Your wallet address
 ].filter(Boolean) as string[]
 
+// Debug wallet configuration
+if (typeof window !== 'undefined') {
+  console.log('🔧 SUPER_ADMIN_WALLETS:', SUPER_ADMIN_WALLETS)
+  console.log('🔧 ENV WALLET:', process.env.NEXT_PUBLIC_SUPER_ADMIN_WALLET)
+}
+
 const ADMIN_EMAILS = [
   'info@unamifoundation.org',
   'admin@beatschain.app',
@@ -129,7 +135,11 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
       
       // HIGHEST PRIORITY: Check if wallet is in super admin list
       if (address && SUPER_ADMIN_WALLETS.includes(address.toLowerCase())) {
+        console.log('✅ SUPER ADMIN WALLET DETECTED:', address)
         role = 'super_admin'
+      } else if (address) {
+        console.log('❌ WALLET NOT IN SUPER ADMIN LIST:', address.toLowerCase())
+        console.log('🔍 CHECKING AGAINST:', SUPER_ADMIN_WALLETS)
       }
       // Check if email is admin (from Google OAuth or Reown AppKit social login)
       else if (web3Profile?.email && ADMIN_EMAILS.some(email => email.toLowerCase() === web3Profile.email.toLowerCase())) {

@@ -8,6 +8,7 @@ import { useUnifiedAuth } from '@/context/UnifiedAuthContext'
 import { ConnectButton, useConnect } from 'thirdweb/react'
 import { createThirdwebClient } from 'thirdweb'
 import { inAppWallet } from 'thirdweb/wallets'
+import AdminWalletManager from '@/components/AdminWalletManager'
 
 const client = createThirdwebClient({
   clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || '53c6d7d26b476a57e09e7706265a60bb'
@@ -18,6 +19,7 @@ export default function AdminSetupPage() {
     <UniversalLayout>
       <ResponsiveWrapper pageType="admin">
         <AdminSetupPageContent />
+        <AdminWalletManager />
       </ResponsiveWrapper>
     </UniversalLayout>
   )
