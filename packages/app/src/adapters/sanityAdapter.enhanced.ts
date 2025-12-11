@@ -152,6 +152,11 @@ export class SanityAdapter implements DataAdapter {
 
   async getFeaturedBeats(limit: number = 6): Promise<Beat[]> {
     try {
+      if (!client) {
+        console.warn('Sanity client not available, returning demo beats')
+        return this.getDemoBeats(limit)
+      }
+
       // First try to get featured beats
       let beats = await client.fetch(`
         *[_type == "beat" && featured == true] {
@@ -170,10 +175,13 @@ export class SanityAdapter implements DataAdapter {
         `);
       }
       
-      // Ensure we have an array even if the query returns null
-      if (!beats) beats = [];
+      // If still no beats from Sanity, return demo beats
+      if (!beats || beats.length === 0) {
+        console.log('📦 No Sanity beats found, using demo beats')
+        return this.getDemoBeats(limit)
+      }
       
-      return beats.map((b: any) => ({
+      const processedBeats = beats.slice(0, limit).map((b: any) => ({
         id: b.slug?.current || b._id,
         title: b.title || 'Untitled Beat',
         description: b.description || '',
@@ -186,11 +194,75 @@ export class SanityAdapter implements DataAdapter {
         audioUrl: b.audioFile?.asset?.url || '',
         sanityAudioUrl: b.audioFile?.asset?.url || '',
         coverImageUrl: b.coverImage ? urlFor(b.coverImage).url() : undefined,
+        isActive: true,
+        createdAt: new Date(),
+        tags: [b.genre || 'Hip Hop'],
         isNFT: false
       }));
+      
+      console.log(`🎵 Sanity beats loaded: ${processedBeats.length}`)
+      return processedBeats
     } catch (error) {
       console.error('Error fetching featured beats from Sanity:', error);
-      return [];
+      return this.getDemoBeats(limit)
     }
+  }
+
+  private getDemoBeats(limit: number): Beat[] {
+    const demoBeats = [
+      {
+        id: 'demo-amapiano-1',
+        title: 'Amapiano Vibes',
+        description: 'Smooth amapiano beat with piano melodies',
+        producerId: 'demo-producer-1',
+        producerName: 'SA Producer',
+        genre: 'Amapiano',
+        bpm: 112,
+        key: 'C',
+        price: 0.05,
+        audioUrl: '',
+        coverImageUrl: undefined,
+        isActive: true,
+        createdAt: new Date(),
+        tags: ['Amapiano', 'Piano'],
+        isNFT: false
+      },
+      {
+        id: 'demo-afrobeats-1',
+        title: 'Afrobeats Fire',
+        description: 'Energetic afrobeats rhythm',
+        producerId: 'demo-producer-2',
+        producerName: 'Afro Beats Maker',
+        genre: 'Afrobeats',
+        bpm: 128,
+        key: 'Am',
+        price: 0.08,
+        audioUrl: '',
+        coverImageUrl: undefined,
+        isActive: true,
+        createdAt: new Date(),
+        tags: ['Afrobeats', 'Percussion'],
+        isNFT: false
+      },
+      {
+        id: 'demo-trap-1',
+        title: 'Trap Banger',
+        description: 'Hard-hitting trap beat',
+        producerId: 'demo-producer-3',
+        producerName: 'Trap King',
+        genre: 'Trap',
+        bpm: 140,
+        key: 'Gm',
+        price: 0.06,
+        audioUrl: '',
+        coverImageUrl: undefined,
+        isActive: true,
+        createdAt: new Date(),
+        tags: ['Trap', '808'],
+        isNFT: false
+      }
+    ]
+    
+    return demoBeats.slice(0, limit)
   }
 }

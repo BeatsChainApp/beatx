@@ -42,9 +42,8 @@ function MarketplacePageContent() {
   const [beats, setBeats] = useState<Beat[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [dataSource, setDataSource] = useState<'loading' | 'web3' | 'sanity' | 'empty'>('loading')
   
-  // Use Web3DataContext directly for blockchain beats
-  const { beats: web3Beats, loading: web3Loading, refreshBeats } = useWeb3Data()
   // Analytics now handled by LivepeerAnalyticsDashboard component
 
   // Load beats and hero data
@@ -57,7 +56,13 @@ function MarketplacePageContent() {
         // WEB3 PIPELINE: Supabase + Livepeer + IPFS (PRIMARY)
         const web3Beats = await livepeerDataProvider.getFeaturedBeats(50)
         console.log('Web3 pipeline (Supabase+Livepeer+IPFS):', web3Beats.length)
-        setBeats(web3Beats)
+        
+        if (web3Beats.length > 0) {
+          setBeats(web3Beats)
+          setDataSource(web3Beats.some(b => (b as any).source === 'sanity') ? 'sanity' : 'web3')
+        } else {
+          setDataSource('empty')
+        }
         
         // Load hero data from Sanity
         if (client) {
@@ -77,7 +82,7 @@ function MarketplacePageContent() {
     }
 
     loadData()
-  }, [web3Beats])
+  }, [])
   
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -85,7 +90,7 @@ function MarketplacePageContent() {
   }, [debouncedSearchTerm, selectedGenre, sortBy, professionalFilter, optimizedOnly])
   
   // Show loading state
-  if (loading || web3Loading) {
+  if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 mobile-container">
         <div className="text-center py-12">
@@ -224,14 +229,18 @@ function MarketplacePageContent() {
         </div>
       </div>
 
-      {/* Debug Info & Results Count */}
+      {/* Data Source & Debug Info */}
       <div className="mb-6">
+        {dataSource === 'sanity' && (
+          <div className="mb-4 p-3 bg-blue-100 border border-blue-300 rounded text-sm">
+            📦 <strong>Demo Mode:</strong> Showing Sanity CMS fallback beats. Upload your own beats to see them here!
+          </div>
+        )}
         {process.env.NODE_ENV === 'development' && (
           <div className="mb-4 p-3 bg-yellow-100 border border-yellow-300 rounded text-sm">
-            <strong>Debug:</strong> Total: {beats.length} beats | 
-            Web3: {beats.filter(b => (b as any).source === 'web3').length} | 
-            Sanity: {beats.filter(b => (b as any).source === 'sanity').length} | 
-            Hybrid Marketplace Active
+            <strong>Debug:</strong> Source: {dataSource} | Total: {beats.length} beats | 
+            Web3: {beats.filter(b => (b as any).source === 'web3' || (b as any).source === 'supabase' || (b as any).source === 'local').length} | 
+            Sanity: {beats.filter(b => (b as any).source === 'sanity').length}
           </div>
         )}
         <div className="flex justify-between items-center">

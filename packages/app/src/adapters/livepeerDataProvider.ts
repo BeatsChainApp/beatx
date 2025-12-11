@@ -33,32 +33,43 @@ export class LivepeerDataProvider implements DataAdapter {
       // Secondary: Local beats (user's own)
       const localBeats = this.getLocalBeats()
       
-      // Tertiary: Sanity demo beats
-      const sanityBeats = await this.sanityAdapter.getFeaturedBeats()
+      // If we have data from primary sources, use them
+      if (supabaseBeats.length > 0 || localBeats.length > 0) {
+        const allBeats = [
+          ...supabaseBeats.map(beat => ({ ...beat, priority: 1, source: 'supabase' })),
+          ...localBeats.map(beat => ({ ...beat, priority: 2, source: 'local' }))
+        ]
+
+        const uniqueBeats = allBeats
+          .filter((beat, index, self) => 
+            self.findIndex(b => b.id === beat.id) === index
+          )
+          .sort((a, b) => {
+            if (a.priority !== b.priority) return a.priority - b.priority
+            return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+          })
+          .slice(0, limit)
+
+        console.log(`✅ Web3 Data: ${supabaseBeats.length} Supabase + ${localBeats.length} Local`)
+        return uniqueBeats
+      }
       
-      // Combine with priority: Supabase > Local > Sanity
-      const allBeats = [
-        ...supabaseBeats.map(beat => ({ ...beat, priority: 1, source: 'supabase' })),
-        ...localBeats.map(beat => ({ ...beat, priority: 2, source: 'local' })),
-        ...sanityBeats.map(beat => ({ ...beat, priority: 3, source: 'sanity', isDemo: true }))
-      ]
-
-      // Remove duplicates and sort by priority
-      const uniqueBeats = allBeats
-        .filter((beat, index, self) => 
-          self.findIndex(b => b.id === beat.id) === index
-        )
-        .sort((a, b) => {
-          if (a.priority !== b.priority) return a.priority - b.priority
-          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-        })
-        .slice(0, limit)
-
-      console.log(`Livepeer-first marketplace: ${supabaseBeats.length} Supabase + ${localBeats.length} Local + ${sanityBeats.length} Sanity`)
-      return uniqueBeats
+      // Fallback: Sanity demo beats (only if no other data)
+      console.log('📦 Using Sanity fallback beats')
+      const sanityBeats = await this.sanityAdapter.getFeaturedBeats(limit)
+      return sanityBeats.map(beat => ({ ...beat, source: 'sanity', isDemo: true }))
+      
     } catch (error) {
       console.error('Error in getFeaturedBeats:', error)
-      return this.getLocalBeats().slice(0, limit)
+      // Final fallback to Sanity
+      try {
+        const sanityBeats = await this.sanityAdapter.getFeaturedBeats(limit)
+        console.log('🔄 Fallback to Sanity beats:', sanityBeats.length)
+        return sanityBeats.map(beat => ({ ...beat, source: 'sanity', isDemo: true }))
+      } catch (sanityError) {
+        console.error('Sanity fallback failed:', sanityError)
+        return []
+      }
     }
   }
 
