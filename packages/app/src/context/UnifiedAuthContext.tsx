@@ -249,25 +249,29 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
     const syncCrossPlatform = async () => {
       if (user && address) {
         try {
-          // Sync with extension
+          // Sync with extension (silently fail if 503)
           if (process.env.NEXT_PUBLIC_EXTENSION_AUTH_ENDPOINT) {
-            await fetch(process.env.NEXT_PUBLIC_EXTENSION_AUTH_ENDPOINT, {
+            fetch(process.env.NEXT_PUBLIC_EXTENSION_AUTH_ENDPOINT, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ address, user, platform: 'web' })
-            }).catch(() => {})
+            }).catch(() => {
+              // Silently handle 503 errors - auth endpoints not critical
+            })
           }
           
-          // Sync with WhatsApp
+          // Sync with WhatsApp (silently fail if 503)
           if (process.env.NEXT_PUBLIC_WHATSAPP_AUTH_ENDPOINT) {
-            await fetch(process.env.NEXT_PUBLIC_WHATSAPP_AUTH_ENDPOINT, {
+            fetch(process.env.NEXT_PUBLIC_WHATSAPP_AUTH_ENDPOINT, {
               method: 'POST', 
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ address, user, platform: 'web' })
-            }).catch(() => {})
+            }).catch(() => {
+              // Silently handle 503 errors - auth endpoints not critical
+            })
           }
         } catch (error) {
-          console.warn('Cross-platform sync failed:', error)
+          // Cross-platform sync is not critical for core functionality
         }
       }
     }
