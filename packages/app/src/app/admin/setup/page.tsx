@@ -50,16 +50,33 @@ function AdminSetupPageContent() {
           </div>
           
           <div className="space-y-4">
-            <ConnectButton 
-              client={client}
-              wallets={[inAppWallet({ auth: { providers: ["google", "email"] } })]}
-              connectButton={{
-                label: "🔐 Sign in with Google or Email",
-                className: "w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors"
-              }}
-            />
-            <div className="text-xs text-gray-500 text-center">
-              Uses Thirdweb embedded wallet with Google OAuth
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+              <h3 className="font-medium text-green-800 mb-2">✅ RECOMMENDED: Email Authentication</h3>
+              <p className="text-sm text-green-700 mb-3">
+                Sign in with <strong>info@unamifoundation.org</strong> for instant admin access
+              </p>
+              <ConnectButton 
+                client={client}
+                wallets={[inAppWallet({ auth: { providers: ["google"] } })]}
+                connectButton={{
+                  label: "🔐 Sign in with Google (Recommended)",
+                  className: "w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors"
+                }}
+              />
+            </div>
+            
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-medium text-blue-800 mb-2">🔄 Alternative: Import Wallet</h3>
+              <p className="text-sm text-blue-700 mb-3">
+                Import your existing wallet with the super admin private key
+              </p>
+              <ConnectButton 
+                client={client}
+                connectButton={{
+                  label: "💼 Connect External Wallet",
+                  className: "w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
+                }}
+              />
             </div>
           </div>
           

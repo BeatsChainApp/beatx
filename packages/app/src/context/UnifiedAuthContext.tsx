@@ -9,7 +9,9 @@ import { useWeb3Profile } from '@/hooks/useWeb3Profile'
 // Super admin wallets and emails
 const SUPER_ADMIN_WALLETS = [
   process.env.NEXT_PUBLIC_SUPER_ADMIN_WALLET?.toLowerCase(),
-  '0xc84799a904eeb5c57abbbc40176e7db8be202c10', // Your wallet address
+  '0xc84799a904eeb5c57abbbc40176e7db8be202c10', // Configured super admin
+  // Add your actual wallet if different:
+  // 'YOUR_ACTUAL_WALLET_ADDRESS_HERE'.toLowerCase(),
 ].filter(Boolean) as string[]
 
 // Debug wallet configuration
