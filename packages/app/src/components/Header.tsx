@@ -43,7 +43,7 @@ export function Header() {
 
   return (
     <>
-      <header className="bg-white border-b border-gray-200 px-4 py-3">
+      <header className="bg-white border-b border-gray-200 px-2 sm:px-4 py-2 sm:py-3 relative z-40">
         <div className="container mx-auto flex justify-between items-center">
           {/* Logo */}
           <LinkComponent href="/">
@@ -66,7 +66,7 @@ export function Header() {
           </LinkComponent>
 
           {/* Right Side */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1 sm:gap-4">
             <NotificationCenter />
             <Connect />
             
@@ -74,7 +74,7 @@ export function Header() {
               <div className="relative">
                 <button 
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 hover:text-gray-900 p-1"
                 >
                   {user?.picture ? (
                     <img 
@@ -89,38 +89,38 @@ export function Header() {
                       </span>
                     </div>
                   )}
-                  <span className="hidden sm:inline">{user?.name || 'User'}</span>
-                  <span className="sm:hidden">{user?.name ? user.name.slice(0, 8) + '...' : 'User'}</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <span className="hidden sm:inline max-w-24 truncate">{user?.name || 'User'}</span>
+                  <span className="sm:hidden max-w-16 truncate text-xs">{user?.name ? user.name.slice(0, 6) + '...' : 'User'}</span>
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
                 
                 {/* User Dropdown Menu */}
                 {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                    <div className="py-2">
-                      <LinkComponent href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <div className="absolute right-0 top-full mt-1 sm:mt-2 w-40 sm:w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                    <div className="py-1 sm:py-2">
+                      <LinkComponent href="/dashboard" className="block px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100">
                         Dashboard
                       </LinkComponent>
-                      <LinkComponent href="/library" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      <LinkComponent href="/library" className="block px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100">
                         My Library
                       </LinkComponent>
-                      <LinkComponent href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      <LinkComponent href="/profile" className="block px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100">
                         Profile
                       </LinkComponent>
-                      <LinkComponent href="/creator-dashboard" className="block px-4 py-2 text-sm text-purple-700 hover:bg-purple-50">
+                      <LinkComponent href="/creator-dashboard" className="block px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-purple-700 hover:bg-purple-50">
                         🎨 Creator Dashboard
                       </LinkComponent>
                       {(user?.role === 'admin' || user?.role === 'super_admin') && (
-                        <LinkComponent href="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <LinkComponent href="/admin" className="block px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-gray-700 hover:bg-gray-100">
                           Admin Panel
                         </LinkComponent>
                       )}
-                      <div className="border-t border-gray-200 mt-2 pt-2">
+                      <div className="border-t border-gray-200 mt-1 sm:mt-2 pt-1 sm:pt-2">
                         <button 
                           onClick={signOut}
-                          className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                          className="block w-full text-left px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-red-600 hover:bg-gray-100"
                         >
                           Sign Out
                         </button>

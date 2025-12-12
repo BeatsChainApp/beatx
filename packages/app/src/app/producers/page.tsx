@@ -10,7 +10,7 @@ import { Pagination } from '@/components/Pagination'
 import { dataProvider } from '@/adapters/unifiedDataProvider'
 import { Producer } from '@/types/data'
 import { client } from '@/lib/sanity-client'
-import RadioSubmissionCard from '@/components/producer/RadioSubmissionCard'
+
 
 export default function ProducersPage() {
   return (
@@ -118,30 +118,23 @@ function ProducersPageContent() {
       {heroData ? (
         <CmsHeroSection data={heroData} />
       ) : (
-        <div style={{
-          background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-          minHeight: '60vh',
-          display: 'flex',
-          alignItems: 'center',
-          color: '#1f2937',
-          position: 'relative'
-        }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.1)' }}></div>
-          <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '4rem 2rem', position: 'relative', zIndex: 1, textAlign: 'center' }}>
-            <h1 style={{ fontSize: '3.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
+        <div className="bg-gradient-to-br from-yellow-400 to-orange-500 min-h-[50vh] sm:min-h-[60vh] flex items-center text-gray-900 relative overflow-hidden">
+          <div className="absolute inset-0 bg-black bg-opacity-10"></div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 relative z-10 text-center">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
               🎤 Meet Our Beat Makers
             </h1>
-            <p style={{ fontSize: '1.25rem', marginBottom: '2rem', opacity: 0.9 }}>
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-8 opacity-90 max-w-3xl mx-auto px-4">
               Connect with South Africa's most talented beat creators and producers
             </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <div style={{ background: 'rgba(31,41,55,0.1)', padding: '0.75rem 1.5rem', borderRadius: '2rem', border: '1px solid rgba(31,41,55,0.2)' }}>
+            <div className="flex flex-wrap gap-2 sm:gap-3 justify-center px-4">
+              <div className="bg-gray-900 bg-opacity-10 px-3 sm:px-4 py-2 rounded-full border border-gray-900 border-opacity-20 text-xs sm:text-sm font-medium">
                 🎹 Growing Community
               </div>
-              <div style={{ background: 'rgba(31,41,55,0.1)', padding: '0.75rem 1.5rem', borderRadius: '2rem', border: '1px solid rgba(31,41,55,0.2)' }}>
+              <div className="bg-gray-900 bg-opacity-10 px-3 sm:px-4 py-2 rounded-full border border-gray-900 border-opacity-20 text-xs sm:text-sm font-medium">
                 🇿🇦 South African Focus
               </div>
-              <div style={{ background: 'rgba(31,41,55,0.1)', padding: '0.75rem 1.5rem', borderRadius: '2rem', border: '1px solid rgba(31,41,55,0.2)' }}>
+              <div className="bg-gray-900 bg-opacity-10 px-3 sm:px-4 py-2 rounded-full border border-gray-900 border-opacity-20 text-xs sm:text-sm font-medium">
                 🚀 New Platform
               </div>
             </div>
@@ -149,63 +142,37 @@ function ProducersPageContent() {
         </div>
       )}
 
-      <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
 
       {/* Radio Submission Card */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div className="mb-6 sm:mb-8">
         <RadioSubmissionCard />
       </div>
 
       {/* Filters */}
-      <div style={{
-        background: 'white',
-        padding: '1.5rem',
-        borderRadius: '0.5rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        marginBottom: '2rem',
-        border: '1px solid #e5e7eb'
-      }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 mb-6 sm:mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <input
             type="text"
             placeholder="Search producers..."
-            style={{
-              padding: '0.75rem',
-              border: '1px solid #d1d5db',
-              borderRadius: '0.375rem',
-              fontSize: '0.875rem'
-            }}
+            className="px-3 sm:px-4 py-2 border border-gray-300 rounded-md text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-yellow-500"
           />
-          <select style={{
-            padding: '0.75rem',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem'
-          }}>
+          <select className="px-3 sm:px-4 py-2 border border-gray-300 rounded-md text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-yellow-500">
             <option>All Genres</option>
+            <option>Amapiano</option>
             <option>Hip Hop</option>
+            <option>Afrobeats</option>
+            <option>House</option>
             <option>Trap</option>
-            <option>Electronic</option>
-            <option>R&B</option>
-            <option>Lo-Fi</option>
           </select>
-          <select style={{
-            padding: '0.75rem',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem'
-          }}>
+          <select className="px-3 sm:px-4 py-2 border border-gray-300 rounded-md text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-yellow-500">
             <option>All Locations</option>
-            <option>United States</option>
-            <option>Europe</option>
-            <option>Asia</option>
+            <option>Johannesburg</option>
+            <option>Cape Town</option>
+            <option>Durban</option>
+            <option>Pretoria</option>
           </select>
-          <select style={{
-            padding: '0.75rem',
-            border: '1px solid #d1d5db',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem'
-          }}>
+          <select className="px-3 sm:px-4 py-2 border border-gray-300 rounded-md text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-yellow-500">
             <option>Sort by Rating</option>
             <option>Most Sales</option>
             <option>Most Beats</option>
@@ -216,18 +183,13 @@ function ProducersPageContent() {
 
       {/* Producers Grid */}
       {currentProducers.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem 2rem', color: '#6b7280' }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎵</div>
-          <h3 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1f2937' }}>No beat makers yet</h3>
-          <p>Be the first beat creator to join our platform!</p>
+        <div className="text-center py-12 sm:py-16 text-gray-600">
+          <div className="text-6xl sm:text-8xl mb-4">🎵</div>
+          <h3 className="text-xl sm:text-2xl font-semibold mb-2 text-gray-900">No beat makers yet</h3>
+          <p className="text-sm sm:text-base">Be the first beat creator to join our platform!</p>
         </div>
       ) : (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(min(350px, 100%), 1fr))',
-          gap: 'clamp(1rem, 3vw, 1.5rem)',
-          marginBottom: '2rem'
-        }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {currentProducers.map((producer, index) => (
             <ProducerCard key={`${producer.id}-${index}`} producer={producer} />
           ))}

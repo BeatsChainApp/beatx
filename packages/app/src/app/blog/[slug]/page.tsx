@@ -33,30 +33,36 @@ function getFallbackPost(slug: string) {
   }
 }
 
-export default function BlogPostPage() {
+export default function BlogPostPage({ params }: PageProps) {
   return (
     <UniversalLayout>
       <ResponsiveWrapper pageType="public">
-        <BlogPostPageContent />
+        <BlogPostPageContent params={params} />
       </ResponsiveWrapper>
     </UniversalLayout>
   )
 }
 
-function BlogPostPageContent() {
+function BlogPostPageContent({ params }: { params: { slug: string } }) {
   const [post, setPost] = useState(getFallbackPost(params.slug))
   const [loading, setLoading] = useState(true)
   const [heroImageUrl, setHeroImageUrl] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchPost() {
-      if (!client) {
-        setLoading(false)
-        return
-      }
       try {
+        setLoading(true)
+        setError(null)
+        
+        if (!client) {
+          console.warn('Sanity client not available, using fallback content')
+          setLoading(false)
+          return
+        }
+        
         const data = await client.fetch(`*[_type == "post" && slug.current == $slug][0] {
-          _id, title, slug, publishedAt, mainImage, body, categories[]->{ title }, author->{ name, bio, image }
+          _id, title, slug, publishedAt, mainImage, body, categories[]->{ title }, author->{ name, bio, image }, excerpt
         }`, { slug: params.slug })
         
         if (data) {
@@ -67,84 +73,96 @@ function BlogPostPageContent() {
             try {
               const imageUrl = urlFor(data.mainImage).width(1920).url()
               setHeroImageUrl(imageUrl)
-            } catch (error) {
-              console.warn('Failed to process hero image:', error)
+            } catch (imageError) {
+              console.warn('Failed to process hero image:', imageError)
             }
           }
+        } else {
+          console.warn(`No post found for slug: ${params.slug}, using fallback`)
         }
-      } catch (error) {
-        console.error('Failed to fetch blog post:', error)
+      } catch (fetchError) {
+        console.error('Failed to fetch blog post:', fetchError)
+        setError('Failed to load blog post')
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
     fetchPost()
   }, [params.slug])
   
   const shareUrl = `https://beatschain.app/blog/${post.slug.current}`
   const shareTitle = encodeURIComponent(post.title)
-  const shareDescription = encodeURIComponent(post.excerpt || post.body?.[0]?.children?.[0]?.text?.substring(0, 160) || 'Read this article on BeatsChain')
+  const shareDescription = encodeURIComponent(
+    post.excerpt || 
+    (Array.isArray(post.body) && post.body[0]?.children?.[0]?.text?.substring(0, 160)) || 
+    'Read this article on BeatsChain'
+  )
 
   // Client-side title update for immediate feedback
   useEffect(() => {
-    document.title = `${post.title} | BeatsChain Blog`
+    if (typeof document !== 'undefined') {
+      document.title = `${post.title} | BeatsChain Blog`
+    }
   }, [post.title])
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <div className="text-6xl mb-4">❌</div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Post</h2>
+        <p className="text-gray-600 mb-4">{error}</p>
+        <a href="/blog" className="text-blue-600 hover:text-blue-800 underline">
+          ← Back to Blog
+        </a>
+      </div>
+    )
+  }
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading blog post...</p>
+      </div>
+    )
+  }
 
   return (
     <div>
       {/* Hero Section */}
-      <div style={{
+      <div className="bg-gradient-to-br from-gray-800 to-gray-900 min-h-[40vh] flex items-center text-white relative overflow-hidden" style={{
         background: heroImageUrl 
           ? `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7)), url(${heroImageUrl})`
-          : 'linear-gradient(135deg, #1f2937 0%, #374151 100%)',
+          : undefined,
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        minHeight: '40vh',
-        display: 'flex',
-        alignItems: 'center',
-        color: 'white',
-        position: 'relative'
+        backgroundPosition: 'center'
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)' }}></div>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '4rem 2rem', position: 'relative', zIndex: 1, textAlign: 'center' }}>
-          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginBottom: '1rem' }}>
+        <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 relative z-10 text-center">
+          <div className="flex flex-wrap gap-2 justify-center mb-4">
             {post.categories?.slice(0, 3).map((category: any, index: number) => (
-              <span key={index} style={{
-                background: 'rgba(255,255,255,0.2)',
-                color: 'white',
-                padding: '0.25rem 0.75rem',
-                borderRadius: '1rem',
-                fontSize: '0.75rem',
-                fontWeight: '500',
-                border: '1px solid rgba(255,255,255,0.3)'
-              }}>
+              <span key={index} className="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-medium border border-white border-opacity-30">
                 {category.title || category}
               </span>
             ))}
           </div>
-          <h1 style={{ fontSize: '3rem', fontWeight: 'bold', lineHeight: '1.2', marginBottom: '1rem' }}>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-4 sm:mb-6">
             {post.title}
           </h1>
-          <p style={{ fontSize: '1.125rem', opacity: 0.9, maxWidth: '600px', margin: '0 auto' }}>
+          <p className="text-sm sm:text-base md:text-lg opacity-90 max-w-3xl mx-auto px-4">
             {post.excerpt || 'Insights on Web3 beats, BeatNFTs, and the future of beat ownership'}
           </p>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{ 
-                width: '32px', 
-                height: '32px', 
-                borderRadius: '50%', 
-                background: 'rgba(255,255,255,0.2)', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                fontSize: '1rem'
-              }}>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mt-6 sm:mt-8">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center text-sm">
                 {post.author?.name?.charAt(0) || '👤'}
               </div>
-              <span style={{ fontSize: '0.875rem', opacity: 0.9 }}>{post.author?.name}</span>
+              <span className="text-sm opacity-90">{post.author?.name}</span>
             </div>
-            <span style={{ fontSize: '0.875rem', opacity: 0.7 }}>•</span>
-            <time style={{ fontSize: '0.875rem', opacity: 0.9 }}>
+            <span className="hidden sm:inline text-sm opacity-70">•</span>
+            <time className="text-sm opacity-90">
               {new Date(post.publishedAt).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
@@ -155,28 +173,21 @@ function BlogPostPageContent() {
         </div>
       </div>
       
-      <article style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
-      <header style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+      <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+      <header className="mb-6 sm:mb-8">
+        <div className="flex flex-wrap gap-2 mb-4">
           {post.categories?.map((category: any) => (
-            <span key={category.title || category} style={{
-              background: '#dbeafe',
-              color: '#1e40af',
-              padding: '0.25rem 0.75rem',
-              borderRadius: '1rem',
-              fontSize: '0.75rem',
-              fontWeight: '500'
-            }}>
+            <span key={category.title || category} className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
               {category.title || category}
             </span>
           ))}
         </div>
         
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', lineHeight: '1.2', color: '#1f2937', marginBottom: '1rem' }}>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight text-gray-900 mb-4 sm:mb-6">
           {post.title}
         </h1>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+        <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
           {post.author?.image?.asset && !loading ? (() => {
             try {
               const imageUrl = urlFor(post.author.image).width(48).height(48).url()
@@ -209,23 +220,13 @@ function BlogPostPageContent() {
               </div>
             )
           })() : (
-            <div style={{ 
-              width: '48px', 
-              height: '48px', 
-              borderRadius: '50%', 
-              background: '#e5e7eb', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              fontSize: '1.25rem',
-              color: '#6b7280'
-            }}>
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-200 flex items-center justify-center text-lg sm:text-xl text-gray-600">
               {post.author.name?.charAt(0) || '👤'}
             </div>
           )}
           <div>
-            <p style={{ fontWeight: '500', color: '#1f2937', margin: 0 }}>{post.author?.name}</p>
-            <time style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+            <p className="font-medium text-gray-900 text-sm sm:text-base">{post.author?.name}</p>
+            <time className="text-xs sm:text-sm text-gray-600">
               {new Date(post.publishedAt).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
@@ -236,39 +237,32 @@ function BlogPostPageContent() {
         </div>
       </header>
 
-      <div style={{ 
-        fontSize: '1.125rem', 
-        lineHeight: '1.7', 
-        color: '#374151',
-        marginBottom: '3rem'
-      }}>
-        {loading ? (
-          <p>Loading content...</p>
-        ) : post.body && Array.isArray(post.body) ? (
+      <div className="prose prose-sm sm:prose lg:prose-lg max-w-none text-gray-700 mb-8 sm:mb-12">
+        {post.body && Array.isArray(post.body) ? (
           <PortableText 
             value={post.body}
             components={{
               block: {
-                h1: ({children}) => <h1 style={{fontSize: '2.5rem', fontWeight: 'bold', margin: '2rem 0 1rem', color: '#1f2937'}}>{children}</h1>,
-                h2: ({children}) => <h2 style={{fontSize: '2rem', fontWeight: 'bold', margin: '1.5rem 0 1rem', color: '#1f2937'}}>{children}</h2>,
-                h3: ({children}) => <h3 style={{fontSize: '1.5rem', fontWeight: '600', margin: '1.5rem 0 1rem', color: '#1f2937'}}>{children}</h3>,
-                h4: ({children}) => <h4 style={{fontSize: '1.25rem', fontWeight: '600', margin: '1rem 0 0.5rem', color: '#1f2937'}}>{children}</h4>,
-                blockquote: ({children}) => <blockquote style={{borderLeft: '4px solid #3b82f6', paddingLeft: '1rem', margin: '1.5rem 0', fontStyle: 'italic', color: '#6b7280'}}>{children}</blockquote>,
-                normal: ({children}) => <p style={{margin: '1rem 0', lineHeight: '1.7'}}>{children}</p>
+                h1: ({children}) => <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-8 mb-4 text-gray-900">{children}</h1>,
+                h2: ({children}) => <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mt-6 mb-3 text-gray-900">{children}</h2>,
+                h3: ({children}) => <h3 className="text-lg sm:text-xl md:text-2xl font-semibold mt-6 mb-3 text-gray-900">{children}</h3>,
+                h4: ({children}) => <h4 className="text-base sm:text-lg md:text-xl font-semibold mt-4 mb-2 text-gray-900">{children}</h4>,
+                blockquote: ({children}) => <blockquote className="border-l-4 border-blue-500 pl-4 my-6 italic text-gray-600">{children}</blockquote>,
+                normal: ({children}) => <p className="my-4 leading-relaxed">{children}</p>
               },
               list: {
-                bullet: ({children}) => <ul style={{margin: '1rem 0', paddingLeft: '2rem', listStyleType: 'disc'}}>{children}</ul>,
-                number: ({children}) => <ol style={{margin: '1rem 0', paddingLeft: '2rem', listStyleType: 'decimal'}}>{children}</ol>
+                bullet: ({children}) => <ul className="my-4 pl-6 list-disc space-y-2">{children}</ul>,
+                number: ({children}) => <ol className="my-4 pl-6 list-decimal space-y-2">{children}</ol>
               },
               listItem: {
-                bullet: ({children}) => <li style={{margin: '0.5rem 0'}}>{children}</li>,
-                number: ({children}) => <li style={{margin: '0.5rem 0'}}>{children}</li>
+                bullet: ({children}) => <li className="leading-relaxed">{children}</li>,
+                number: ({children}) => <li className="leading-relaxed">{children}</li>
               },
               marks: {
-                strong: ({children}) => <strong style={{fontWeight: 'bold'}}>{children}</strong>,
-                em: ({children}) => <em style={{fontStyle: 'italic'}}>{children}</em>,
-                code: ({children}) => <code style={{background: '#f3f4f6', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.875rem', fontFamily: 'monospace'}}>{children}</code>,
-                link: ({children, value}) => <a href={value?.href} style={{color: '#3b82f6', textDecoration: 'underline'}} target={value?.href?.startsWith('http') ? '_blank' : '_self'} rel={value?.href?.startsWith('http') ? 'noopener noreferrer' : ''}>{children}</a>
+                strong: ({children}) => <strong className="font-bold">{children}</strong>,
+                em: ({children}) => <em className="italic">{children}</em>,
+                code: ({children}) => <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono">{children}</code>,
+                link: ({children, value}) => <a href={value?.href} className="text-blue-600 underline hover:text-blue-800" target={value?.href?.startsWith('http') ? '_blank' : '_self'} rel={value?.href?.startsWith('http') ? 'noopener noreferrer' : ''}>{children}</a>
               },
               types: {
                 image: ({ value }: any) => {
@@ -277,17 +271,17 @@ function BlogPostPageContent() {
                     const imageUrl = urlFor(value).width(800).url()
                     if (!imageUrl) return null
                     return (
-                      <div style={{ margin: '2rem 0', textAlign: 'center' }}>
+                      <div className="my-8 text-center">
                         <img
                           src={imageUrl}
                           alt={value.alt || ''}
-                          style={{ maxWidth: '100%', height: 'auto', borderRadius: '0.5rem' }}
+                          className="max-w-full h-auto rounded-lg mx-auto"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none'
                           }}
                         />
                         {value.caption && (
-                          <p style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.5rem', fontStyle: 'italic' }}>
+                          <p className="text-sm text-gray-600 mt-2 italic">
                             {value.caption}
                           </p>
                         )}
@@ -332,81 +326,46 @@ function BlogPostPageContent() {
         )}
       </div>
 
-      <div style={{
-        background: '#f9fafb',
-        padding: '2rem',
-        borderRadius: '0.5rem',
-        border: '1px solid #e5e7eb',
-        marginBottom: '2rem'
-      }}>
-        <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', color: '#1f2937' }}>
+      <div className="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 mb-6 sm:mb-8">
+        <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-900">
           Share this article
         </h3>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           <a
             href={`https://twitter.com/intent/tweet?text=${shareTitle}&url=${encodeURIComponent(shareUrl)}`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              background: '#1da1f2',
-              color: 'white',
-              padding: '0.5rem 1rem',
-              borderRadius: '0.375rem',
-              textDecoration: 'none',
-              fontSize: '0.875rem',
-              fontWeight: '500'
-            }}
+            className="bg-blue-500 text-white px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-blue-600 transition-colors"
           >
-            Share on Twitter
+            <span className="hidden sm:inline">Share on </span>Twitter
           </a>
           <a
             href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${shareTitle}`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              background: '#1877f2',
-              color: 'white',
-              padding: '0.5rem 1rem',
-              borderRadius: '0.375rem',
-              textDecoration: 'none',
-              fontSize: '0.875rem',
-              fontWeight: '500'
-            }}
+            className="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-blue-700 transition-colors"
           >
-            Share on Facebook
+            <span className="hidden sm:inline">Share on </span>Facebook
           </a>
           <a
             href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&title=${shareTitle}&summary=${shareDescription}`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              background: '#0077b5',
-              color: 'white',
-              padding: '0.5rem 1rem',
-              borderRadius: '0.375rem',
-              textDecoration: 'none',
-              fontSize: '0.875rem',
-              fontWeight: '500'
-            }}
+            className="bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-blue-800 transition-colors"
           >
-            Share on LinkedIn
+            <span className="hidden sm:inline">Share on </span>LinkedIn
           </a>
           <button
-            onClick={() => navigator.clipboard.writeText(shareUrl)}
-            style={{
-              background: '#6b7280',
-              color: 'white',
-              padding: '0.5rem 1rem',
-              borderRadius: '0.375rem',
-              border: 'none',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              cursor: 'pointer'
+            onClick={() => {
+              if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareUrl)
+              }
             }}
+            className="bg-gray-600 text-white px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-gray-700 transition-colors"
           >
             Copy Link
           </button>
-          <a href="/blog" style={{ color: '#3b82f6', textDecoration: 'underline', padding: '0.5rem 1rem' }}>
+          <a href="/blog" className="text-blue-600 hover:text-blue-800 underline px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium">
             ← Back to Blog
           </a>
         </div>

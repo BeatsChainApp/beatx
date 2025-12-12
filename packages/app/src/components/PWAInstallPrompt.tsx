@@ -8,60 +8,30 @@ export default function PWAInstallPrompt() {
   if (!showInstallPrompt) return null
 
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: '1rem',
-      left: '1rem',
-      right: '1rem',
-      background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-      color: 'white',
-      padding: '1rem',
-      borderRadius: '0.75rem',
-      boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-      zIndex: 1000,
-      maxWidth: '400px',
-      margin: '0 auto'
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-        <div style={{ fontSize: '1.5rem' }}>📱</div>
-        <div>
-          <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600' }}>
+    <div className="fixed bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 bg-gradient-to-br from-blue-600 to-blue-800 text-white p-3 sm:p-4 rounded-xl shadow-2xl z-50 max-w-sm mx-auto safe-area-inset-bottom">
+      <div className="flex items-center gap-2 sm:gap-3 mb-3">
+        <div className="text-xl sm:text-2xl">📱</div>
+        <div className="flex-1">
+          <h4 className="text-sm sm:text-base font-semibold mb-1">
             Install BeatsChain App
           </h4>
-          <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.9 }}>
+          <p className="text-xs sm:text-sm opacity-90">
             Get the full Web3 beat experience
           </p>
         </div>
       </div>
       
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div className="flex gap-2">
         <button
           onClick={installApp}
-          style={{
-            flex: 1,
-            background: 'rgba(255,255,255,0.2)',
-            color: 'white',
-            border: '1px solid rgba(255,255,255,0.3)',
-            padding: '0.5rem 1rem',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            cursor: 'pointer'
-          }}
+          className="flex-1 bg-white bg-opacity-20 text-white border border-white border-opacity-30 py-2.5 px-3 sm:px-4 rounded-lg text-xs sm:text-sm font-medium hover:bg-opacity-30 transition-all active:scale-95 touch-manipulation"
         >
-          Install
+          📱 Install App
         </button>
         <button
           onClick={dismissInstallPrompt}
-          style={{
-            background: 'transparent',
-            color: 'rgba(255,255,255,0.8)',
-            border: 'none',
-            padding: '0.5rem',
-            borderRadius: '0.375rem',
-            fontSize: '0.875rem',
-            cursor: 'pointer'
-          }}
+          className="bg-transparent text-white text-opacity-80 border-none p-2.5 rounded-lg text-sm hover:text-opacity-100 transition-all active:scale-95 touch-manipulation min-w-[44px] flex items-center justify-center"
+          aria-label="Dismiss install prompt"
         >
           ✕
         </button>

@@ -59,30 +59,23 @@ function BlogPageContent() {
       {heroData ? (
         <CmsHeroSection data={heroData} />
       ) : (
-        <div style={{
-          background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-          minHeight: '50vh',
-          display: 'flex',
-          alignItems: 'center',
-          color: 'white',
-          position: 'relative'
-        }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)' }}></div>
-          <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(2rem, 6vw, 4rem) clamp(1rem, 4vw, 2rem)', position: 'relative', zIndex: 1, textAlign: 'center' }}>
-            <h1 style={{ fontSize: 'clamp(2rem, 6vw, 3.5rem)', fontWeight: 'bold', marginBottom: '1.5rem' }}>
+        <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-purple-700 min-h-[40vh] sm:min-h-[50vh] flex items-center text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 relative z-10 text-center">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
               📝 BeatsChain Blog
             </h1>
-            <p style={{ fontSize: 'clamp(1rem, 3vw, 1.25rem)', marginBottom: '2rem', opacity: 0.9 }}>
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-8 opacity-90 max-w-3xl mx-auto px-4">
               Latest insights on music production, Web3, and the future of beats
             </p>
-            <div style={{ display: 'flex', gap: 'clamp(0.5rem, 2vw, 1rem)', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <div style={{ background: 'rgba(255,255,255,0.1)', padding: '0.75rem 1.5rem', borderRadius: '2rem', border: '1px solid rgba(255,255,255,0.2)' }}>
+            <div className="flex flex-wrap gap-2 sm:gap-3 justify-center px-4">
+              <div className="bg-white bg-opacity-10 px-3 sm:px-4 py-2 rounded-full border border-white border-opacity-20 text-xs sm:text-sm font-medium">
                 🎵 Music Insights
               </div>
-              <div style={{ background: 'rgba(255,255,255,0.1)', padding: '0.75rem 1.5rem', borderRadius: '2rem', border: '1px solid rgba(255,255,255,0.2)' }}>
+              <div className="bg-white bg-opacity-10 px-3 sm:px-4 py-2 rounded-full border border-white border-opacity-20 text-xs sm:text-sm font-medium">
                 🔗 Web3 Updates
               </div>
-              <div style={{ background: 'rgba(255,255,255,0.1)', padding: '0.75rem 1.5rem', borderRadius: '2rem', border: '1px solid rgba(255,255,255,0.2)' }}>
+              <div className="bg-white bg-opacity-10 px-3 sm:px-4 py-2 rounded-full border border-white border-opacity-20 text-xs sm:text-sm font-medium">
                 💡 Producer Tips
               </div>
             </div>
@@ -90,7 +83,7 @@ function BlogPageContent() {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         <EnhancedBlogGrid posts={posts} loading={loading} />
       </div>
     </div>

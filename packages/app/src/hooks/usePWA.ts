@@ -34,10 +34,17 @@ export function usePWA() {
       setDeferredPrompt(e)
       setState(prev => ({ ...prev, isInstallable: true }))
       
-      // Show install prompt after user interaction
-      setTimeout(() => {
-        setState(prev => ({ ...prev, showInstallPrompt: true }))
-      }, 5000)
+      // Show install prompt after user interaction, but respect dismissal and mobile viewport
+      const dismissed = localStorage.getItem('pwa_install_dismissed')
+      const dismissedTime = dismissed ? parseInt(dismissed) : 0
+      const daysSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24)
+      
+      // Only show if not dismissed recently (7 days) and not on very small screens
+      if (daysSinceDismissed > 7 && window.innerWidth > 320) {
+        setTimeout(() => {
+          setState(prev => ({ ...prev, showInstallPrompt: true }))
+        }, 8000) // Increased delay for better UX
+      }
     }
 
     // Listen for app installed
@@ -84,6 +91,9 @@ export function usePWA() {
   const dismissInstallPrompt = () => {
     setState(prev => ({ ...prev, showInstallPrompt: false }))
     localStorage.setItem('pwa_install_dismissed', Date.now().toString())
+    
+    // Also dismiss for this session to prevent re-showing
+    sessionStorage.setItem('pwa_dismissed_this_session', 'true')
   }
 
   return {

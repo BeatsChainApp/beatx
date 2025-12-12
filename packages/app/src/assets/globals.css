@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import '../styles/wallet-modal.css';
+@import '../styles/mobile-viewport.css';
+
 /* Reset and base styles */
 * {
   margin: 0;
