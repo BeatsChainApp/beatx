@@ -39,8 +39,8 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   // Auto-trigger onboarding for new users
   useEffect(() => {
     const checkAutoStart = () => {
-      // Check if this is a new user (no previous onboarding data)
-      const hasCompletedOnboarding = localStorage.getItem('beatx_onboarding_completed')
+      // Check if this is a new user (no previous onboarding data) - check both keys
+      const hasCompletedOnboarding = localStorage.getItem('beatx_onboarding_completed') || localStorage.getItem('onboarding_completed')
       const hasUserPreferences = localStorage.getItem('beatx_user_preferences')
       
       // If no onboarding data exists and user should see onboarding

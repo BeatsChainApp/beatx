@@ -19,7 +19,8 @@ class AppOnboardingManager {
             if (typeof window === 'undefined' || !window.localStorage) {
                 return false;
             }
-            const completed = localStorage.getItem('beatx_onboarding_completed');
+            // Use consistent storage key across all systems
+            const completed = localStorage.getItem('beatx_onboarding_completed') || localStorage.getItem('onboarding_completed');
             return completed === 'true';
         } catch (error) {
             console.warn('Failed to check onboarding status:', error);
@@ -188,9 +189,56 @@ class AppOnboardingManager {
         }
     }
 
+    async completeOnboarding() {
+        try {
+            // Set both storage keys for consistency
+            localStorage.setItem('beatx_onboarding_completed', 'true');
+            localStorage.setItem('onboarding_completed', 'true');
+            localStorage.setItem('beatx_onboarding_choices', JSON.stringify(this.userChoices));
+            
+            // Trigger completion event
+            this.dispatchOnboardingEvent('complete', { choices: this.userChoices });
+            
+            // Trigger n8n completion webhook
+            await this.triggerN8NWorkflow('onboardingComplete', {
+                event: 'onboarding_completed',
+                choices: this.userChoices,
+                timestamp: Date.now()
+            });
+        } catch (error) {
+            console.warn('Failed to complete onboarding:', error);
+        }
+    }
+
+    async handleStepCompletion(stepName, stepData) {
+        try {
+            this.userChoices[stepName] = stepData;
+            
+            // Save progress
+            const progress = {
+                step: this.currentStep,
+                completed: false,
+                choices: this.userChoices,
+                progress: this.currentStep / this.steps.length
+            };
+            localStorage.setItem('beatx_onboarding_progress', JSON.stringify(progress));
+            
+            // Record step completion event
+            await this.recordEvent('step_completed', {
+                step: stepName,
+                data: stepData,
+                progress: progress.progress
+            });
+        } catch (error) {
+            console.warn('Failed to handle step completion:', error);
+        }
+    }
+
     reset() {
         try {
+            // Clear both storage keys for consistency
             localStorage.removeItem('beatx_onboarding_completed');
+            localStorage.removeItem('onboarding_completed');
             localStorage.removeItem('beatx_onboarding_choices');
             localStorage.removeItem('beatx_user_preferences');
             localStorage.removeItem('beatx_ai_recommendations');

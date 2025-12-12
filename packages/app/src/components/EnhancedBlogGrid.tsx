@@ -85,8 +85,8 @@ export default function EnhancedBlogGrid({ posts, loading }: EnhancedBlogGridPro
       {/* Featured Posts Section */}
       {featuredPosts.length > 0 && (
         <section>
-          <h2 className="text-2xl font-bold mb-6 text-gray-900">Featured Posts</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-900">Featured Posts</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {featuredPosts.map((post) => (
               <motion.div 
                 key={post._id}
@@ -105,43 +105,43 @@ export default function EnhancedBlogGrid({ posts, loading }: EnhancedBlogGridPro
                   </div>
                 )}
                 
-                <div className="p-6">
-                  <div className="flex gap-2 mb-3">
-                    <span className="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                <div className="p-4 sm:p-6">
+                  <div className="flex flex-wrap gap-1 sm:gap-2 mb-3">
+                    <span className="bg-indigo-100 text-indigo-800 text-xs font-medium px-2 sm:px-2.5 py-0.5 rounded-full">
                       Featured
                     </span>
                     {post.categories?.[0] && (
-                      <span className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                      <span className="bg-purple-100 text-purple-800 text-xs font-medium px-2 sm:px-2.5 py-0.5 rounded-full truncate max-w-24 sm:max-w-none">
                         {post.categories[0].title}
                       </span>
                     )}
                   </div>
                   
-                  <h3 className="text-xl font-bold mb-2 text-gray-900">
-                    <Link href={`/blog/${post.slug.current}`} className="hover:text-indigo-700 transition-colors">
+                  <h3 className="text-lg sm:text-xl font-bold mb-2 text-gray-900 leading-tight">
+                    <Link href={`/blog/${post.slug.current}`} className="hover:text-indigo-700 transition-colors line-clamp-2">
                       {post.title}
                     </Link>
                   </h3>
                   
                   {post.excerpt && (
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    <p className="text-gray-600 text-xs sm:text-sm mb-4 line-clamp-2 leading-relaxed">
                       {post.excerpt}
                     </p>
                   )}
                   
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center">
+                    <div className="flex items-center min-w-0 flex-1">
                       {post.author?.image && (
                         <img
                           src={urlFor(post.author.image).width(40).height(40).url()}
                           alt={post.author.name}
-                          className="w-8 h-8 rounded-full mr-2"
+                          className="w-6 h-6 sm:w-8 sm:h-8 rounded-full mr-2 flex-shrink-0"
                         />
                       )}
-                      <span className="text-sm text-gray-700">{post.author?.name}</span>
+                      <span className="text-xs sm:text-sm text-gray-700 truncate">{post.author?.name}</span>
                     </div>
-                    <span className="text-xs text-gray-500">
-                      {new Date(post.publishedAt).toLocaleDateString()}
+                    <span className="text-xs text-gray-500 ml-2 flex-shrink-0">
+                      {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </span>
                   </div>
                 </div>
@@ -153,10 +153,10 @@ export default function EnhancedBlogGrid({ posts, loading }: EnhancedBlogGridPro
       
       {/* Filters */}
       <section>
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2">
           <button
             onClick={() => setActiveFilter('all')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
               activeFilter === 'all'
                 ? 'bg-indigo-600 text-white'
                 : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
@@ -167,7 +167,7 @@ export default function EnhancedBlogGrid({ posts, loading }: EnhancedBlogGridPro
           
           <button
             onClick={() => setActiveFilter('featured')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
               activeFilter === 'featured'
                 ? 'bg-indigo-600 text-white'
                 : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
@@ -180,7 +180,7 @@ export default function EnhancedBlogGrid({ posts, loading }: EnhancedBlogGridPro
             <button
               key={category}
               onClick={() => setActiveFilter(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                 activeFilter === category
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
@@ -194,7 +194,7 @@ export default function EnhancedBlogGrid({ posts, loading }: EnhancedBlogGridPro
       
       {/* Main Grid */}
       <section>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {currentPosts.map((post, index) => (
             <motion.article 
               key={post._id}
@@ -213,48 +213,48 @@ export default function EnhancedBlogGrid({ posts, loading }: EnhancedBlogGridPro
                 </div>
               )}
               
-              <div className="p-6">
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {post.categories?.map(category => (
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-wrap gap-1 sm:gap-2 mb-3">
+                  {post.categories?.slice(0, 2).map(category => (
                     <span 
                       key={category.title}
-                      className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
+                      className="bg-blue-100 text-blue-800 text-xs font-medium px-2 sm:px-2.5 py-0.5 rounded-full truncate max-w-20 sm:max-w-none"
                     >
                       {category.title}
                     </span>
                   ))}
                   {post.featured && (
-                    <span className="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    <span className="bg-amber-100 text-amber-800 text-xs font-medium px-2 sm:px-2.5 py-0.5 rounded-full">
                       Featured
                     </span>
                   )}
                 </div>
                 
-                <h3 className="text-lg font-bold mb-2 text-gray-900">
-                  <Link href={`/blog/${post.slug.current}`} className="hover:text-blue-700 transition-colors">
+                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 leading-tight">
+                  <Link href={`/blog/${post.slug.current}`} className="hover:text-blue-700 transition-colors line-clamp-2">
                     {post.title}
                   </Link>
                 </h3>
                 
                 {post.excerpt && (
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                  <p className="text-gray-600 text-xs sm:text-sm mb-4 line-clamp-3 leading-relaxed">
                     {post.excerpt}
                   </p>
                 )}
                 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center">
+                  <div className="flex items-center min-w-0 flex-1">
                     {post.author?.image && (
                       <img
                         src={urlFor(post.author.image).width(40).height(40).url()}
                         alt={post.author.name}
-                        className="w-8 h-8 rounded-full mr-2"
+                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-full mr-2 flex-shrink-0"
                       />
                     )}
-                    <span className="text-sm text-gray-700">{post.author?.name}</span>
+                    <span className="text-xs sm:text-sm text-gray-700 truncate">{post.author?.name}</span>
                   </div>
-                  <span className="text-xs text-gray-500">
-                    {new Date(post.publishedAt).toLocaleDateString()}
+                  <span className="text-xs text-gray-500 ml-2 flex-shrink-0">
+                    {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </span>
                 </div>
               </div>
@@ -270,9 +270,10 @@ export default function EnhancedBlogGrid({ posts, loading }: EnhancedBlogGridPro
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="relative inline-flex items-center px-2 sm:px-4 py-2 rounded-l-md border border-gray-300 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Previous
+              <span className="hidden sm:inline">Previous</span>
+              <span className="sm:hidden">‹</span>
             </button>
             
             <div className="hidden md:flex">
@@ -300,9 +301,10 @@ export default function EnhancedBlogGrid({ posts, loading }: EnhancedBlogGridPro
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="relative inline-flex items-center px-2 sm:px-4 py-2 rounded-r-md border border-gray-300 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next
+              <span className="hidden sm:inline">Next</span>
+              <span className="sm:hidden">›</span>
             </button>
           </nav>
         </div>

@@ -180,12 +180,12 @@ function MarketplacePageContent() {
             placeholder="Search BeatNFTs..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 sm:px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
           />
           <select
             value={selectedGenre}
             onChange={(e) => setSelectedGenre(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 sm:px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
           >
             <option value="all">All Genres</option>
             <option value="amapiano">Amapiano</option>
@@ -200,7 +200,7 @@ function MarketplacePageContent() {
           <select
             value={professionalFilter}
             onChange={(e) => setProfessionalFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 sm:px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
           >
             <option value="all">All Beats</option>
             <option value="professional">🎯 Professional</option>
@@ -210,21 +210,21 @@ function MarketplacePageContent() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 sm:px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
           >
             <option value="newest">Newest First</option>
             <option value="price-low">Price: Low to High</option>
             <option value="price-high">Price: High to Low</option>
             <option value="popular">Most Popular</option>
           </select>
-          <label className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
+          <label className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
             <input
               type="checkbox"
               checked={optimizedOnly}
               onChange={(e) => setOptimizedOnly(e.target.checked)}
               className="w-4 h-4 text-blue-600"
             />
-            <span className="text-sm font-medium text-gray-700">⚡ Optimized Only</span>
+            <span className="text-xs sm:text-sm font-medium text-gray-700">⚡ Optimized Only</span>
           </label>
         </div>
       </div>

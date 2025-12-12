@@ -2,19 +2,19 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useOnboarding } from '@/components/OnboardingProvider'
 
 export default function GetStartedButton() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { startOnboarding, completed } = useOnboarding()
 
   const handleGetStarted = async () => {
     setLoading(true)
     
-    // Check if user has completed onboarding
-    const hasOnboarded = localStorage.getItem('onboarding_completed')
-    
-    if (!hasOnboarded) {
-      router.push('/onboarding')
+    // Use consistent storage key and comprehensive onboarding
+    if (!completed) {
+      await startOnboarding()
     } else {
       router.push('/dashboard')
     }

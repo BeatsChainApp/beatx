@@ -1,0 +1,143 @@
+/* Mobile responsive wallet modal styles */
+
+/* Thirdweb modal container */
+[data-thirdweb] {
+  --tw-modal-bg: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Modal backdrop */
+[data-thirdweb] [role="dialog"] {
+  margin: 8px !important;
+  max-width: calc(100vw - 16px) !important;
+  max-height: calc(100vh - 16px) !important;
+  width: 100% !important;
+}
+
+/* Modal content */
+[data-thirdweb] [role="dialog"] > div {
+  border-radius: 12px !important;
+  padding: 16px !important;
+  max-height: calc(100vh - 32px) !important;
+  overflow-y: auto !important;
+}
+
+/* Modal header */
+[data-thirdweb] [role="dialog"] h2 {
+  font-size: 18px !important;
+  margin-bottom: 12px !important;
+}
+
+/* Wallet options */
+[data-thirdweb] [role="dialog"] button[data-wallet] {
+  padding: 12px !important;
+  font-size: 14px !important;
+  border-radius: 8px !important;
+  margin-bottom: 8px !important;
+}
+
+/* Wallet icons */
+[data-thirdweb] [role="dialog"] button[data-wallet] img {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+/* Connect button text */
+[data-thirdweb] [role="dialog"] button[data-wallet] span {
+  font-size: 14px !important;
+}
+
+/* Details modal (disconnect) */
+[data-thirdweb] [data-testid="wallet-details-modal"] {
+  margin: 8px !important;
+  max-width: calc(100vw - 16px) !important;
+  width: 100% !important;
+}
+
+[data-thirdweb] [data-testid="wallet-details-modal"] > div {
+  padding: 16px !important;
+  border-radius: 12px !important;
+}
+
+/* Disconnect button */
+[data-thirdweb] [data-testid="disconnect-wallet"] {
+  padding: 12px 16px !important;
+  font-size: 14px !important;
+  border-radius: 8px !important;
+  width: 100% !important;
+  margin-top: 12px !important;
+}
+
+/* Address display */
+[data-thirdweb] [data-testid="wallet-address"] {
+  font-size: 12px !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  word-break: break-all !important;
+}
+
+/* Balance display */
+[data-thirdweb] [data-testid="wallet-balance"] {
+  font-size: 14px !important;
+  margin: 8px 0 !important;
+}
+
+/* Close button */
+[data-thirdweb] [role="dialog"] button[aria-label="Close"] {
+  top: 12px !important;
+  right: 12px !important;
+  width: 32px !important;
+  height: 32px !important;
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 640px) {
+  [data-thirdweb] [role="dialog"] {
+    margin: 4px !important;
+    max-width: calc(100vw - 8px) !important;
+  }
+  
+  [data-thirdweb] [role="dialog"] > div {
+    padding: 12px !important;
+  }
+  
+  [data-thirdweb] [role="dialog"] h2 {
+    font-size: 16px !important;
+  }
+  
+  [data-thirdweb] [role="dialog"] button[data-wallet] {
+    padding: 10px !important;
+    font-size: 13px !important;
+  }
+  
+  [data-thirdweb] [role="dialog"] button[data-wallet] img {
+    width: 28px !important;
+    height: 28px !important;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  [data-thirdweb] [role="dialog"] {
+    margin: 2px !important;
+    max-width: calc(100vw - 4px) !important;
+  }
+  
+  [data-thirdweb] [role="dialog"] > div {
+    padding: 8px !important;
+  }
+  
+  [data-thirdweb] [role="dialog"] h2 {
+    font-size: 14px !important;
+    margin-bottom: 8px !important;
+  }
+  
+  [data-thirdweb] [role="dialog"] button[data-wallet] {
+    padding: 8px !important;
+    font-size: 12px !important;
+  }
+  
+  [data-thirdweb] [role="dialog"] button[data-wallet] img {
+    width: 24px !important;
+    height: 24px !important;
+  }
+}

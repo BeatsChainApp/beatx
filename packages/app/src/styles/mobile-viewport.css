@@ -1,0 +1,118 @@
+/* Mobile viewport and safe area handling */
+
+/* Ensure proper viewport on mobile devices */
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+/* Safe area insets for devices with notches */
+.safe-area-inset-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-inset-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-inset-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Prevent zoom on input focus on iOS */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
+textarea,
+select {
+  font-size: 16px !important;
+}
+
+/* Better touch targets */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Prevent horizontal scroll */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* PWA specific styles */
+@media (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Hide browser UI elements in standalone mode */
+  .browser-only {
+    display: none !important;
+  }
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific styles */
+  .ios-scroll-fix {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Fix for iOS viewport units */
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Android specific fixes */
+@media screen and (max-width: 767px) {
+  /* Prevent zoom on form inputs */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+  
+  /* Better button touch targets */
+  button, .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Very small screens */
+@media screen and (max-width: 320px) {
+  /* Ensure content fits on very small screens */
+  .container {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  /* Smaller text on very small screens */
+  .responsive-text {
+    font-size: 14px !important;
+  }
+}
+
+/* Landscape orientation on mobile */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  /* Adjust for landscape mode on mobile */
+  .mobile-landscape-adjust {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}

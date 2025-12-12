@@ -249,16 +249,16 @@ export default function AppOnboardingModal({ isOpen, onClose }: AppOnboardingMod
   const currentStepName = steps[currentStep]
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto mx-2 sm:mx-4">
         
         {/* Progress Bar */}
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-4 sm:p-6 border-b border-gray-200">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Welcome to BeatsChain</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Welcome to BeatsChain</h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-xl"
+              className="text-gray-400 hover:text-gray-600 text-xl p-1"
             >
               ✕
             </button>
@@ -279,45 +279,45 @@ export default function AppOnboardingModal({ isOpen, onClose }: AppOnboardingMod
         </div>
 
         {/* Step Content */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {currentStepName === 'welcome' && (
             <div className="text-center">
-              <div className="text-6xl mb-6">🎵</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Welcome to BeatsChain</h3>
-              <p className="text-gray-600 mb-8">
+              <div className="text-4xl sm:text-6xl mb-4 sm:mb-6">🎵</div>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Welcome to BeatsChain</h3>
+              <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base px-2">
                 Transform your music into NFTs, submit to radio stations, and access professional music industry tools
               </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <div className="text-3xl mb-2">🎧</div>
-                  <h4 className="font-semibold text-gray-900">NFT Minting</h4>
-                  <p className="text-gray-600 text-sm">Turn your music into blockchain assets</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+                <div className="p-3 sm:p-4 border border-gray-200 rounded-lg">
+                  <div className="text-2xl sm:text-3xl mb-2">🎧</div>
+                  <h4 className="font-semibold text-gray-900 text-sm sm:text-base">NFT Minting</h4>
+                  <p className="text-gray-600 text-xs sm:text-sm">Turn your music into blockchain assets</p>
                 </div>
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <div className="text-3xl mb-2">📻</div>
-                  <h4 className="font-semibold text-gray-900">Radio Submission</h4>
-                  <p className="text-gray-600 text-sm">Professional SA radio packages</p>
+                <div className="p-3 sm:p-4 border border-gray-200 rounded-lg">
+                  <div className="text-2xl sm:text-3xl mb-2">📻</div>
+                  <h4 className="font-semibold text-gray-900 text-sm sm:text-base">Radio Submission</h4>
+                  <p className="text-gray-600 text-xs sm:text-sm">Professional SA radio packages</p>
                 </div>
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <div className="text-3xl mb-2">🏪</div>
-                  <h4 className="font-semibold text-gray-900">Marketplace</h4>
-                  <p className="text-gray-600 text-sm">Buy and sell music NFTs</p>
+                <div className="p-3 sm:p-4 border border-gray-200 rounded-lg">
+                  <div className="text-2xl sm:text-3xl mb-2">🏪</div>
+                  <h4 className="font-semibold text-gray-900 text-sm sm:text-base">Marketplace</h4>
+                  <p className="text-gray-600 text-xs sm:text-sm">Buy and sell music NFTs</p>
                 </div>
               </div>
 
               {renderSponsorContent('welcome')}
               
-              <div className="flex gap-3 justify-center mt-6">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
                 <button
                   onClick={nextStep}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all font-medium"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all font-medium text-sm sm:text-base"
                 >
                   Get Started
                 </button>
                 <button
                   onClick={onClose}
-                  className="bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-all font-medium"
+                  className="bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-all font-medium text-sm sm:text-base"
                 >
                   Skip Setup
                 </button>
@@ -386,13 +386,13 @@ export default function AppOnboardingModal({ isOpen, onClose }: AppOnboardingMod
 
           {currentStepName === 'role' && (
             <div className="text-center">
-              <div className="text-5xl mb-6">🎯</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">What describes you best?</h3>
-              <p className="text-gray-600 mb-8">
+              <div className="text-4xl sm:text-5xl mb-4 sm:mb-6">🎯</div>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">What describes you best?</h3>
+              <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base px-2">
                 This helps us customize your BeatsChain experience
               </p>
               
-              <div className="grid grid-cols-1 gap-4 mb-6">
+              <div className="grid grid-cols-1 gap-3 sm:gap-4 mb-4 sm:mb-6">
                 {[
                   { id: 'solo_artist', icon: '🎤', title: 'Solo Artist', desc: 'Create and mint your music as NFTs' },
                   { id: 'producer', icon: '🎹', title: 'Producer/Beat Maker', desc: 'Create beats and instrumentals for the marketplace' },
@@ -401,17 +401,17 @@ export default function AppOnboardingModal({ isOpen, onClose }: AppOnboardingMod
                   <button
                     key={role.id}
                     onClick={() => handleRoleSelect(role.id as any)}
-                    className={`p-6 border-2 rounded-lg transition-all text-left ${
+                    className={`p-4 sm:p-6 border-2 rounded-lg transition-all text-left ${
                       userChoices.role === role.id
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="text-3xl">{role.icon}</div>
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <div className="text-2xl sm:text-3xl">{role.icon}</div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">{role.title}</h4>
-                        <p className="text-gray-600 text-sm">{role.desc}</p>
+                        <h4 className="font-semibold text-gray-900 text-sm sm:text-base">{role.title}</h4>
+                        <p className="text-gray-600 text-xs sm:text-sm">{role.desc}</p>
                       </div>
                     </div>
                   </button>
@@ -420,17 +420,17 @@ export default function AppOnboardingModal({ isOpen, onClose }: AppOnboardingMod
 
               {userChoices.role && renderSponsorContent('role')}
               
-              <div className="flex gap-3 justify-center mt-6">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
                 <button
                   onClick={nextStep}
                   disabled={!userChoices.role}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 transition-all font-medium"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 sm:px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 transition-all font-medium text-sm sm:text-base"
                 >
                   Continue
                 </button>
                 <button
                   onClick={previousStep}
-                  className="bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-all font-medium"
+                  className="bg-gray-200 text-gray-700 py-3 px-4 sm:px-6 rounded-lg hover:bg-gray-300 transition-all font-medium text-sm sm:text-base"
                 >
                   Back
                 </button>
@@ -448,39 +448,39 @@ export default function AppOnboardingModal({ isOpen, onClose }: AppOnboardingMod
 
           {currentStepName === 'features' && (
             <div className="text-center">
-              <div className="text-5xl mb-6">🚀</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Your BeatsChain Toolkit</h3>
-              <p className="text-gray-600 mb-8">
+              <div className="text-4xl sm:text-5xl mb-4 sm:mb-6">🚀</div>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Your BeatsChain Toolkit</h3>
+              <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base px-2">
                 Everything you need to succeed in the music industry
               </p>
               
-              <div className="space-y-4 mb-8">
+              <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                 {[
                   { icon: '🎧', title: 'NFT Minting', desc: 'Turn your music into blockchain assets with automatic licensing' },
                   { icon: '📻', title: 'Radio Submission', desc: 'Professional packages for SA radio stations with SAMRO docs' },
                   { icon: '🏪', title: 'Marketplace', desc: 'Buy, sell, and discover music NFTs from artists worldwide' },
                   { icon: '🎯', title: 'ISRC Generation', desc: 'Industry-standard music codes for professional distribution' }
                 ].map((feature, index) => (
-                  <div key={index} className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg">
-                    <div className="text-3xl">{feature.icon}</div>
+                  <div key={index} className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 border border-gray-200 rounded-lg">
+                    <div className="text-2xl sm:text-3xl">{feature.icon}</div>
                     <div className="text-left">
-                      <h4 className="font-semibold text-gray-900">{feature.title}</h4>
-                      <p className="text-gray-600 text-sm">{feature.desc}</p>
+                      <h4 className="font-semibold text-gray-900 text-sm sm:text-base">{feature.title}</h4>
+                      <p className="text-gray-600 text-xs sm:text-sm">{feature.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
               
-              <div className="flex gap-3 justify-center">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <button
                   onClick={completeOnboarding}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all font-medium"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 sm:px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all font-medium text-sm sm:text-base"
                 >
                   Start Creating
                 </button>
                 <button
                   onClick={previousStep}
-                  className="bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-all font-medium"
+                  className="bg-gray-200 text-gray-700 py-3 px-4 sm:px-6 rounded-lg hover:bg-gray-300 transition-all font-medium text-sm sm:text-base"
                 >
                   Back
                 </button>
@@ -514,48 +514,48 @@ function ProfileStep({ onSubmit, onBack, renderSponsor }: ProfileStepProps) {
 
   return (
     <div className="text-center">
-      <div className="text-5xl mb-6">📝</div>
-      <h3 className="text-2xl font-bold text-gray-900 mb-4">Set Up Your Artist Profile</h3>
-      <p className="text-gray-600 mb-8">
+      <div className="text-4xl sm:text-5xl mb-4 sm:mb-6">📝</div>
+      <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Set Up Your Artist Profile</h3>
+      <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base px-2">
         Complete your profile to get the most out of BeatsChain
       </p>
       
-      <form onSubmit={handleSubmit} className="space-y-4 mb-6 text-left">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 mb-4 sm:mb-6 text-left">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
             Artist Name *
           </label>
           <input
             type="text"
             value={artistName}
             onChange={(e) => setArtistName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             placeholder="Your artist name"
             required
           />
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
             Stage Name (Optional)
           </label>
           <input
             type="text"
             value={stageName}
             onChange={(e) => setStageName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             placeholder="Your stage name"
           />
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
             Primary Genre *
           </label>
           <select
             value={genre}
             onChange={(e) => setGenre(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             required
           >
             <option value="">Select Genre</option>
@@ -575,17 +575,17 @@ function ProfileStep({ onSubmit, onBack, renderSponsor }: ProfileStepProps) {
 
       {renderSponsor()}
       
-      <div className="flex gap-3 justify-center mt-6">
+      <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
         <button
           onClick={handleSubmit}
           disabled={!artistName || !genre}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 transition-all font-medium"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 sm:px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 transition-all font-medium text-sm sm:text-base"
         >
           Continue
         </button>
         <button
           onClick={onBack}
-          className="bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-all font-medium"
+          className="bg-gray-200 text-gray-700 py-3 px-4 sm:px-6 rounded-lg hover:bg-gray-300 transition-all font-medium text-sm sm:text-base"
         >
           Back
         </button>
