@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
+import { googleAuth } from '@/lib/googleAuth'
 import { useActiveAccount } from "thirdweb/react"
 import { useSIWE } from './SIWEContext'
 import { useWeb3Profile } from '@/hooks/useWeb3Profile'
@@ -335,6 +336,23 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signIn = async () => {
+    // Try Google Sign-up/sign-in first when client is configured
+    try {
+      if (typeof window !== 'undefined' && (process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || (window as any).google)) {
+        try {
+          await googleAuth.signIn()
+          // Rebuild unified user from stored Google data
+          setTimeout(() => buildUnifiedUser(), 100)
+          return
+        } catch (gErr) {
+          console.warn('Google sign-in attempt failed, falling back to wallet SIWE', gErr)
+        }
+      }
+    } catch (err) {
+      console.warn('Google sign-in check failed', err)
+    }
+
+    // Fallback: wallet/SIWE sign in
     if (isConnected && address) {
       try {
         if (siweSignIn) {
@@ -345,6 +363,8 @@ export function UnifiedAuthProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error('Sign in failed:', error)
       }
+    } else {
+      console.warn('No wallet connected and Google sign-in unavailable')
     }
   }
 

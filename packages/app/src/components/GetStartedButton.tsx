@@ -11,10 +11,9 @@ export default function GetStartedButton() {
 
   const handleGetStarted = async () => {
     setLoading(true)
-    
-    // Use consistent storage key and comprehensive onboarding
+    // Route new users to the dedicated onboarding page; keep dashboard for completed users
     if (!completed) {
-      await startOnboarding()
+      router.push('/onboarding')
     } else {
       router.push('/dashboard')
     }

@@ -49,6 +49,13 @@ export default function Navigation() {
               <div className="flex items-center mr-4">
                 <SimplifiedWalletConnect />
               </div>
+
+              {/* Primary onboarding CTA (non-breaking link to onboarding page) */}
+              <div className="flex items-center">
+                <Link href="/onboarding" className="ml-3 bg-purple-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-purple-700 transition-colors">
+                  Signup
+                </Link>
+              </div>
               
               {navigationItems.map((item) => (
                 <div key={item.label} className="relative group">
